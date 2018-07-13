@@ -1,17 +1,20 @@
 {
   "name": "hangul",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "",
-  "main": "index.js",
+  "main": "Hangul.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "concurrently \"rollup -c -w\" \"http-server\""
   },
   "author": "Cole Gannon",
   "license": "ISC",
   "devDependencies": {
+    "concurrently": "^3.6.0",
     "eslint": "^4.19.1",
     "eslint-config-airbnb-base": "^13.0.0",
     "eslint-plugin-import": "^2.13.0",
+    "http-server": "^0.11.1",
     "rollup": "^0.62.0"
   },
   "dependencies": {}

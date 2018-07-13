@@ -4,7 +4,7 @@ const is = range => (char) => {
   if (char.length - 1) {
     throw new Error(`"${char}" does not have a length of one!`);
   }
-  range.contains(char.charCodeAt(0));
+  return range.contains(char.charCodeAt(0));
 };
 export const jamo = new Range(0x1100, 0x11FF);
 export const compatibilityJamo = new Range(0x3130, 0x318F);

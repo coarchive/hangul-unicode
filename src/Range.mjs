@@ -10,4 +10,4 @@ export default class Range {
   contains(num) {
     return num >= this.start && num <= this.end;
   }
-}
+};
