@@ -1,6 +1,9 @@
 import transform from './transformer';
+import { jamoExtendedB } from './blocks';
 
-export const string = 'ᄢᄣ';
-export default ({
+const string = jamoExtendedB.map(v => String.fromCodePoint(v));
+console.log('asdjaslkdjslakdj');
+export default {
   transform,
-});
+  string,
+};

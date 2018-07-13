@@ -10,4 +10,14 @@ export default class Range {
   contains(num) {
     return num >= this.start && num <= this.end;
   }
-};
+
+  forEach(fn) {
+    for (let i = this.start; i <= this.end; i++) {
+      fn(i);
+    }
+  }
+
+  map(fn) {
+    return Array(this.end - this.start + 1).fill``.map((v, i) => fn(i + this.start - 1));
+  }
+}

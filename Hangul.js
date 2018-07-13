@@ -1,4 +1,4 @@
-var Hangul = (function (exports) {
+var Hangul = (function () {
   'use strict';
 
   class Range {
@@ -13,14 +13,18 @@ var Hangul = (function (exports) {
     contains(num) {
       return num >= this.start && num <= this.end;
     }
+
+    forEach(fn) {
+      for (let i = this.start; i <= this.end; i++) {
+        fn(i);
+      }
+    }
+
+    map(fn) {
+      return Array(this.end - this.start + 1).fill``.map((v, i) => fn(i + this.start - 1));
+    }
   }
 
-  const is = range => (char) => {
-    if (char.length - 1) {
-      throw new Error(`"${char}" does not have a length of one!`);
-    }
-    return range.contains(char.charCodeAt(0));
-  };
   const jamo = new Range(0x1100, 0x11FF);
   const compatibilityJamo = new Range(0x3130, 0x318F);
   const jamoExtendedA = new Range(0xA960, 0xA97F);
@@ -28,6 +32,12 @@ var Hangul = (function (exports) {
   const jamoExtendedB = new Range(0xD7B0, 0xD7FF);
   const halfwidth = new Range(0xFFA0, 0xFFDF);
 
+  const is = range => (char) => {
+    if (char.length - 1) {
+      throw new Error(`"${char}" does not have a length of one!`);
+    }
+    return range.contains(char.charCodeAt(0));
+  };
   const isJamo = is(jamo);
   const isCompatibilityJamo = is(compatibilityJamo);
   const isJamoExtendedA = is(jamoExtendedA);
@@ -455,7 +465,7 @@ var Hangul = (function (exports) {
     ￛ: ['ㅡ', 'ㅣ'],
     ￜ: 'ㅣ',
   };
-  var eq = (Object.assign({}, jamo$1, jamoExtendedA$1, jamoExtendedB$1, halfwidth$1));
+  var mappings = (Object.assign({}, jamo$1, jamoExtendedA$1, jamoExtendedB$1, halfwidth$1));
 
   // tries to transform everything into standard hangul
 
@@ -463,11 +473,9 @@ var Hangul = (function (exports) {
     if (typeof str !== 'string') {
       throw new Error('Cannot transform things that are not strings');
     }
-    console.log(str.length);
     return str.split``.map((char) => {
       if (isHangul(char) && !isStandard(char)) {
-        console.log('Non-standard hangul character!');
-        const comp = eq[char];
+        const comp = mappings[char];
         if (comp) {
           return comp;
         }
@@ -477,14 +485,13 @@ var Hangul = (function (exports) {
     });
   }
 
-  const string = 'ᄢᄣ';
-  var main = ({
+  const string = jamoExtendedB.map(v => String.fromCodePoint(v));
+  console.log('asdjaslkdjslakdj');
+  var main = {
     transform,
-  });
+    string,
+  };
 
-  exports.string = string;
-  exports.default = main;
+  return main;
 
-  return exports;
-
-}({}));
+}());

@@ -5,7 +5,8 @@
   "main": "Hangul.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "concurrently \"rollup -c -w\" \"http-server\""
+    "start": "http-server",
+    "dev": "rollup -c -w"
   },
   "author": "Cole Gannon",
   "license": "ISC",

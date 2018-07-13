@@ -414,4 +414,10 @@ const halfwidth = {
   ￛ: ['ㅡ', 'ㅣ'],
   ￜ: 'ㅣ',
 };
+export {
+  jamo,
+  jamoExtendedA,
+  jamoExtendedB,
+  halfwidth,
+};
 export default (Object.assign({}, jamo, jamoExtendedA, jamoExtendedB, halfwidth));
