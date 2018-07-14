@@ -3,7 +3,7 @@ import contains from './contains';
 
 const isStandardHangul = char => blocks.isCompatibilityJamo(char) || blocks.isSyllable(char);
 const isHangul = char => (
-  isStandard(char)
+  isStandardHangul(char)
   || blocks.isJamo(char)
   || blocks.isJamoExtendedA(char)
   || blocks.isJamoExtendedB(char)
