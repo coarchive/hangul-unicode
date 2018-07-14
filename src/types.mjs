@@ -1,5 +1,5 @@
-import * as blocks from './blocks';
-import contains from './contains';
+import * as blocks from './unicode/blocks';
+import { contains } from './array';
 
 const isStandardHangul = char => blocks.isCompatibilityJamo(char) || blocks.isSyllable(char);
 const isHangul = char => (

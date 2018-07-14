@@ -25,6 +25,21 @@ var Hangul = (function (exports) {
     }
   }
 
+  var makeAry = (aryLike) => {
+    if (typeof aryLike === 'string') {
+      aryLike = aryLike.split``;
+    } else if (!Array.isArray(aryLike)) {
+      throw new Error('aryLike must be a string or an array!');
+    }
+    return aryLike;
+  };
+
+  // I mean, how am I supposed to describe this?
+
+  var runAry = (method => arg => aryLike => makeAry(aryLike)[method](arg));
+
+  var contains = (runAry('some'));
+
   var is = ((range) => {
     const isArray = Array.isArray(range);
     return (char) => {
@@ -41,6 +56,7 @@ var Hangul = (function (exports) {
     };
   });
 
+  console.log(is);
   const jamo = new Range(0x1100, 0x11FF);
   const compatibilityJamo = new Range(0x3130, 0x318F);
   const jamoExtendedA = new Range(0xA960, 0xA97F);
@@ -53,17 +69,6 @@ var Hangul = (function (exports) {
   const isSyllable = is(syllables);
   const isJamoExtendedB = is(jamoExtendedB);
   const isHalfwidth = is(halfwidth);
-
-  var makeAry = (aryLike) => {
-    if (typeof aryLike === 'string') {
-      aryLike = aryLike.split``;
-    } else if (!Array.isArray(aryLike)) {
-      throw new Error('aryLike must be a string or an array!');
-    }
-    return aryLike;
-  };
-
-  var contains = (fn => aryLike => makeAry(aryLike).some(fn));
 
   const isStandardHangul = char => isCompatibilityJamo(char) || isSyllable(char);
   const isHangul = char => (

@@ -4,10 +4,10 @@ import isAll from './isAll';
 import whatIs from './whatIs';
 import whereIs from './whereIs';
 
-export default {
+export {
   contains,
   is,
   isAll,
   whatIs,
   whereIs,
-}
+};

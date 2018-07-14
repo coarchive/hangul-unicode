@@ -1,6 +1,7 @@
 import Range from './Range';
-import is from '../array';
+import { is } from '../array';
 
+console.log(is);
 export const jamo = new Range(0x1100, 0x11FF);
 export const compatibilityJamo = new Range(0x3130, 0x318F);
 export const jamoExtendedA = new Range(0xA960, 0xA97F);

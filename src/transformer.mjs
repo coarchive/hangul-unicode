@@ -1,6 +1,6 @@
 // tries to transform everything into disassembled standard hangul
 import { isStandardHangul, isHangul } from './types';
-import mappings from './mappings';
+import mappings from './unicode/mappings';
 
 function transform(str) {
   if (typeof str !== 'string') {
