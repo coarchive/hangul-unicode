@@ -14,6 +14,12 @@ const isSyllable = is(syllables);
 const isJamoExtendedB = is(jamoExtendedB);
 const isHalfwidth = is(halfwidth);
 export {
+  jamo,
+  compatibilityJamo,
+  jamoExtendedA,
+  syllables,
+  jamoExtendedB,
+  halfwidth,
   isJamo,
   isCompatibilityJamo,
   isJamoExtendedA,

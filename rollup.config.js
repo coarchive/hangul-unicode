@@ -6,5 +6,9 @@ export default {
     format: 'iife',
     name: 'Hangul',
     strict: true,
+    sourcemap: true,
+  },
+  watch: {
+    include: 'src/**',
   },
 };

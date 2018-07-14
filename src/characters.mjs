@@ -11,8 +11,12 @@ const complex = {
   ㅈ: 'ㅈ',
 };
 const isConsonant = is(consonants);
+const isVowel = is(vowels);
+const isComplex = is(complex);
+
 export {
-  consonants,
-  vowels,
   complex,
+  isConsonant,
+  isVowel,
+  isComplex,
 };

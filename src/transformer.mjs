@@ -1,8 +1,8 @@
-// tries to transform everything into standard hangul
+// tries to transform everything into disassembled standard hangul
 import { isStandardHangul, isHangul } from './types';
 import mappings from './mappings';
 
-export default function (str) {
+function transform(str) {
   if (typeof str !== 'string') {
     throw new Error('Cannot transform things that are not strings');
   }
@@ -16,4 +16,8 @@ export default function (str) {
     }
     return char;
   });
+}
+export default (transform);
+export function transformToString(str) {
+  return transform(str).flat();
 }

@@ -13,8 +13,8 @@ const containsStandardHangul = contains(isStandardHangul);
 const containsHangul = contains(isHangul);
 
 export {
-  containsStandardHangul,
+  isHangul,
   isStandardHangul,
   containsHangul,
-  isHangul,
+  containsStandardHangul,
 };

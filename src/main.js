@@ -1,13 +1,13 @@
-import { isCompatibilityJamo, isSyllable, isStandard, isHangul } from './types';
+import { isStandardHangul, containsStandardHangul, isHangul, containsHangul } from './types';
 import transform from './transformer';
 import { jamoExtendedB } from './blocks';
 
 const string = jamoExtendedB.map(v => String.fromCodePoint(v));
-export default {
-  transform,
+export {
+  transform as toStandard,
   string,
-  isCompatibilityJamo,
-  isSyllable,
-  isStandard,
+  isStandardHangul,
   isHangul,
+  containsHangul,
+  containsStandardHangul,
 };

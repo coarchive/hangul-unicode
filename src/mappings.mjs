@@ -1,6 +1,6 @@
 // I had to write all of this myself.
 // It was so painful.
-const jamo = {
+export const jamo = {
   ᄀ: 'ㄱ',
   ᄁ: ['ㄱ', 'ㄱ'],
   ᄂ: 'ㄴ',
@@ -256,7 +256,25 @@ const jamo = {
   ᇾ: ['ㄱ', 'ㅎ'],
   ᇿ: ['ㄴ', 'ㄴ'],
 };
-const jamoExtendedA = {
+export const compatibilityJamo = {
+  ㄲ: ['ㄱ', 'ㄱ'],
+  ㄳ: ['ㄱ', 'ㅅ'],
+  ㄵ: ['ㄴ', 'ㅈ'],
+  ㄶ: ['ㄴ', 'ㅎ'],
+  ㄸ: ['ㄷ', 'ㄷ'],
+  ㄺ: ['ㄹ', 'ㄱ'],
+  ㄻ: ['ㄹ', 'ㅁ'],
+  ㄼ: ['ㄹ', 'ㅂ'],
+  ㄽ: ['ㄹ', 'ㅅ'],
+  ㄾ: ['ㄹ', 'ㅌ'],
+  ㄿ: ['ㄹ', 'ㅍ'],
+  ㅀ: ['ㄹ', 'ㅎ'],
+  ㅃ: ['ㅂ', 'ㅂ'],
+  ㅄ: ['ㅂ', 'ㅅ'],
+  ㅆ: ['ㅅ', 'ㅅ'],
+  ㅉ: ['ㅈ', 'ㅈ'],
+};
+export const jamoExtendedA = {
   ꥠ: ['ㄷ', 'ㅁ'],
   ꥡ: ['ㄷ', 'ㅂ'],
   ꥢ: ['ㄷ', 'ㅅ'],
@@ -287,7 +305,7 @@ const jamoExtendedA = {
   ꥻ: ['ㅎ', 'ㅅ'],
   ꥼ: ['ㆆ', 'ㆆ'],
 };
-const jamoExtendedB = {
+export const jamoExtendedB = {
   ힰ: ['ㅗ', 'ㅕ'],
   ힱ: ['ㅗ', 'ㅗ', 'ㅣ'],
   ힲ: ['ㅛ', 'ㅏ'],
@@ -361,7 +379,7 @@ const jamoExtendedB = {
   ퟺ: ['ㅍ', 'ㅅ'],
   ퟻ: ['ㅍ', 'ㅌ'],
 };
-const halfwidth = {
+export const halfwidth = {
   ﾡ: 'ㄱ',
   ﾢ: ['ㄱ', 'ㄱ'],
   ﾣ: ['ㄱ', 'ㅅ'],
@@ -414,10 +432,5 @@ const halfwidth = {
   ￛ: ['ㅡ', 'ㅣ'],
   ￜ: 'ㅣ',
 };
-export {
-  jamo,
-  jamoExtendedA,
-  jamoExtendedB,
-  halfwidth,
-};
-export default (Object.assign({}, jamo, jamoExtendedA, jamoExtendedB, halfwidth));
+const all = Object.assign({}, jamo, compatibilityJamo, jamoExtendedA, jamoExtendedB, halfwidth);
+export default (all);

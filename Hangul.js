@@ -1,4 +1,4 @@
-var Hangul = (function () {
+var Hangul = (function (exports) {
   'use strict';
 
   class Range {
@@ -25,19 +25,28 @@ var Hangul = (function () {
     }
   }
 
+  var is = ((range) => {
+    const isArray = Array.isArray(range);
+    return (char) => {
+      if (typeof char !== 'string') {
+        throw new Error('char MUST be a string!');
+      }
+      if (char.length - 1) {
+        throw new Error(`"${char}" does not have a length of one!`);
+      }
+      if (isArray) {
+        return range.includes(char);
+      }
+      return range.contains(char.charCodeAt(0));
+    };
+  });
+
   const jamo = new Range(0x1100, 0x11FF);
   const compatibilityJamo = new Range(0x3130, 0x318F);
   const jamoExtendedA = new Range(0xA960, 0xA97F);
   const syllables = new Range(0xAC00, 0xD7AF);
   const jamoExtendedB = new Range(0xD7B0, 0xD7FF);
   const halfwidth = new Range(0xFFA0, 0xFFDF);
-
-  const is = range => (char) => {
-    if (char.length - 1) {
-      throw new Error(`"${char}" does not have a length of one!`);
-    }
-    return range.contains(char.charCodeAt(0));
-  };
   const isJamo = is(jamo);
   const isCompatibilityJamo = is(compatibilityJamo);
   const isJamoExtendedA = is(jamoExtendedA);
@@ -45,9 +54,27 @@ var Hangul = (function () {
   const isJamoExtendedB = is(jamoExtendedB);
   const isHalfwidth = is(halfwidth);
 
-  const isJamoExtended = v => isJamoExtendedA(v) || isJamoExtendedB(v);
-  const isStandard = v => isCompatibilityJamo(v) || isSyllable(v);
-  const isHangul = v => isJamo(v) || isStandard(v) || isJamoExtended(v) || isHalfwidth(v);
+  var makeAry = (aryLike) => {
+    if (typeof aryLike === 'string') {
+      aryLike = aryLike.split``;
+    } else if (!Array.isArray(aryLike)) {
+      throw new Error('aryLike must be a string or an array!');
+    }
+    return aryLike;
+  };
+
+  var contains = (fn => aryLike => makeAry(aryLike).some(fn));
+
+  const isStandardHangul = char => isCompatibilityJamo(char) || isSyllable(char);
+  const isHangul = char => (
+    isStandardHangul(char)
+    || isJamo(char)
+    || isJamoExtendedA(char)
+    || isJamoExtendedB(char)
+    || isHalfwidth(char)
+  );
+  const containsStandardHangul = contains(isStandardHangul);
+  const containsHangul = contains(isHangul);
 
   // I had to write all of this myself.
   // It was so painful.
@@ -307,6 +334,24 @@ var Hangul = (function () {
     ᇾ: ['ㄱ', 'ㅎ'],
     ᇿ: ['ㄴ', 'ㄴ'],
   };
+  const compatibilityJamo$1 = {
+    ㄲ: ['ㄱ', 'ㄱ'],
+    ㄳ: ['ㄱ', 'ㅅ'],
+    ㄵ: ['ㄴ', 'ㅈ'],
+    ㄶ: ['ㄴ', 'ㅎ'],
+    ㄸ: ['ㄷ', 'ㄷ'],
+    ㄺ: ['ㄹ', 'ㄱ'],
+    ㄻ: ['ㄹ', 'ㅁ'],
+    ㄼ: ['ㄹ', 'ㅂ'],
+    ㄽ: ['ㄹ', 'ㅅ'],
+    ㄾ: ['ㄹ', 'ㅌ'],
+    ㄿ: ['ㄹ', 'ㅍ'],
+    ㅀ: ['ㄹ', 'ㅎ'],
+    ㅃ: ['ㅂ', 'ㅂ'],
+    ㅄ: ['ㅂ', 'ㅅ'],
+    ㅆ: ['ㅅ', 'ㅅ'],
+    ㅉ: ['ㅈ', 'ㅈ'],
+  };
   const jamoExtendedA$1 = {
     ꥠ: ['ㄷ', 'ㅁ'],
     ꥡ: ['ㄷ', 'ㅂ'],
@@ -465,17 +510,17 @@ var Hangul = (function () {
     ￛ: ['ㅡ', 'ㅣ'],
     ￜ: 'ㅣ',
   };
-  var mappings = (Object.assign({}, jamo$1, jamoExtendedA$1, jamoExtendedB$1, halfwidth$1));
+  const all = Object.assign({}, jamo$1, compatibilityJamo$1, jamoExtendedA$1, jamoExtendedB$1, halfwidth$1);
 
-  // tries to transform everything into standard hangul
+  // tries to transform everything into disassembled standard hangul
 
-  function transform (str) {
+  function transform(str) {
     if (typeof str !== 'string') {
       throw new Error('Cannot transform things that are not strings');
     }
     return str.split``.map((char) => {
-      if (isHangul(char) && !isStandard(char)) {
-        const comp = mappings[char];
+      if (isHangul(char) && !isStandardHangul(char)) {
+        const comp = all[char];
         if (comp) {
           return comp;
         }
@@ -486,12 +531,15 @@ var Hangul = (function () {
   }
 
   const string = jamoExtendedB.map(v => String.fromCodePoint(v));
-  console.log('Hello world');
-  var main = {
-    transform,
-    string,
-  };
 
-  return main;
+  exports.toStandard = transform;
+  exports.string = string;
+  exports.isStandardHangul = isStandardHangul;
+  exports.isHangul = isHangul;
+  exports.containsHangul = containsHangul;
+  exports.containsStandardHangul = containsStandardHangul;
 
-}());
+  return exports;
+
+}({}));
+//# sourceMappingURL=Hangul.js.map
