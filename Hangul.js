@@ -486,7 +486,7 @@ var Hangul = (function () {
   }
 
   const string = jamoExtendedB.map(v => String.fromCodePoint(v));
-  console.log('asdjaslkdjslakdj');
+  console.log('Hello world');
   var main = {
     transform,
     string,

@@ -1,5 +1,7 @@
-const consonant = ['ㄱ', 'ㄴ', 'ㄷ', 'ㄹ', 'ㅁ', 'ㅂ', 'ㅅ', 'ㅇ', 'ㅈ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ'];
-const vowels = ['ㅏ', 'ㅑ', 'ㅓ', 'ㅕ', 'ㅗ', 'ㅛ', 'ㅜ', 'ㅠ', 'ㅡ', 'ㅣ'];
+import is from './is';
+
+const consonants = ['ㄱ', 'ㄴ', 'ㄷ', 'ㄹ', 'ㅁ', 'ㅂ', 'ㅅ', 'ㅇ', 'ㅈ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ'];
+const vowels = ['ㅏ', 'ㅐ', 'ㅑ', 'ㅒ', 'ㅓ', 'ㅔ', 'ㅕ', 'ㅖ', 'ㅗ', 'ㅛ', 'ㅜ', 'ㅠ', 'ㅡ', 'ㅣ'];
 const complex = {
   ㄱ: ['ㄱ', 'ㅅ', 'ㅈ', 'ㅎ'],
   ㄷ: 'ㄷ',
@@ -7,4 +9,10 @@ const complex = {
   ㅂ: ['ㅂ', 'ㅅ'],
   ㅅ: 'ㅅ',
   ㅈ: 'ㅈ',
+};
+const isConsonant = is(consonants);
+export {
+  consonants,
+  vowels,
+  complex,
 };
