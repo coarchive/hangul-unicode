@@ -8,6 +8,7 @@ var Hangul = (function (exports) {
       }
       this.start = start;
       this.end = end;
+      this.length = this.end - this.start + 1;
     }
 
     contains(num) {
@@ -21,7 +22,7 @@ var Hangul = (function (exports) {
     }
 
     map(fn) {
-      return Array(this.end - this.start + 1).fill``.map((v, i) => fn(i + this.start - 1));
+      return Array(this.length).fill``.map((v, i) => fn(i + this.start));
     }
   }
 
@@ -56,13 +57,25 @@ var Hangul = (function (exports) {
     };
   });
 
-  console.log(is);
+  var whatIs = (runAry('find'));
+
   const jamo = new Range(0x1100, 0x11FF);
   const compatibilityJamo = new Range(0x3130, 0x318F);
   const jamoExtendedA = new Range(0xA960, 0xA97F);
   const syllables = new Range(0xAC00, 0xD7AF);
   const jamoExtendedB = new Range(0xD7B0, 0xD7FF);
   const halfwidth = new Range(0xFFA0, 0xFFDF);
+  const reserved = [
+    0x3130, 0x318F, // compatibilityJamo
+    new Range(0xA97D, 0xA97F), // jamoExtendedA
+    new Range(0xD7A4, 0xD7AF), // syllables
+    new Range(0xD7C7, 0xD7CA), // jamoExtendedB
+    new Range(0xD7FC, 0xD7FF), // jamoExtendedB
+  ];
+  const isReserved = (char) => {
+    const code = char.codePointAt(0);
+    return reserved.includes(code) || reserved.filter(v => typeof v !== 'number').some(range => range.contains(code));
+  };
   const isJamo = is(jamo);
   const isCompatibilityJamo = is(compatibilityJamo);
   const isJamoExtendedA = is(jamoExtendedA);
@@ -80,6 +93,7 @@ var Hangul = (function (exports) {
   );
   const containsStandardHangul = contains(isStandardHangul);
   const containsHangul = contains(isHangul);
+  const whatIsStandardHangul = whatIs(isStandardHangul);
 
   // I had to write all of this myself.
   // It was so painful.
@@ -543,6 +557,8 @@ var Hangul = (function (exports) {
   exports.isHangul = isHangul;
   exports.containsHangul = containsHangul;
   exports.containsStandardHangul = containsStandardHangul;
+  exports.whatIsStandardHangul = whatIsStandardHangul;
+  exports.isReserved = isReserved;
 
   return exports;
 

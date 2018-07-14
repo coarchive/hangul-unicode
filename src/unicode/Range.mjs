@@ -5,6 +5,7 @@ export default class Range {
     }
     this.start = start;
     this.end = end;
+    this.length = this.end - this.start + 1;
   }
 
   contains(num) {
@@ -18,6 +19,6 @@ export default class Range {
   }
 
   map(fn) {
-    return Array(this.end - this.start + 1).fill``.map((v, i) => fn(i + this.start - 1));
+    return Array(this.length).fill``.map((v, i) => fn(i + this.start));
   }
 }
