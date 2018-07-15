@@ -26,38 +26,26 @@ var Hangul = (function (exports) {
     }
   }
 
-  var makeAry = (aryLike) => {
-    if (typeof aryLike === 'string') {
-      aryLike = aryLike.split``;
-    } else if (!Array.isArray(aryLike)) {
-      throw new Error('aryLike must be a string or an array!');
+  var assertChar = ((char) => {
+    if (typeof char !== 'string') {
+      throw new Error('char MUST be a string!');
     }
-    return aryLike;
-  };
-
-  // I mean, how am I supposed to describe this?
-
-  var runAry = (method => arg => aryLike => makeAry(aryLike)[method](arg));
-
-  var contains = (runAry('some'));
-
-  var is = ((range) => {
-    const isArray = Array.isArray(range);
-    return (char) => {
-      if (typeof char !== 'string') {
-        throw new Error('char MUST be a string!');
-      }
-      if (char.length - 1) {
-        throw new Error(`"${char}" does not have a length of one!`);
-      }
-      if (isArray) {
-        return range.includes(char);
-      }
-      return range.contains(char.charCodeAt(0));
-    };
+    if (char.length - 1) {
+      throw new Error(`"${char}" does not have a length of one!`);
+    }
   });
 
-  var whatIs = (runAry('find'));
+  var is = (range => (char) => {
+    assertChar(char);
+    if (Array.isArray(range)) {
+      return range.includes(char);
+    } if (range instanceof Range) {
+      return range.contains(char.charCodeAt(0));
+    } if (typeof range === 'object') {
+      return !!range[char];
+    }
+    return false;
+  });
 
   const jamo = new Range(0x1100, 0x11FF);
   const compatibilityJamo = new Range(0x3130, 0x318F);
@@ -72,16 +60,67 @@ var Hangul = (function (exports) {
     new Range(0xD7C7, 0xD7CA), // jamoExtendedB
     new Range(0xD7FC, 0xD7FF), // jamoExtendedB
   ];
-  const isReserved = (char) => {
-    const code = char.codePointAt(0);
-    return reserved.includes(code) || reserved.filter(v => typeof v !== 'number').some(range => range.contains(code));
-  };
   const isJamo = is(jamo);
   const isCompatibilityJamo = is(compatibilityJamo);
   const isJamoExtendedA = is(jamoExtendedA);
   const isSyllable = is(syllables);
   const isJamoExtendedB = is(jamoExtendedB);
   const isHalfwidth = is(halfwidth);
+
+  const consonants = {
+    ㄱ: 1,
+    ㄴ: 1,
+    ㄷ: 1,
+    ㄹ: 1,
+    ㅁ: 1,
+    ㅂ: 1,
+    ㅅ: 1,
+    ㅇ: 1,
+    ㅈ: 1,
+    ㅊ: 1,
+    ㅋ: 1,
+    ㅌ: 1,
+    ㅍ: 1,
+    ㅎ: 1,
+  };
+  const vowels = {
+    ㅏ: 1,
+    ㅐ: 1,
+    ㅑ: 1,
+    ㅓ: 1,
+    ㅔ: 1,
+    ㅕ: 1,
+    ㅖ: 1,
+    ㅗ: 1,
+    ㅛ: 1,
+    ㅜ: 1,
+    ㅠ: 1,
+    ㅡ: 1,
+    ㅣ: 1,
+  };
+  // ['ㄱ', 'ㄴ', 'ㄷ', 'ㄹ', 'ㅁ', 'ㅂ', 'ㅅ', 'ㅇ', 'ㅈ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ'];
+  // ['ㅏ', 'ㅐ', 'ㅑ', 'ㅒ', 'ㅓ', 'ㅔ', 'ㅕ', 'ㅖ', 'ㅗ', 'ㅛ', 'ㅜ', 'ㅠ', 'ㅡ', 'ㅣ'];
+  // They're stored as objects so there's no need for iteration
+
+  const isConsonant = is(consonants);
+  const isVowel = is(vowels);
+
+  var makeAry = (aryLike) => {
+    if (typeof aryLike === 'string') {
+      aryLike = aryLike.split``;
+    } else if (!Array.isArray(aryLike)) {
+      throw new Error('aryLike must be a string or an array!');
+    }
+    return aryLike;
+  };
+
+  // I mean, how am I supposed to describe this?
+
+  var runAry = (method => arg => aryLike => makeAry(aryLike)[method](v => arg(v)));
+
+  var contains = (runAry('some'));
+
+  var isAll = (runAry('every'));
 
   const isStandardHangul = char => isCompatibilityJamo(char) || isSyllable(char);
   const isHangul = char => (
@@ -91,12 +130,13 @@ var Hangul = (function (exports) {
     || isJamoExtendedB(char)
     || isHalfwidth(char)
   );
+  const isAllHangul = isAll(isHangul);
+  const isAllStandardHangul = isAll(isStandardHangul);
   const containsStandardHangul = contains(isStandardHangul);
   const containsHangul = contains(isHangul);
-  const whatIsStandardHangul = whatIs(isStandardHangul);
 
-  // I had to write all of this myself.
-  // It was so painful.
+  // if you're gonna copy this part, at least give me credit.
+  // I had to do all of this manually.
   const jamo$1 = {
     ᄀ: 'ㄱ',
     ᄁ: ['ㄱ', 'ㄱ'],
@@ -354,13 +394,15 @@ var Hangul = (function (exports) {
     ᇿ: ['ㄴ', 'ㄴ'],
   };
   const compatibilityJamo$1 = {
+    // this object is missing a lot of characters in the block since
+    // this file maps archaic characters to compatibilityJamo.
     ㄲ: ['ㄱ', 'ㄱ'],
     ㄳ: ['ㄱ', 'ㅅ'],
     ㄵ: ['ㄴ', 'ㅈ'],
     ㄶ: ['ㄴ', 'ㅎ'],
     ㄸ: ['ㄷ', 'ㄷ'],
-    ㄺ: ['ㄹ', 'ㄱ'],
     ㄻ: ['ㄹ', 'ㅁ'],
+    ㄺ: ['ㄹ', 'ㄱ'],
     ㄼ: ['ㄹ', 'ㅂ'],
     ㄽ: ['ㄹ', 'ㅅ'],
     ㄾ: ['ㄹ', 'ㅌ'],
@@ -370,6 +412,47 @@ var Hangul = (function (exports) {
     ㅄ: ['ㅂ', 'ㅅ'],
     ㅆ: ['ㅅ', 'ㅅ'],
     ㅉ: ['ㅈ', 'ㅈ'],
+    ㅘ: ['ㅗ', 'ㅏ'],
+    ㅙ: ['ㅗ', 'ㅐ'],
+    ㅚ: ['ㅗ', 'ㅣ'],
+    ㅝ: ['ㅜ', 'ㅓ'],
+    ㅞ: ['ㅜ', 'ㅔ'],
+    ㅟ: ['ㅜ', 'ㅣ'],
+    ㅢ: ['ㅡ', 'ㅣ'],
+    ㅥ: ['ㄴ', 'ㄴ'],
+    ㅦ: ['ㄴ', 'ㄷ'],
+    ㅧ: ['ㄴ', 'ㅅ'],
+    ㅨ: ['ㄴ', 'ㅿ'],
+    ㅩ: ['ㄹ', 'ㄱ', 'ㅅ'],
+    ㅪ: ['ㄹ', 'ㄷ'],
+    ㅫ: ['ㄹ', 'ㅂ', 'ㅅ'],
+    ㅬ: ['ㄹ', 'ㅿ'],
+    ㅭ: ['ㄹ', 'ㆆ'],
+    ㅮ: ['ㅁ', 'ㅂ'],
+    ㅯ: ['ㅁ', 'ㅅ'],
+    ㅰ: ['ㅁ', 'ㅿ'],
+    ㅲ: ['ㅂ', 'ㄱ'],
+    ㅳ: ['ㅂ', 'ㄷ'],
+    ㅴ: ['ㅂ', 'ㅅ', 'ㄱ'],
+    ㅵ: ['ㅂ', 'ㅅ', 'ㄷ'],
+    ㅶ: ['ㅂ', 'ㅈ'],
+    ㅷ: ['ㅂ', 'ㅌ'],
+    ㅺ: ['ㅅ', 'ㄱ'],
+    ㅻ: ['ㅅ', 'ㄴ'],
+    ㅼ: ['ㅅ', 'ㄷ'],
+    ㅽ: ['ㅅ', 'ㅂ'],
+    ㅾ: ['ㅅ', 'ㅈ'],
+    ㆀ: ['ㅇ', 'ㅇ'],
+    ㆂ: ['ㆁ', 'ㅅ'],
+    ㆃ: ['ㆁ', 'ㅿ'],
+    ㆅ: ['ㅎ', 'ㅎ'],
+    ㆇ: ['ㅛ', 'ㅑ'],
+    ㆈ: ['ㅛ', 'ㅒ'],
+    ㆉ: ['ㅛ', 'ㅣ'],
+    ㆊ: ['ㅠ', 'ㅕ'],
+    ㆋ: ['ㅠ', 'ㅖ'],
+    ㆌ: ['ㅠ', 'ㅣ'],
+    ㆎ: ['ㆍ', 'ㅣ'],
   };
   const jamoExtendedA$1 = {
     ꥠ: ['ㄷ', 'ㅁ'],
@@ -533,32 +616,40 @@ var Hangul = (function (exports) {
 
   // tries to transform everything into disassembled standard hangul
 
+  function transformChar(char) {
+    if (isHangul(char)) {
+      console.log(char);
+      const comp = all[char];
+      if (comp) {
+        return comp;
+      }
+      return char;
+    }
+    return char;
+  }
   function transform(str) {
     if (typeof str !== 'string') {
       throw new Error('Cannot transform things that are not strings');
     }
-    return str.split``.map((char) => {
-      if (isHangul(char) && !isStandardHangul(char)) {
-        const comp = all[char];
-        if (comp) {
-          return comp;
-        }
-        return char;
-      }
-      return char;
-    });
+    return str.split``.map(transformChar);
   }
 
-  const string = jamoExtendedB.map(v => String.fromCodePoint(v));
+  function isComplex(char) {
+    assertChar(char);
+    return !!(transformChar(char).length - 1);
+  }
 
-  exports.toStandard = transform;
-  exports.string = string;
-  exports.isStandardHangul = isStandardHangul;
+  exports.isSyllable = isSyllable;
   exports.isHangul = isHangul;
+  exports.isStandardHangul = isStandardHangul;
+  exports.isAllHangul = isAllHangul;
+  exports.isAllStandardHangul = isAllStandardHangul;
   exports.containsHangul = containsHangul;
   exports.containsStandardHangul = containsStandardHangul;
-  exports.whatIsStandardHangul = whatIsStandardHangul;
-  exports.isReserved = isReserved;
+  exports.isConsonant = isConsonant;
+  exports.isVowel = isVowel;
+  exports.isComplex = isComplex;
+  exports.transform = transform;
 
   return exports;
 
