@@ -1,4 +1,4 @@
-import hasProp, { hasPropCurried } from '../hasProp';
+import { hasPropCurried } from '../hasProp';
 
 export const complex = {
   // consonants
@@ -111,3 +111,23 @@ export const irregularComplex = {
     ㅣ: 'ㆎ',
   },
 };
+
+const descend = o => (...ary) => {
+  const lowerObject = o[ary[0]];
+  if (lowerObject) {
+    return descend(lowerObject, ary.slice(1));
+  }
+  return false;
+};
+const beginIrregularComplex = hasPropCurried(irregularComplex);
+const composeIrregularComplex = descend(irregularComplex);
+export const beginComplex = hasPropCurried(complex);
+export const composeComplex = descend(complex);
+export const composeAnyComplex = (...ary) => (
+  composeComplex(...ary)
+  || composeIrregularComplex(...ary)
+);
+export const beginAnyComplex = char => (
+  beginComplex(char)
+  || beginIrregularComplex(char)
+);

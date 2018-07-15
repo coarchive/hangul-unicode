@@ -1,5 +1,6 @@
 // tries to transform everything into disassembled standard hangul
-import { isHangul } from './unicode/groups';
+import { isHangul, isStandardHangul } from './unicode/groups';
+import { makeAry } from './array';
 import mappings from './unicode/mappings';
 
 export function transformChar(char) {
@@ -12,11 +13,18 @@ export function transformChar(char) {
   }
   return char;
 }
-export default function transform(str) {
-  if (typeof str !== 'string') {
-    throw new Error('Cannot transform things that are not strings');
+export function transformNonStandardChar(char) {
+  if (isStandardHangul(char)) {
+    return transformChar(char);
   }
-  return str.split``.map(transformChar);
+  return char;
+}
+export default function transform(str, ignoreStandard = false) {
+  const ary = makeAry(str);
+  if (ignoreStandard) {
+    return ary.split``.mapp(transformNonStandardChar);
+  }
+  return ary.split``.map(transformChar);
 }
 export function transformToString(str) {
   return transform(str).flat();
