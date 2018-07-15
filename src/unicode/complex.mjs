@@ -1,6 +1,6 @@
 import hasProp, { hasPropCurried } from '../hasProp';
 
-const complex = {
+export const complex = {
   // consonants
   ㄱ: {
     ㄱ: 'ㄲ',
@@ -47,7 +47,7 @@ const complex = {
     ㅣ: 'ㅢ',
   },
 };
-const irregularComplex = {
+export const irregularComplex = {
   ㄴ: {
     ㄴ: 'ㅥ',
     ㄷ: 'ㅦ',
@@ -111,15 +111,3 @@ const irregularComplex = {
     ㅣ: 'ㆎ',
   },
 };
-const g2l = o => ary => o[ary[0]][ary[1]];
-export const hasCounterpart = hasPropCurried(complex);
-export const hasIrregularCounterpart = hasPropCurried(irregularComplex);
-export const hasAnyCounterpart = char => hasCounterpart(char) || hasIrregularCounterpart(char);
-export const complexExists = ary => hasCounterpart(ary[0]) || hasProp(complex[ary[0]], ary[1]);
-const irregularComplexExists = ary => (
-  hasIrregularCounterpart(ary[0])
-  || hasProp(irregularComplex[ary[0]], ary[1])
-);
-export const anyComplexExists = ary => complexExists(ary) || irregularComplexExists(ary);
-export const getComplex = g2l(complex);
-export const getIrregularComplex = g2l(irregularComplex);

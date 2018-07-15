@@ -618,7 +618,6 @@ var Hangul = (function (exports) {
 
   function transformChar(char) {
     if (isHangul(char)) {
-      console.log(char);
       const comp = all[char];
       if (comp) {
         return comp;

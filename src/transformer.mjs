@@ -4,7 +4,6 @@ import mappings from './unicode/mappings';
 
 export function transformChar(char) {
   if (isHangul(char)) {
-    console.log(char);
     const comp = mappings[char];
     if (comp) {
       return comp;
