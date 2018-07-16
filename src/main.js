@@ -9,7 +9,8 @@ import {
   containsStandardHangul,
 } from './unicode/groups';
 import assertChar from './assertChar';
-import { composeComplex } from './compose';
+import composeComplex from './composeComplex';
+import composeSyllable from './composeSyllable';
 import transform, { transformChar } from './transformer';
 
 function isComplex(char) {
@@ -28,5 +29,6 @@ export {
   isVowel,
   isComplex,
   composeComplex,
+  composeSyllable,
   transform,
 };

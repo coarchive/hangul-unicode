@@ -1,3 +1,4 @@
+
 export const cho = [
   'ㄱ', 'ㄲ', 'ㄴ', 'ㄷ', 'ㄸ', 'ㄹ', 'ㅁ',
   'ㅂ', 'ㅃ', 'ㅅ', 'ㅆ', 'ㅇ', 'ㅈ', 'ㅉ',
@@ -59,7 +60,8 @@ export const jong = [
   'ㅇ', 'ㅈ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ',
 ];
 export const jongNum = {
-  null: 0,
+  null: null,
+  undefined: null,
   ㄱ: 1,
   ㄲ: 2,
   ㄳ: 3,

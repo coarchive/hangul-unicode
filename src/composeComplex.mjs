@@ -1,13 +1,17 @@
 import assertChar from './assertChar';
 import { complex, irregular } from './unicode/complex';
+import fuel from './fuel';
 
-function* composeComplexGen(includeIrregular = false) {
+export function* composeComplexGenerator(includeIrregular = false) {
   let objList = [complex];
   if (includeIrregular) {
     objList.push(irregular);
   }
   while (true) {
-    const currentChar = yield true;
+    const currentChar = yield objList;
+    if (currentChar === null) {
+      return objList[0];
+    }
     assertChar(currentChar);
     const currentCharObj = objList.map(obj => obj[currentChar]).filter(v => v);
     if (currentCharObj.length === 1 && typeof currentCharObj[0] === 'string') {
@@ -18,8 +22,4 @@ function* composeComplexGen(includeIrregular = false) {
     objList = currentCharObj;
   }
 }
-export function composeComplex(i) {
-  const gen = composeComplexGen(i);
-  gen.next();
-  return gen;
-}
+export default (fuel(composeComplexGenerator, true));

@@ -246,13 +246,26 @@ var Hangul = (function (exports) {
     },
   };
 
-  function* composeComplexGen(includeIrregular = false) {
+  var fuel = ((generator, arg) => (...ary) => {
+    ary = ary.slice();
+    const gen = generator(arg);
+    let res = gen.next();
+    while (ary.length && !res.done) {
+      res = gen.next(ary.shift());
+    }
+    return { value: res.value, remaining: ary };
+  });
+
+  function* composeComplexGenerator(includeIrregular = false) {
     let objList = [complex];
     if (includeIrregular) {
       objList.push(irregular);
     }
     while (true) {
-      const currentChar = yield true;
+      const currentChar = yield objList;
+      if (currentChar === null) {
+        return objList[0];
+      }
       assertChar(currentChar);
       const currentCharObj = objList.map(obj => obj[currentChar]).filter(v => v);
       if (currentCharObj.length === 1 && typeof currentCharObj[0] === 'string') {
@@ -263,11 +276,110 @@ var Hangul = (function (exports) {
       objList = currentCharObj;
     }
   }
-  function composeComplex(i) {
-    const gen = composeComplexGen(i);
-    gen.next();
-    return gen;
+  var composeComplex = (fuel(composeComplexGenerator, true));
+
+  const choNum = {
+    ㄱ: 0,
+    ㄲ: 1,
+    ㄴ: 2,
+    ㄷ: 3,
+    ㄸ: 4,
+    ㄹ: 5,
+    ㅁ: 6,
+    ㅂ: 7,
+    ㅃ: 8,
+    ㅅ: 9,
+    ㅆ: 10,
+    ㅇ: 11,
+    ㅈ: 12,
+    ㅉ: 13,
+    ㅊ: 14,
+    ㅋ: 15,
+    ㅌ: 16,
+    ㅍ: 17,
+    ㅎ: 18,
+  };
+  const jungNum = {
+    ㅏ: 0,
+    ㅐ: 1,
+    ㅑ: 2,
+    ㅒ: 3,
+    ㅓ: 4,
+    ㅔ: 5,
+    ㅕ: 6,
+    ㅖ: 7,
+    ㅗ: 8,
+    ㅘ: 9,
+    ㅙ: 10,
+    ㅚ: 11,
+    ㅛ: 12,
+    ㅜ: 13,
+    ㅝ: 14,
+    ㅞ: 15,
+    ㅟ: 16,
+    ㅠ: 17,
+    ㅡ: 18,
+    ㅢ: 19,
+    ㅣ: 20,
+  };
+  const jongNum = {
+    null: null,
+    undefined: null,
+    ㄱ: 1,
+    ㄲ: 2,
+    ㄳ: 3,
+    ㄴ: 4,
+    ㄵ: 5,
+    ㄶ: 6,
+    ㄷ: 7,
+    ㄹ: 8,
+    ㄺ: 9,
+    ㄻ: 10,
+    ㄼ: 11,
+    ㄽ: 12,
+    ㄾ: 13,
+    ㄿ: 14,
+    ㅀ: 15,
+    ㅁ: 16,
+    ㅂ: 17,
+    ㅄ: 18,
+    ㅅ: 19,
+    ㅆ: 20,
+    ㅇ: 21,
+    ㅈ: 22,
+    ㅊ: 23,
+    ㅋ: 24,
+    ㅌ: 25,
+    ㅍ: 26,
+    ㅎ: 27,
+  };
+
+  const composeSyllableFn = (cho$$1, jung$$1, jong$$1 = 0) => (
+    String.fromCodePoint(cho$$1 * 588 + jung$$1 * 28 + jong$$1 + syllables.start)
+  );
+  function* composeSyllableGenerator() {
+    const choChar = yield;
+    const cho$$1 = choNum[choChar];
+    if (!Number.isInteger(cho$$1)) {
+      return choChar;
+    }
+    const jungChar = yield choChar;
+    const jung$$1 = jungNum[jungChar];
+    if (!Number.isInteger(jung$$1)) {
+      return `${choChar}${jungChar}`;
+    }
+    const maybeComplete = composeSyllableFn(cho$$1, jung$$1);
+    const jongChar = yield maybeComplete;
+    const jong$$1 = jongNum[jongChar];
+    if (jong$$1 === null) {
+      return maybeComplete;
+    }
+    if (!Number.isInteger(jong$$1)) {
+      return `${maybeComplete}${jongChar}`;
+    }
+    return composeSyllableFn(cho$$1, jung$$1, jong$$1);
   }
+  var composeSyllable = (fuel(composeSyllableGenerator));
 
   // if you're gonna copy this part, at least give me credit.
   // I had to do all of this manually.
@@ -790,6 +902,7 @@ var Hangul = (function (exports) {
   exports.isVowel = isVowel;
   exports.isComplex = isComplex;
   exports.composeComplex = composeComplex;
+  exports.composeSyllable = composeSyllable;
   exports.transform = transform;
 
   return exports;

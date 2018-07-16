@@ -1,16 +1,30 @@
-import { syllables } from './unicode/blocks';
 import { choNum, jungNum, jongNum } from './unicode/syllable';
+import fuel from './fuel';
+import { syllables } from './unicode/blocks';
 
-export default ((cho, jung, jong) => {
-  const chNum = choNum[cho];
-  const juNum = jungNum[jung];
-  const joNum = jongNum[jong];
-  if (!Number.isInteger(chNum)) {
-    throw new Error(`${cho} is not a valid cho character`);
-  } if (!Number.isInteger(juNum)) {
-    throw new Error(`${jung} is not a valid jung character`);
-  } if (!Number.isInteger(joNum)) {
-    throw new Error(`${jong} is not a valid jong character`);
+const composeSyllableFn = (cho, jung, jong = 0) => (
+  String.fromCodePoint(cho * 588 + jung * 28 + jong + syllables.start)
+);
+export function* composeSyllableGenerator() {
+  const choChar = yield;
+  const cho = choNum[choChar];
+  if (!Number.isInteger(cho)) {
+    return choChar;
   }
-  return String.fromCodePoint(cho * 588 + jung * 28 + jong + syllables.start);
-});
+  const jungChar = yield choChar;
+  const jung = jungNum[jungChar];
+  if (!Number.isInteger(jung)) {
+    return `${choChar}${jungChar}`;
+  }
+  const maybeComplete = composeSyllableFn(cho, jung);
+  const jongChar = yield maybeComplete;
+  const jong = jongNum[jongChar];
+  if (jong === null) {
+    return maybeComplete;
+  }
+  if (!Number.isInteger(jong)) {
+    return `${maybeComplete}${jongChar}`;
+  }
+  return composeSyllableFn(cho, jung, jong);
+}
+export default (fuel(composeSyllableGenerator));

@@ -1,19 +1,10 @@
 export const double = {
-  ㄱ: {
-    ㄱ: 'ㄲ',
-  },
-  ㄷ: {
-    ㄷ: 'ㄸ',
-  },
-  ㅅ: {
-    ㅅ: 'ㅆ',
-  },
-  ㅈ: {
-    ㅈ: 'ㅉ',
-  },
-  ㅂ: {
-    ㅂ: 'ㅃ',
-  },
+  // the characters that you can type with "one" key + shift
+  ㄱ: 'ㄲ',
+  ㄷ: 'ㄸ',
+  ㅅ: 'ㅆ',
+  ㅈ: 'ㅉ',
+  ㅂ: 'ㅃ',
 };
 export const complex = {
   // consonants
