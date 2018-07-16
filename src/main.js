@@ -11,6 +11,7 @@ import {
 import assertChar from './assertChar';
 import composeComplex from './composeComplex';
 import composeSyllable from './composeSyllable';
+import decomposeSyllable from './decomposeSyllable';
 import transform, { transformChar } from './transformer';
 
 function isComplex(char) {
@@ -30,5 +31,6 @@ export {
   isComplex,
   composeComplex,
   composeSyllable,
+  decomposeSyllable,
   transform,
 };
