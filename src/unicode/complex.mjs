@@ -1,5 +1,3 @@
-import { hasPropCurried } from '../hasProp';
-
 export const double = {
   ㄱ: {
     ㄱ: 'ㄲ',
@@ -20,11 +18,15 @@ export const double = {
 export const complex = {
   // consonants
   ㄱ: {
+    ㄱ: 'ㄲ',
     ㅅ: 'ㄳ',
   },
   ㄴ: {
     ㅈ: 'ㄵ',
     ㅎ: 'ㄶ',
+  },
+  ㄷ: {
+    ㄷ: 'ㄸ',
   },
   ㄹ: {
     ㄱ: 'ㄺ',
@@ -38,6 +40,12 @@ export const complex = {
   ㅂ: {
     ㅂ: 'ㅃ',
     ㅅ: 'ㅄ',
+  },
+  ㅅ: {
+    ㅅ: 'ㅆ',
+  },
+  ㅈ: {
+    ㅈ: 'ㅉ',
   },
   // vowels
   ㅗ: {
@@ -54,7 +62,7 @@ export const complex = {
     ㅣ: 'ㅢ',
   },
 };
-export const irregularComplex = {
+export const irregular = {
   ㄴ: {
     ㄴ: 'ㅥ',
     ㄷ: 'ㅦ',
@@ -118,22 +126,3 @@ export const irregularComplex = {
     ㅣ: 'ㆎ',
   },
 };
-const descend = o => (...ary) => {
-  const lowerObject = o[ary[0]];
-  if (lowerObject) {
-    return descend(lowerObject, ary.slice(1));
-  }
-  return false;
-};
-const beginIrregularComplex = hasPropCurried(irregularComplex);
-const composeIrregularComplex = descend(irregularComplex);
-export const beginComplex = hasPropCurried(complex);
-export const composeComplex = descend(complex);
-export const composeAnyComplex = (...ary) => (
-  composeComplex(...ary)
-  || composeIrregularComplex(...ary)
-);
-export const beginAnyComplex = char => (
-  beginComplex(char)
-  || beginIrregularComplex(char)
-);

@@ -4,7 +4,7 @@ var Hangul = (function (exports) {
   class Range {
     constructor(start, end) {
       if (typeof (start + end) !== 'number') {
-        throw new Error('Both arguments to the Range constructor must be numbers!');
+        throw new TypeError('Both arguments to the Range constructor must be numbers!');
       }
       this.start = start;
       this.end = end;
@@ -28,19 +28,18 @@ var Hangul = (function (exports) {
 
   var assertChar = ((char) => {
     if (typeof char !== 'string') {
-      throw new Error('char MUST be a string!');
-    }
-    if (char.length - 1) {
-      throw new Error(`"${char}" does not have a length of one!`);
+      throw new TypeError('char must be a string!');
+    } if (char.length - 1) {
+      throw new Error(`"${char}" must have a length of one!`);
     }
   });
 
   var is = (range => (char) => {
     assertChar(char);
-    if (Array.isArray(range)) {
+    if (range instanceof Range) {
+      return range.contains(char.codePointAt(0));
+    } if (Array.isArray(range)) {
       return range.includes(char);
-    } if (range instanceof Range) {
-      return range.contains(char.charCodeAt(0));
     } if (typeof range === 'object') {
       return !!range[char];
     }
@@ -107,9 +106,9 @@ var Hangul = (function (exports) {
 
   var makeAry = (aryLike) => {
     if (typeof aryLike === 'string') {
-      aryLike = aryLike.split``;
-    } else if (!Array.isArray(aryLike)) {
-      throw new Error('aryLike must be a string or an array!');
+      return aryLike.split``;
+    } if (!Array.isArray(aryLike)) {
+      throw new TypeError('aryLike must be a string or an array!');
     }
     return aryLike;
   };
@@ -134,6 +133,137 @@ var Hangul = (function (exports) {
   const isAllStandardHangul = isAll(isStandardHangul);
   const containsStandardHangul = contains(isStandardHangul);
   const containsHangul = contains(isHangul);
+
+  const complex = {
+    // consonants
+    ㄱ: {
+      ㄱ: 'ㄲ',
+      ㅅ: 'ㄳ',
+    },
+    ㄴ: {
+      ㅈ: 'ㄵ',
+      ㅎ: 'ㄶ',
+    },
+    ㄷ: {
+      ㄷ: 'ㄸ',
+    },
+    ㄹ: {
+      ㄱ: 'ㄺ',
+      ㅁ: 'ㄻ',
+      ㅂ: 'ㄼ',
+      ㅅ: 'ㄽ',
+      ㅌ: 'ㄾ',
+      ㅍ: 'ㄿ',
+      ㅎ: 'ㅀ',
+    },
+    ㅂ: {
+      ㅂ: 'ㅃ',
+      ㅅ: 'ㅄ',
+    },
+    ㅅ: {
+      ㅅ: 'ㅆ',
+    },
+    ㅈ: {
+      ㅈ: 'ㅉ',
+    },
+    // vowels
+    ㅗ: {
+      ㅏ: 'ㅘ',
+      ㅐ: 'ㅙ',
+      ㅣ: 'ㅚ',
+    },
+    ㅜ: {
+      ㅓ: 'ㅝ',
+      ㅔ: 'ㅞ',
+      ㅣ: 'ㅟ',
+    },
+    ㅡ: {
+      ㅣ: 'ㅢ',
+    },
+  };
+  const irregular = {
+    ㄴ: {
+      ㄴ: 'ㅥ',
+      ㄷ: 'ㅦ',
+      ㅅ: 'ㅧ',
+      ㅿ: 'ㅨ',
+    },
+    ㄹ: {
+      ㄱ: {
+        ㅅ: 'ㅩ',
+      },
+      ㄷ: 'ㅪ',
+      ㅂ: {
+        ㅅ: 'ㅫ',
+      },
+      ㅿ: 'ㅬ',
+      ㆆ: 'ㅭ',
+    },
+    ㅁ: {
+      ㅂ: 'ㅮ',
+      ㅅ: 'ㅯ',
+      ㅿ: 'ㅰ',
+    },
+    ㅂ: {
+      ㄱ: 'ㅲ',
+      ㄷ: 'ㅳ',
+      ㅅ: {
+        ㄱ: 'ㅴ',
+        ㄷ: 'ㅵ',
+      },
+      ㅈ: 'ㅶ',
+      ㅌ: 'ㅷ',
+    },
+    ㅅ: {
+      ㄱ: 'ㅺ',
+      ㄴ: 'ㅻ',
+      ㄷ: 'ㅼ',
+      ㅂ: 'ㅽ',
+      ㅈ: 'ㅾ',
+    },
+    ㅇ: {
+      ㅇ: 'ㆀ',
+    },
+    ㆁ: {
+      ㅅ: 'ㆁ',
+      ㅿ: 'ㅿ',
+    },
+    ㅎ: {
+      ㅎ: 'ㆅ',
+    },
+    ㅛ: {
+      ㅑ: 'ㆇ',
+      ㅒ: 'ㆈ',
+      ㅣ: 'ㆉ',
+    },
+    ㅠ: {
+      ㅕ: 'ㆊ',
+      ㅖ: 'ㆋ',
+      ㅣ: 'ㆌ',
+    },
+    ㆍ: {
+      ㅣ: 'ㆎ',
+    },
+  };
+
+  function* composeComplex(includeIrregular = false) {
+    let objList = [complex];
+    if (includeIrregular) {
+      objList.push(irregular);
+    }
+    while (true) {
+      const currentChar = yield true;
+      assertChar(currentChar);
+      const currentCharObj = objList.map(obj => obj[currentChar]).filter(v => v);
+      if (!currentCharObj.length) {
+        if (typeof objList[0] === 'string') {
+          return objList[0];
+        }
+        return objList[0].$;
+      }
+      objList = currentCharObj;
+    }
+  }
 
   // if you're gonna copy this part, at least give me credit.
   // I had to do all of this manually.
@@ -626,11 +756,18 @@ var Hangul = (function (exports) {
     }
     return char;
   }
-  function transform(str) {
-    if (typeof str !== 'string') {
-      throw new Error('Cannot transform things that are not strings');
+  function transformNonStandardChar(char) {
+    if (isStandardHangul(char)) {
+      return transformChar(char);
     }
-    return str.split``.map(transformChar);
+    return char;
+  }
+  function transform(str, ignoreStandard = false) {
+    const ary = makeAry(str);
+    if (ignoreStandard) {
+      return ary.split``.mapp(transformNonStandardChar);
+    }
+    return ary.split``.map(transformChar);
   }
 
   function isComplex(char) {
@@ -648,6 +785,7 @@ var Hangul = (function (exports) {
   exports.isConsonant = isConsonant;
   exports.isVowel = isVowel;
   exports.isComplex = isComplex;
+  exports.composeComplex = composeComplex;
   exports.transform = transform;
 
   return exports;
