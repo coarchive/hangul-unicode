@@ -1,17 +1,30 @@
 import { hasPropCurried } from '../hasProp';
 
+export const double = {
+  ㄱ: {
+    ㄱ: 'ㄲ',
+  },
+  ㄷ: {
+    ㄷ: 'ㄸ',
+  },
+  ㅅ: {
+    ㅅ: 'ㅆ',
+  },
+  ㅈ: {
+    ㅈ: 'ㅉ',
+  },
+  ㅂ: {
+    ㅂ: 'ㅃ',
+  },
+};
 export const complex = {
   // consonants
   ㄱ: {
-    ㄱ: 'ㄲ',
     ㅅ: 'ㄳ',
   },
   ㄴ: {
     ㅈ: 'ㄵ',
     ㅎ: 'ㄶ',
-  },
-  ㄷ: {
-    ㄷ: 'ㄸ',
   },
   ㄹ: {
     ㄱ: 'ㄺ',
@@ -25,12 +38,6 @@ export const complex = {
   ㅂ: {
     ㅂ: 'ㅃ',
     ㅅ: 'ㅄ',
-  },
-  ㅅ: {
-    ㅅ: 'ㅆ',
-  },
-  ㅈ: {
-    ㅈ: 'ㅉ',
   },
   // vowels
   ㅗ: {
@@ -111,7 +118,6 @@ export const irregularComplex = {
     ㅣ: 'ㆎ',
   },
 };
-
 const descend = o => (...ary) => {
   const lowerObject = o[ary[0]];
   if (lowerObject) {

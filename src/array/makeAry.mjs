@@ -1,8 +1,8 @@
 export default (aryLike) => {
   if (typeof aryLike === 'string') {
-    aryLike = aryLike.split``;
-  } else if (!Array.isArray(aryLike)) {
-    throw new Error('aryLike must be a string or an array!');
+    return aryLike.split``;
+  } if (!Array.isArray(aryLike)) {
+    throw new TypeError('aryLike must be a string or an array!');
   }
   return aryLike;
 };
