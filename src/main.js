@@ -9,7 +9,7 @@ import {
   containsStandardHangul,
 } from './unicode/groups';
 import assertChar from './assertChar';
-import composeComplex from './composeComplex';
+import composeComplexGenerator from './composeComplex';
 import composeSyllableGenerator from './composeSyllable';
 import decomposeSyllable from './decomposeSyllable';
 import fuel from './fuel';
@@ -20,6 +20,7 @@ export function isComplex(char) {
   return !!(transformChar(char).length - 1);
 }
 export const composeSyllable = fuel(composeSyllableGenerator);
+export const composeComplex = fuel(composeComplexGenerator, true);
 export {
   isSyllable,
   isHangul,
@@ -30,7 +31,6 @@ export {
   containsStandardHangul,
   isConsonant,
   isVowel,
-  composeComplex,
   composeSyllableGenerator,
   decomposeSyllable,
   transform,

@@ -135,19 +135,24 @@ var Hangul = (function (exports) {
   const containsHangul = contains(isHangul);
 
   const complex = {
+    $: null,
     // consonants
     ㄱ: {
+      $: 'ㄱ',
       ㄱ: 'ㄲ',
       ㅅ: 'ㄳ',
     },
     ㄴ: {
+      $: 'ㄴ',
       ㅈ: 'ㄵ',
       ㅎ: 'ㄶ',
     },
     ㄷ: {
+      $: 'ㄷ',
       ㄷ: 'ㄸ',
     },
     ㄹ: {
+      $: 'ㄹ',
       ㄱ: 'ㄺ',
       ㅁ: 'ㄻ',
       ㅂ: 'ㄼ',
@@ -157,57 +162,70 @@ var Hangul = (function (exports) {
       ㅎ: 'ㅀ',
     },
     ㅂ: {
+      $: 'ㅂ',
       ㅂ: 'ㅃ',
       ㅅ: 'ㅄ',
     },
     ㅅ: {
+      $: 'ㅅ',
       ㅅ: 'ㅆ',
     },
     ㅈ: {
+      $: 'ㅈ',
       ㅈ: 'ㅉ',
     },
     // vowels
     ㅗ: {
+      $: 'ㅗ',
       ㅏ: 'ㅘ',
       ㅐ: 'ㅙ',
       ㅣ: 'ㅚ',
     },
     ㅜ: {
+      $: 'ㅜ',
       ㅓ: 'ㅝ',
       ㅔ: 'ㅞ',
       ㅣ: 'ㅟ',
     },
     ㅡ: {
+      $: 'ㅡ',
       ㅣ: 'ㅢ',
     },
   };
   const irregular = {
     ㄴ: {
+      $: 'ㄴ',
       ㄴ: 'ㅥ',
       ㄷ: 'ㅦ',
       ㅅ: 'ㅧ',
       ㅿ: 'ㅨ',
     },
     ㄹ: {
+      $: 'ㄹ',
       ㄱ: {
+        $: 'ㄺ',
         ㅅ: 'ㅩ',
       },
       ㄷ: 'ㅪ',
       ㅂ: {
+        $: 'ㄼ',
         ㅅ: 'ㅫ',
       },
       ㅿ: 'ㅬ',
       ㆆ: 'ㅭ',
     },
     ㅁ: {
+      $: 'ㅁ',
       ㅂ: 'ㅮ',
       ㅅ: 'ㅯ',
       ㅿ: 'ㅰ',
     },
     ㅂ: {
+      $: 'ㅂ',
       ㄱ: 'ㅲ',
       ㄷ: 'ㅳ',
       ㅅ: {
+        $: 'ㅄ',
         ㄱ: 'ㅴ',
         ㄷ: 'ㅵ',
       },
@@ -215,6 +233,7 @@ var Hangul = (function (exports) {
       ㅌ: 'ㅷ',
     },
     ㅅ: {
+      $: 'ㅅ',
       ㄱ: 'ㅺ',
       ㄴ: 'ㅻ',
       ㄷ: 'ㅼ',
@@ -222,53 +241,73 @@ var Hangul = (function (exports) {
       ㅈ: 'ㅾ',
     },
     ㅇ: {
+      $: 'ㅇ',
       ㅇ: 'ㆀ',
     },
     ㆁ: {
+      $: 'ㆁ',
       ㅅ: 'ㆁ',
       ㅿ: 'ㅿ',
     },
     ㅎ: {
+      $: 'ㅎ',
       ㅎ: 'ㆅ',
     },
     ㅛ: {
+      $: 'ㅛ',
       ㅑ: 'ㆇ',
       ㅒ: 'ㆈ',
       ㅣ: 'ㆉ',
     },
     ㅠ: {
+      $: 'ㅠ',
       ㅕ: 'ㆊ',
       ㅖ: 'ㆋ',
       ㅣ: 'ㆌ',
     },
     ㆍ: {
+      $: 'ㆍ',
       ㅣ: 'ㆎ',
     },
   };
 
-  // import fuel from './fuel';
+  class ComposeGeneratorYield {
+    constructor(result = '', ...remainder) {
+      this.result = result;
+      this.remainder = remainder;
+    }
+  }
 
-  function* gen(includeIrregular = false) {
+  function* composeComplexGenerator (includeIrregular = false) {
     let objList = [complex];
     if (includeIrregular) {
       objList.push(irregular);
     }
+    let charsReceived = 0;
     while (true) {
-      const currentChar = yield objList;
+      const previous = typeof objList[0] === 'string' ? objList[0] : objList[0].$;
+      let currentChar;
+      if (!charsReceived) {
+        currentChar = yield new ComposeGeneratorYield('');
+      } else if (charsReceived === 1) {
+        currentChar = yield new ComposeGeneratorYield('', previous);
+      } else {
+        currentChar = yield new ComposeGeneratorYield(previous);
+      }
+      charsReceived++;
       if (currentChar === null) {
-        return objList[0];
+        return new ComposeGeneratorYield(objList[0], currentChar);
       }
       assertChar(currentChar);
       const currentCharObj = objList.map(obj => obj[currentChar]).filter(v => v);
       if (currentCharObj.length === 1 && typeof currentCharObj[0] === 'string') {
-        return currentCharObj[0];
+        return new ComposeGeneratorYield(currentCharObj[0]);
       } if (!currentCharObj.length) {
-        return `${objList[0].$ || ''}${currentChar}`;
+        return new ComposeGeneratorYield(previous, currentChar);
       }
       objList = currentCharObj;
     }
   }
-  // export const composeAnyComplex = (fuel(gen, true));
 
   const cho = [
     'ㄱ', 'ㄲ', 'ㄴ', 'ㄷ', 'ㄸ', 'ㄹ', 'ㅁ',
@@ -362,26 +401,19 @@ var Hangul = (function (exports) {
     ㅎ: 27,
   };
 
-  class ComposeGeneratorYield {
-    constructor(result = '', remainder = []) {
-      this.result = result;
-      this.remainder = remainder;
-    }
-  }
-
   const composeSyllableFn = (cho$$1, jung$$1, jong$$1 = 0) => (
     String.fromCodePoint(cho$$1 * 588 + jung$$1 * 28 + jong$$1 + syllables.start)
   );
   function* composeSyllableGenerator () {
-    const choChar = yield;
+    const choChar = yield new ComposeGeneratorYield('');
     const cho$$1 = choNum[choChar];
     if (!Number.isInteger(cho$$1)) {
       return new ComposeGeneratorYield('', choChar);
     }
-    const jungChar = yield new ComposeGeneratorYield(choChar);
+    const jungChar = yield new ComposeGeneratorYield('', choChar);
     const jung$$1 = jungNum[jungChar];
     if (!Number.isInteger(jung$$1)) {
-      return new ComposeGeneratorYield(choChar, jungChar);
+      return new ComposeGeneratorYield('', choChar, jungChar);
     }
     const maybeComplete = composeSyllableFn(cho$$1, jung$$1);
     const jongChar = yield new ComposeGeneratorYield(maybeComplete);
@@ -390,7 +422,7 @@ var Hangul = (function (exports) {
       return new ComposeGeneratorYield(maybeComplete);
     }
     if (!Number.isInteger(jong$$1)) {
-      return new ComposeGeneratorYield(maybeComplete, jong$$1);
+      return new ComposeGeneratorYield(maybeComplete, jongChar);
     }
     return new ComposeGeneratorYield(composeSyllableFn(cho$$1, jung$$1, jong$$1));
   }
@@ -430,10 +462,9 @@ var Hangul = (function (exports) {
     const fn = (...ary) => {
       if (yieldObj.done) {
         const val = yieldObj.value;
-        console.log(yieldObj);
         return construct(gen, {
           done: true,
-          value: new ComposeGeneratorYield(val.result, val.remainder.concat(ary)),
+          value: new ComposeGeneratorYield(val.result, ...val.remainder.concat(ary)),
         });
       }
       let currentYieldObj = yieldObj;
@@ -969,9 +1000,11 @@ var Hangul = (function (exports) {
     return !!(transformChar(char).length - 1);
   }
   const composeSyllable = fuel(composeSyllableGenerator);
+  const composeComplex = fuel(composeComplexGenerator, true);
 
   exports.isComplex = isComplex;
   exports.composeSyllable = composeSyllable;
+  exports.composeComplex = composeComplex;
   exports.isSyllable = isSyllable;
   exports.isHangul = isHangul;
   exports.isStandardHangul = isStandardHangul;
@@ -981,7 +1014,6 @@ var Hangul = (function (exports) {
   exports.containsStandardHangul = containsStandardHangul;
   exports.isConsonant = isConsonant;
   exports.isVowel = isVowel;
-  exports.composeComplex = gen;
   exports.composeSyllableGenerator = composeSyllableGenerator;
   exports.decomposeSyllable = decomposeSyllable;
   exports.transform = transform;

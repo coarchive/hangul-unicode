@@ -6,7 +6,7 @@ const construct = (gen, yieldObj) => {
       const val = yieldObj.value;
       return construct(gen, {
         done: true,
-        value: new Y(val.result, val.remainder.concat(ary)),
+        value: new Y(val.result, ...val.remainder.concat(ary)),
       });
     }
     let currentYieldObj = yieldObj;

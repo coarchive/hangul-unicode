@@ -7,20 +7,28 @@ export default function* (includeIrregular = false) {
   if (includeIrregular) {
     objList.push(irregular);
   }
-  let lastChar;
+  let charsReceived = 0;
   while (true) {
-    const currentChar = yield new Y('', lastChar);
+    const previous = typeof objList[0] === 'string' ? objList[0] : objList[0].$;
+    let currentChar;
+    if (!charsReceived) {
+      currentChar = yield new Y('');
+    } else if (charsReceived === 1) {
+      currentChar = yield new Y('', previous);
+    } else {
+      currentChar = yield new Y(previous);
+    }
+    charsReceived++;
     if (currentChar === null) {
-      return objList[0];
+      return new Y(objList[0], currentChar);
     }
     assertChar(currentChar);
     const currentCharObj = objList.map(obj => obj[currentChar]).filter(v => v);
     if (currentCharObj.length === 1 && typeof currentCharObj[0] === 'string') {
-      return currentCharObj[0];
+      return new Y(currentCharObj[0]);
     } if (!currentCharObj.length) {
-      return `${objList[0].$ || ''}${currentChar}`;
+      return new Y(previous, currentChar);
     }
     objList = currentCharObj;
-    [lastChar] = currentCharObj;
   }
 }

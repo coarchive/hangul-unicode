@@ -7,6 +7,7 @@ export const double = {
   ㅂ: 'ㅃ',
 };
 export const complex = {
+  $: null,
   // consonants
   ㄱ: {
     $: 'ㄱ',

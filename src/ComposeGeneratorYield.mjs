@@ -1,5 +1,5 @@
 export default class ComposeGeneratorYield {
-  constructor(result = '', remainder = []) {
+  constructor(result = '', ...remainder) {
     this.result = result;
     this.remainder = remainder;
   }
