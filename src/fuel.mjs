@@ -4,7 +4,6 @@ const construct = (gen, yieldObj) => {
   const fn = (...ary) => {
     if (yieldObj.done) {
       const val = yieldObj.value;
-      console.log(yieldObj);
       return construct(gen, {
         done: true,
         value: new Y(val.result, val.remainder.concat(ary)),
