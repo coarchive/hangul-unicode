@@ -1,14 +1,15 @@
 import assertChar from './assertChar';
 import { complex, irregular } from './unicode/complex';
-// import fuel from './fuel';
+import Y from './ComposeGeneratorYield';
 
-export default function* gen(includeIrregular = false) {
+export default function* (includeIrregular = false) {
   let objList = [complex];
   if (includeIrregular) {
     objList.push(irregular);
   }
+  let lastChar;
   while (true) {
-    const currentChar = yield objList;
+    const currentChar = yield new Y('', lastChar);
     if (currentChar === null) {
       return objList[0];
     }
@@ -20,6 +21,6 @@ export default function* gen(includeIrregular = false) {
       return `${objList[0].$ || ''}${currentChar}`;
     }
     objList = currentCharObj;
+    [lastChar] = currentCharObj;
   }
 }
-// export const composeAnyComplex = (fuel(gen, true));
