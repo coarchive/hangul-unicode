@@ -1,10 +1,12 @@
 // tries to transform everything into disassembled standard hangul
 import { isHangul, isStandardHangul } from './unicode/groups';
+import { isSyllable } from './unicode/blocks';
 import { makeAry } from './array';
 import mappings from './unicode/mappings';
 
 export function transformChar(char) {
-  if (isHangul(char)) {
+  if (isHangul(char) && !isSyllable(char)) {
+    // this if-statement isn't REALLY needed
     const comp = mappings[char];
     if (comp) {
       return comp;
@@ -22,7 +24,7 @@ export function transformNonStandardChar(char) {
 export default function transform(str, ignoreStandard = false) {
   const ary = makeAry(str);
   if (ignoreStandard) {
-    return ary.split``.mapp(transformNonStandardChar);
+    return ary.split``.map(transformNonStandardChar);
   }
   return ary.split``.map(transformChar);
 }
