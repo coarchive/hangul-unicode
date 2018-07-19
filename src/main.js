@@ -15,6 +15,7 @@ import fuel from './fuel';
 import transform from './transformer';
 import toStandard from './toStandard';
 import composeAnyComplex from './composeAnyComplex';
+import disassemble from './disassemble';
 
 export const composeSyllable = fuel(composeSyllableGenerator)();
 export {
@@ -34,4 +35,5 @@ export {
   toStandard,
   fuel,
   composeAnyComplex,
+  disassemble,
 };

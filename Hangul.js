@@ -1055,6 +1055,20 @@ var Hangul = (function (exports) {
     return v;
   }).flat().join``);
 
+  var disassemble = ((aryLike, grouped = false) => {
+    const ary = makeAry(aryLike).map((char) => {
+      if (isSyllable(char)) {
+        return transform(decomposeSyllable(char));
+      }
+      return transform(char)[0];
+    });
+    if (grouped) {
+      return ary;
+    }
+    return ary.flat(2).join``;
+  }
+  );
+
   const composeSyllable = fuel(composeSyllableGenerator)();
 
   exports.composeSyllable = composeSyllable;
@@ -1074,6 +1088,7 @@ var Hangul = (function (exports) {
   exports.toStandard = toStandard;
   exports.fuel = fuel;
   exports.composeAnyComplex = composeAnyComplex;
+  exports.disassemble = disassemble;
 
   return exports;
 
