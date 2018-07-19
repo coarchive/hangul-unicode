@@ -8,12 +8,6 @@ import {
   containsHangul,
   containsStandardHangul,
 } from './unicode/groups';
-import {
-  cho,
-  jung,
-  jong,
-  irregular
-} from './unicode/complex';
 import composeComplexGenerator from './composeComplex';
 import composeSyllableGenerator from './composeSyllable';
 import decomposeSyllable from './decomposeSyllable';
@@ -22,8 +16,7 @@ import transform from './transformer';
 import toStandard from './toStandard';
 import composeAnyComplex from './composeAnyComplex';
 
-export const composeSyllable = fuel(composeSyllableGenerator);
-export const composeComplex = fuel(composeComplexGenerator, cho, jung, jong, irregular);
+export const composeSyllable = fuel(composeSyllableGenerator)();
 export {
   isSyllable,
   isHangul,

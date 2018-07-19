@@ -23,7 +23,7 @@ const construct = (gen, yieldObj) => {
   fn.done = yieldObj.done;
   return fn;
 };
-export default ((generator, ...args) => (...ary) => {
+export default (generator => (...args) => (...ary) => {
   const gen = generator(...args);
   const yieldObj = gen.next();
   yieldObj.value = {};

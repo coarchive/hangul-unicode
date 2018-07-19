@@ -1,7 +1,9 @@
 import assertChar from './assertChar';
 import Y from './ComposeGeneratorYield';
+import isComplex from './isComplex';
+import fuel from './fuel';
 
-export default function* (...objList) {
+export function* generator(...objList) {
   if (!objList.length) {
     throw new Error('Cannot compose complex without a list of complex to compose!');
   }
@@ -34,8 +36,12 @@ export default function* (...objList) {
       if (previous) {
         return new Y('', previous, currentChar);
       }
+      if (isComplex(currentChar)) {
+        return new Y(currentChar);
+      }
       return new Y('', currentChar);
     }
     objList = currentCharObj;
   }
 }
+export default (fuel(generator));

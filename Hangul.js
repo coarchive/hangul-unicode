@@ -28,6 +28,9 @@ var Hangul = (function (exports) {
 
   var assertChar = ((char) => {
     if (typeof char !== 'string') {
+      console.error(`Error: the type of char is ${typeof char}`);
+      console.error('char is:');
+      console.log(char);
       throw new TypeError('char must be a string!');
     } if (char.length - 1) {
       throw new Error(`"${char}" must have a length of one!`);
@@ -134,386 +137,12 @@ var Hangul = (function (exports) {
   const containsStandardHangul = contains(isStandardHangul);
   const containsHangul = contains(isHangul);
 
-  const cho = {
-    // the characters that you can type with "one" key + shift
-    ㄱ: {
-      $: 'ㄱ',
-      ㄱ: 'ㄲ',
-    },
-    ㄷ: {
-      $: 'ㄷ',
-      ㄷ: 'ㄸ',
-    },
-    ㅅ: {
-      $: 'ㅅ',
-      ㅅ: 'ㅆ',
-    },
-    ㅈ: {
-      $: 'ㅈ',
-      ㅈ: 'ㅉ',
-    },
-    ㅂ: {
-      $: 'ㅂ',
-      ㅂ: 'ㅃ',
-    },
-  };
-  const jung = {
-    ㅗ: {
-      $: 'ㅗ',
-      ㅏ: 'ㅘ',
-      ㅐ: 'ㅙ',
-      ㅣ: 'ㅚ',
-    },
-    ㅜ: {
-      $: 'ㅜ',
-      ㅓ: 'ㅝ',
-      ㅔ: 'ㅞ',
-      ㅣ: 'ㅟ',
-    },
-    ㅡ: {
-      $: 'ㅡ',
-      ㅣ: 'ㅢ',
-    },
-  };
-  const jong = {
-    $: null,
-    ㄱ: {
-      $: 'ㄱ',
-      ㄱ: 'ㄲ',
-      ㅅ: 'ㄳ',
-    },
-    ㄴ: {
-      $: 'ㄴ',
-      ㅈ: 'ㄵ',
-      ㅎ: 'ㄶ',
-    },
-    ㄹ: {
-      $: 'ㄹ',
-      ㄱ: 'ㄺ',
-      ㅁ: 'ㄻ',
-      ㅂ: 'ㄼ',
-      ㅅ: 'ㄽ',
-      ㅌ: 'ㄾ',
-      ㅍ: 'ㄿ',
-      ㅎ: 'ㅀ',
-    },
-    ㅂ: {
-      $: 'ㅂ',
-      ㅅ: 'ㅄ',
-    },
-    ㅅ: {
-      $: 'ㅅ',
-      ㅅ: 'ㅆ',
-    },
-  };
-  const irregular = {
-    ㄴ: {
-      $: 'ㄴ',
-      ㄴ: 'ㅥ',
-      ㄷ: 'ㅦ',
-      ㅅ: 'ㅧ',
-      ㅿ: 'ㅨ',
-    },
-    ㄹ: {
-      $: 'ㄹ',
-      ㄱ: {
-        isComplex: true,
-        $: 'ㄺ',
-        ㅅ: 'ㅩ',
-      },
-      ㄷ: 'ㅪ',
-      ㅂ: {
-        isComplex: true,
-        $: 'ㄼ',
-        ㅅ: 'ㅫ',
-      },
-      ㅿ: 'ㅬ',
-      ㆆ: 'ㅭ',
-    },
-    ㅁ: {
-      $: 'ㅁ',
-      ㅂ: 'ㅮ',
-      ㅅ: 'ㅯ',
-      ㅿ: 'ㅰ',
-    },
-    ㅂ: {
-      $: 'ㅂ',
-      ㄱ: 'ㅲ',
-      ㄷ: 'ㅳ',
-      ㅅ: {
-        isComplex: true,
-        $: 'ㅄ',
-        ㄱ: 'ㅴ',
-        ㄷ: 'ㅵ',
-      },
-      ㅈ: 'ㅶ',
-      ㅌ: 'ㅷ',
-    },
-    ㅅ: {
-      $: 'ㅅ',
-      ㄱ: 'ㅺ',
-      ㄴ: 'ㅻ',
-      ㄷ: 'ㅼ',
-      ㅂ: 'ㅽ',
-      ㅈ: 'ㅾ',
-    },
-    ㅇ: {
-      $: 'ㅇ',
-      ㅇ: 'ㆀ',
-    },
-    ㆁ: {
-      $: 'ㆁ',
-      ㅅ: 'ㆁ',
-      ㅿ: 'ㅿ',
-    },
-    ㅎ: {
-      $: 'ㅎ',
-      ㅎ: 'ㆅ',
-    },
-    ㅛ: {
-      $: 'ㅛ',
-      ㅑ: 'ㆇ',
-      ㅒ: 'ㆈ',
-      ㅣ: 'ㆉ',
-    },
-    ㅠ: {
-      $: 'ㅠ',
-      ㅕ: 'ㆊ',
-      ㅖ: 'ㆋ',
-      ㅣ: 'ㆌ',
-    },
-    ㆍ: {
-      $: 'ㆍ',
-      ㅣ: 'ㆎ',
-    },
-  };
-  // this file is sure complex...
-
   class ComposeGeneratorYield {
     constructor(result = '', ...remainder) {
       this.result = result;
       this.remainder = remainder;
     }
   }
-
-  function* composeComplexGenerator (...objList) {
-    if (!objList.length) {
-      throw new Error('Cannot compose complex without a list of complex to compose!');
-    }
-    let charsReceived = 0;
-    while (true) {
-      const previous = typeof objList[0] === 'string' ? objList[0] : objList[0].$;
-      const previousIsComplex = objList[0].isComplex;
-      let currentChar;
-      if (!charsReceived) {
-        currentChar = yield new ComposeGeneratorYield('');
-      } else if (charsReceived === 1) {
-        currentChar = yield new ComposeGeneratorYield('', previous);
-      } else if (previousIsComplex) {
-        currentChar = yield new ComposeGeneratorYield(previous);
-      } else {
-        currentChar = yield new ComposeGeneratorYield('', previous);
-      }
-      charsReceived++;
-      if (currentChar === null) {
-        return new ComposeGeneratorYield(objList[0], currentChar);
-      }
-      assertChar(currentChar);
-      const currentCharObj = objList.map(obj => obj[currentChar]).filter(v => v);
-      if (typeof currentCharObj[0] === 'string') {
-        return new ComposeGeneratorYield(currentCharObj[0]);
-      } if (!currentCharObj.length) {
-        if (previousIsComplex) {
-          return new ComposeGeneratorYield(previous, currentChar);
-        }
-        if (previous) {
-          return new ComposeGeneratorYield('', previous, currentChar);
-        }
-        return new ComposeGeneratorYield('', currentChar);
-      }
-      objList = currentCharObj;
-    }
-  }
-
-  const cho$1 = [
-    'ㄱ', 'ㄲ', 'ㄴ', 'ㄷ', 'ㄸ', 'ㄹ', 'ㅁ',
-    'ㅂ', 'ㅃ', 'ㅅ', 'ㅆ', 'ㅇ', 'ㅈ', 'ㅉ',
-    'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ',
-  ];
-  const choNum = {
-    ㄱ: 0,
-    ㄲ: 1,
-    ㄴ: 2,
-    ㄷ: 3,
-    ㄸ: 4,
-    ㄹ: 5,
-    ㅁ: 6,
-    ㅂ: 7,
-    ㅃ: 8,
-    ㅅ: 9,
-    ㅆ: 10,
-    ㅇ: 11,
-    ㅈ: 12,
-    ㅉ: 13,
-    ㅊ: 14,
-    ㅋ: 15,
-    ㅌ: 16,
-    ㅍ: 17,
-    ㅎ: 18,
-  };
-  const jung$1 = [
-    'ㅏ', 'ㅐ', 'ㅑ', 'ㅒ', 'ㅓ', 'ㅔ', 'ㅕ',
-    'ㅖ', 'ㅗ', 'ㅘ', 'ㅙ', 'ㅚ', 'ㅛ', 'ㅜ',
-    'ㅝ', 'ㅞ', 'ㅟ', 'ㅠ', 'ㅡ', 'ㅢ', 'ㅣ',
-  ];
-  const jungNum = {
-    ㅏ: 0,
-    ㅐ: 1,
-    ㅑ: 2,
-    ㅒ: 3,
-    ㅓ: 4,
-    ㅔ: 5,
-    ㅕ: 6,
-    ㅖ: 7,
-    ㅗ: 8,
-    ㅘ: 9,
-    ㅙ: 10,
-    ㅚ: 11,
-    ㅛ: 12,
-    ㅜ: 13,
-    ㅝ: 14,
-    ㅞ: 15,
-    ㅟ: 16,
-    ㅠ: 17,
-    ㅡ: 18,
-    ㅢ: 19,
-    ㅣ: 20,
-  };
-  const jong$1 = [
-    null, 'ㄱ', 'ㄲ', 'ㄳ', 'ㄴ', 'ㄵ', 'ㄶ',
-    'ㄷ', 'ㄹ', 'ㄺ', 'ㄻ', 'ㄼ', 'ㄽ', 'ㄾ',
-    'ㄿ', 'ㅀ', 'ㅁ', 'ㅂ', 'ㅄ', 'ㅅ', 'ㅆ',
-    'ㅇ', 'ㅈ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ',
-  ];
-  const jongNum = {
-    null: null,
-    undefined: null,
-    ㄱ: 1,
-    ㄲ: 2,
-    ㄳ: 3,
-    ㄴ: 4,
-    ㄵ: 5,
-    ㄶ: 6,
-    ㄷ: 7,
-    ㄹ: 8,
-    ㄺ: 9,
-    ㄻ: 10,
-    ㄼ: 11,
-    ㄽ: 12,
-    ㄾ: 13,
-    ㄿ: 14,
-    ㅀ: 15,
-    ㅁ: 16,
-    ㅂ: 17,
-    ㅄ: 18,
-    ㅅ: 19,
-    ㅆ: 20,
-    ㅇ: 21,
-    ㅈ: 22,
-    ㅊ: 23,
-    ㅋ: 24,
-    ㅌ: 25,
-    ㅍ: 26,
-    ㅎ: 27,
-  };
-
-  const composeSyllableFn = (cho$$1, jung$$1, jong$$1 = 0) => (
-    String.fromCodePoint(cho$$1 * 588 + jung$$1 * 28 + jong$$1 + syllables.start)
-  );
-  /*
-  export default function* () {
-    const choChar = yield new Y('');
-    const cho = choNum[choChar];
-    if (!Number.isInteger(cho)) {
-      return new Y('', choChar);
-    }
-    const jungChar = yield new Y('', choChar);
-    const jung = jungNum[jungChar];
-    if (!Number.isInteger(jung)) {
-      return new Y('', choChar, jungChar);
-    }
-    const maybeComplete = composeSyllableFn(cho, jung);
-    const jongChar = yield new Y(maybeComplete);
-    const jong = jongNum[jongChar];
-    if (jong === null) {
-      return new Y(maybeComplete);
-    }
-    if (!Number.isInteger(jong)) {
-      return new Y(maybeComplete, jongChar);
-    }
-    return new Y(composeSyllableFn(cho, jung, jong));
-  }
-  */
-  function composeSyllableGenerator (choChar, jungChar, jongChar = null) {
-    const cho$$1 = choNum[choChar];
-    const jung$$1 = jungNum[jungChar];
-    const jong$$1 = jongNum[jongChar];
-    if (!Number.isInteger(cho$$1)) {
-      throw new Error(`"${choChar}" is not a valid cho character`);
-    } if (!Number.isInteger(jung$$1)) {
-      if (jungChar === undefined) {
-        throw new Error('You must provide a jung character to make a syllable');
-      }
-      throw new Error(`"${jungChar}" is not a valid jung character`);
-    } if (jongChar && !Number.isInteger(jong$$1)) {
-      throw new Error(`"${jongChar}" is not a valid jong character`);
-    }
-    return composeSyllableFn(cho$$1, jung$$1, jong$$1);
-  }
-
-  var decomposeSyllable = ((syllable) => {
-    assertChar(syllable);
-    if (!isSyllable(syllable)) {
-      throw new Error('Decomposing a syllable requires a syllable to decompose!');
-    }
-    const code = syllable.codePointAt(0) - syllables.start;
-    const jongNum$$1 = code % 28;
-    const q = (code - jongNum$$1) / 28;
-    const jungNum$$1 = q % 21;
-    const choNum$$1 = 0 | q / 21;
-    return [cho$1[choNum$$1], jung$1[jungNum$$1], jong$1[jongNum$$1]].filter(v => v);
-  });
-
-  const construct = (gen, yieldObj) => {
-    const fn = (...ary) => {
-      if (yieldObj.done) {
-        const val = yieldObj.value;
-        return construct(gen, {
-          done: true,
-          value: new ComposeGeneratorYield(val.result, ...val.remainder.concat(ary)),
-        });
-      }
-      let currentYieldObj = yieldObj;
-      while (ary.length && !currentYieldObj.done) {
-        currentYieldObj = gen.next(ary.shift());
-      }
-      return construct(gen, currentYieldObj);
-    };
-    const val = yieldObj.value;
-    if (val instanceof ComposeGeneratorYield) {
-      fn.result = val.result;
-      fn.remainder = val.remainder;
-    }
-    fn.done = yieldObj.done;
-    return fn;
-  };
-  var fuel = ((generator, ...args) => (...ary) => {
-    const gen = generator(...args);
-    const yieldObj = gen.next();
-    yieldObj.value = {};
-    yieldObj.value.remainder = [];
-    return construct(gen, yieldObj)(...ary);
-  });
 
   // if you're gonna copy this part, at least give me credit.
   // I had to do all of this manually.
@@ -1021,7 +650,372 @@ var Hangul = (function (exports) {
     return ary.map(transformChar);
   }
 
-  var composeAnyComplex = (fuel(composeComplexGenerator, cho, jung, jong, irregular));
+  var isComplex = ((char) => {
+    assertChar(char);
+    return !!(transformChar(char).length - 1);
+  });
+
+  const construct = (gen, yieldObj) => {
+    const fn = (...ary) => {
+      if (yieldObj.done) {
+        const val = yieldObj.value;
+        return construct(gen, {
+          done: true,
+          value: new ComposeGeneratorYield(val.result, ...val.remainder.concat(ary)),
+        });
+      }
+      let currentYieldObj = yieldObj;
+      while (ary.length && !currentYieldObj.done) {
+        currentYieldObj = gen.next(ary.shift());
+      }
+      return construct(gen, currentYieldObj);
+    };
+    const val = yieldObj.value;
+    if (val instanceof ComposeGeneratorYield) {
+      fn.result = val.result;
+      fn.remainder = val.remainder;
+    }
+    fn.done = yieldObj.done;
+    return fn;
+  };
+  var fuel = (generator => (...args) => (...ary) => {
+    const gen = generator(...args);
+    const yieldObj = gen.next();
+    yieldObj.value = {};
+    yieldObj.value.remainder = [];
+    return construct(gen, yieldObj)(...ary);
+  });
+
+  function* generator(...objList) {
+    if (!objList.length) {
+      throw new Error('Cannot compose complex without a list of complex to compose!');
+    }
+    let charsReceived = 0;
+    while (true) {
+      const previous = typeof objList[0] === 'string' ? objList[0] : objList[0].$;
+      const previousIsComplex = objList[0].isComplex;
+      let currentChar;
+      if (!charsReceived) {
+        currentChar = yield new ComposeGeneratorYield('');
+      } else if (charsReceived === 1) {
+        currentChar = yield new ComposeGeneratorYield('', previous);
+      } else if (previousIsComplex) {
+        currentChar = yield new ComposeGeneratorYield(previous);
+      } else {
+        currentChar = yield new ComposeGeneratorYield('', previous);
+      }
+      charsReceived++;
+      if (currentChar === null) {
+        return new ComposeGeneratorYield(objList[0], currentChar);
+      }
+      assertChar(currentChar);
+      const currentCharObj = objList.map(obj => obj[currentChar]).filter(v => v);
+      if (typeof currentCharObj[0] === 'string') {
+        return new ComposeGeneratorYield(currentCharObj[0]);
+      } if (!currentCharObj.length) {
+        if (previousIsComplex) {
+          return new ComposeGeneratorYield(previous, currentChar);
+        }
+        if (previous) {
+          return new ComposeGeneratorYield('', previous, currentChar);
+        }
+        if (isComplex(currentChar)) {
+          return new ComposeGeneratorYield(currentChar);
+        }
+        return new ComposeGeneratorYield('', currentChar);
+      }
+      objList = currentCharObj;
+    }
+  }
+  var composeComplex = (fuel(generator));
+
+  const cho = [
+    'ㄱ', 'ㄲ', 'ㄴ', 'ㄷ', 'ㄸ', 'ㄹ', 'ㅁ',
+    'ㅂ', 'ㅃ', 'ㅅ', 'ㅆ', 'ㅇ', 'ㅈ', 'ㅉ',
+    'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ',
+  ];
+  const choNum = {
+    ㄱ: 0,
+    ㄲ: 1,
+    ㄴ: 2,
+    ㄷ: 3,
+    ㄸ: 4,
+    ㄹ: 5,
+    ㅁ: 6,
+    ㅂ: 7,
+    ㅃ: 8,
+    ㅅ: 9,
+    ㅆ: 10,
+    ㅇ: 11,
+    ㅈ: 12,
+    ㅉ: 13,
+    ㅊ: 14,
+    ㅋ: 15,
+    ㅌ: 16,
+    ㅍ: 17,
+    ㅎ: 18,
+  };
+  const jung = [
+    'ㅏ', 'ㅐ', 'ㅑ', 'ㅒ', 'ㅓ', 'ㅔ', 'ㅕ',
+    'ㅖ', 'ㅗ', 'ㅘ', 'ㅙ', 'ㅚ', 'ㅛ', 'ㅜ',
+    'ㅝ', 'ㅞ', 'ㅟ', 'ㅠ', 'ㅡ', 'ㅢ', 'ㅣ',
+  ];
+  const jungNum = {
+    ㅏ: 0,
+    ㅐ: 1,
+    ㅑ: 2,
+    ㅒ: 3,
+    ㅓ: 4,
+    ㅔ: 5,
+    ㅕ: 6,
+    ㅖ: 7,
+    ㅗ: 8,
+    ㅘ: 9,
+    ㅙ: 10,
+    ㅚ: 11,
+    ㅛ: 12,
+    ㅜ: 13,
+    ㅝ: 14,
+    ㅞ: 15,
+    ㅟ: 16,
+    ㅠ: 17,
+    ㅡ: 18,
+    ㅢ: 19,
+    ㅣ: 20,
+  };
+  const jong = [
+    null, 'ㄱ', 'ㄲ', 'ㄳ', 'ㄴ', 'ㄵ', 'ㄶ',
+    'ㄷ', 'ㄹ', 'ㄺ', 'ㄻ', 'ㄼ', 'ㄽ', 'ㄾ',
+    'ㄿ', 'ㅀ', 'ㅁ', 'ㅂ', 'ㅄ', 'ㅅ', 'ㅆ',
+    'ㅇ', 'ㅈ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ',
+  ];
+  const jongNum = {
+    null: null,
+    undefined: null,
+    ㄱ: 1,
+    ㄲ: 2,
+    ㄳ: 3,
+    ㄴ: 4,
+    ㄵ: 5,
+    ㄶ: 6,
+    ㄷ: 7,
+    ㄹ: 8,
+    ㄺ: 9,
+    ㄻ: 10,
+    ㄼ: 11,
+    ㄽ: 12,
+    ㄾ: 13,
+    ㄿ: 14,
+    ㅀ: 15,
+    ㅁ: 16,
+    ㅂ: 17,
+    ㅄ: 18,
+    ㅅ: 19,
+    ㅆ: 20,
+    ㅇ: 21,
+    ㅈ: 22,
+    ㅊ: 23,
+    ㅋ: 24,
+    ㅌ: 25,
+    ㅍ: 26,
+    ㅎ: 27,
+  };
+
+  const composeSyllableFn = (cho$$1, jung$$1, jong$$1 = 0) => (
+    String.fromCodePoint(cho$$1 * 588 + jung$$1 * 28 + jong$$1 + syllables.start)
+  );
+  function* composeSyllableGenerator () {
+    const choChar = yield new ComposeGeneratorYield('');
+    const cho$$1 = choNum[choChar];
+    if (!Number.isInteger(cho$$1)) {
+      return new ComposeGeneratorYield('', choChar);
+    }
+    const jungChar = yield new ComposeGeneratorYield('', choChar);
+    const jung$$1 = jungNum[jungChar];
+    if (!Number.isInteger(jung$$1)) {
+      return new ComposeGeneratorYield('', choChar, jungChar);
+    }
+    const maybeComplete = composeSyllableFn(cho$$1, jung$$1);
+    const jongChar = yield new ComposeGeneratorYield(maybeComplete);
+    const jong$$1 = jongNum[jongChar];
+    if (jong$$1 === null) {
+      return new ComposeGeneratorYield(maybeComplete);
+    }
+    if (!Number.isInteger(jong$$1)) {
+      return new ComposeGeneratorYield(maybeComplete, jongChar);
+    }
+    return new ComposeGeneratorYield(composeSyllableFn(cho$$1, jung$$1, jong$$1));
+  }
+
+  var decomposeSyllable = ((syllable) => {
+    assertChar(syllable);
+    if (!isSyllable(syllable)) {
+      throw new Error('Decomposing a syllable requires a syllable to decompose!');
+    }
+    const code = syllable.codePointAt(0) - syllables.start;
+    const jongNum$$1 = code % 28;
+    const q = (code - jongNum$$1) / 28;
+    const jungNum$$1 = q % 21;
+    const choNum$$1 = 0 | q / 21;
+    return [cho[choNum$$1], jung[jungNum$$1], jong[jongNum$$1]].filter(v => v);
+  });
+
+  const cho$1 = {
+    // the characters that you can type with "one" key + shift
+    ㄱ: {
+      $: 'ㄱ',
+      ㄱ: 'ㄲ',
+    },
+    ㄷ: {
+      $: 'ㄷ',
+      ㄷ: 'ㄸ',
+    },
+    ㅅ: {
+      $: 'ㅅ',
+      ㅅ: 'ㅆ',
+    },
+    ㅈ: {
+      $: 'ㅈ',
+      ㅈ: 'ㅉ',
+    },
+    ㅂ: {
+      $: 'ㅂ',
+      ㅂ: 'ㅃ',
+    },
+  };
+  const jung$1 = {
+    ㅗ: {
+      $: 'ㅗ',
+      ㅏ: 'ㅘ',
+      ㅐ: 'ㅙ',
+      ㅣ: 'ㅚ',
+    },
+    ㅜ: {
+      $: 'ㅜ',
+      ㅓ: 'ㅝ',
+      ㅔ: 'ㅞ',
+      ㅣ: 'ㅟ',
+    },
+    ㅡ: {
+      $: 'ㅡ',
+      ㅣ: 'ㅢ',
+    },
+  };
+  const jong$1 = {
+    $: null,
+    ㄱ: {
+      $: 'ㄱ',
+      ㄱ: 'ㄲ',
+      ㅅ: 'ㄳ',
+    },
+    ㄴ: {
+      $: 'ㄴ',
+      ㅈ: 'ㄵ',
+      ㅎ: 'ㄶ',
+    },
+    ㄹ: {
+      $: 'ㄹ',
+      ㄱ: 'ㄺ',
+      ㅁ: 'ㄻ',
+      ㅂ: 'ㄼ',
+      ㅅ: 'ㄽ',
+      ㅌ: 'ㄾ',
+      ㅍ: 'ㄿ',
+      ㅎ: 'ㅀ',
+    },
+    ㅂ: {
+      $: 'ㅂ',
+      ㅅ: 'ㅄ',
+    },
+    ㅅ: {
+      $: 'ㅅ',
+      ㅅ: 'ㅆ',
+    },
+  };
+  const irregular = {
+    ㄴ: {
+      $: 'ㄴ',
+      ㄴ: 'ㅥ',
+      ㄷ: 'ㅦ',
+      ㅅ: 'ㅧ',
+      ㅿ: 'ㅨ',
+    },
+    ㄹ: {
+      $: 'ㄹ',
+      ㄱ: {
+        isComplex: true,
+        $: 'ㄺ',
+        ㅅ: 'ㅩ',
+      },
+      ㄷ: 'ㅪ',
+      ㅂ: {
+        isComplex: true,
+        $: 'ㄼ',
+        ㅅ: 'ㅫ',
+      },
+      ㅿ: 'ㅬ',
+      ㆆ: 'ㅭ',
+    },
+    ㅁ: {
+      $: 'ㅁ',
+      ㅂ: 'ㅮ',
+      ㅅ: 'ㅯ',
+      ㅿ: 'ㅰ',
+    },
+    ㅂ: {
+      $: 'ㅂ',
+      ㄱ: 'ㅲ',
+      ㄷ: 'ㅳ',
+      ㅅ: {
+        isComplex: true,
+        $: 'ㅄ',
+        ㄱ: 'ㅴ',
+        ㄷ: 'ㅵ',
+      },
+      ㅈ: 'ㅶ',
+      ㅌ: 'ㅷ',
+    },
+    ㅅ: {
+      $: 'ㅅ',
+      ㄱ: 'ㅺ',
+      ㄴ: 'ㅻ',
+      ㄷ: 'ㅼ',
+      ㅂ: 'ㅽ',
+      ㅈ: 'ㅾ',
+    },
+    ㅇ: {
+      $: 'ㅇ',
+      ㅇ: 'ㆀ',
+    },
+    ㆁ: {
+      $: 'ㆁ',
+      ㅅ: 'ㆁ',
+      ㅿ: 'ㅿ',
+    },
+    ㅎ: {
+      $: 'ㅎ',
+      ㅎ: 'ㆅ',
+    },
+    ㅛ: {
+      $: 'ㅛ',
+      ㅑ: 'ㆇ',
+      ㅒ: 'ㆈ',
+      ㅣ: 'ㆉ',
+    },
+    ㅠ: {
+      $: 'ㅠ',
+      ㅕ: 'ㆊ',
+      ㅖ: 'ㆋ',
+      ㅣ: 'ㆌ',
+    },
+    ㆍ: {
+      $: 'ㆍ',
+      ㅣ: 'ㆎ',
+    },
+  };
+  // this file is sure complex...
+
+  var composeAnyComplex = (composeComplex(cho$1, jung$1, jong$1, irregular));
 
   var toStandard = (aryLike => transform(aryLike).map((v) => {
     let count = 0;
@@ -1061,11 +1055,9 @@ var Hangul = (function (exports) {
     return v;
   }).flat().join``);
 
-  const composeSyllable = fuel(composeSyllableGenerator);
-  const composeComplex = fuel(composeComplexGenerator, cho, jung, jong, irregular);
+  const composeSyllable = fuel(composeSyllableGenerator)();
 
   exports.composeSyllable = composeSyllable;
-  exports.composeComplex = composeComplex;
   exports.isSyllable = isSyllable;
   exports.isHangul = isHangul;
   exports.isStandardHangul = isStandardHangul;
@@ -1076,7 +1068,7 @@ var Hangul = (function (exports) {
   exports.isConsonant = isConsonant;
   exports.isVowel = isVowel;
   exports.composeSyllableGenerator = composeSyllableGenerator;
-  exports.composeComplexGenerator = composeComplexGenerator;
+  exports.composeComplexGenerator = composeComplex;
   exports.decomposeSyllable = decomposeSyllable;
   exports.transform = transform;
   exports.toStandard = toStandard;
