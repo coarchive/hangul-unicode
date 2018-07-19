@@ -1,42 +1,12 @@
-export const double = {
+export const cho = {
   // the characters that you can type with "one" key + shift
-  ㄱ: 'ㄲ',
-  ㄷ: 'ㄸ',
-  ㅅ: 'ㅆ',
-  ㅈ: 'ㅉ',
-  ㅂ: 'ㅃ',
-};
-export const complex = {
-  $: null,
-  // consonants
   ㄱ: {
     $: 'ㄱ',
     ㄱ: 'ㄲ',
-    ㅅ: 'ㄳ',
-  },
-  ㄴ: {
-    $: 'ㄴ',
-    ㅈ: 'ㄵ',
-    ㅎ: 'ㄶ',
   },
   ㄷ: {
     $: 'ㄷ',
     ㄷ: 'ㄸ',
-  },
-  ㄹ: {
-    $: 'ㄹ',
-    ㄱ: 'ㄺ',
-    ㅁ: 'ㄻ',
-    ㅂ: 'ㄼ',
-    ㅅ: 'ㄽ',
-    ㅌ: 'ㄾ',
-    ㅍ: 'ㄿ',
-    ㅎ: 'ㅀ',
-  },
-  ㅂ: {
-    $: 'ㅂ',
-    ㅂ: 'ㅃ',
-    ㅅ: 'ㅄ',
   },
   ㅅ: {
     $: 'ㅅ',
@@ -46,7 +16,12 @@ export const complex = {
     $: 'ㅈ',
     ㅈ: 'ㅉ',
   },
-  // vowels
+  ㅂ: {
+    $: 'ㅂ',
+    ㅂ: 'ㅃ',
+  },
+};
+export const jung = {
   ㅗ: {
     $: 'ㅗ',
     ㅏ: 'ㅘ',
@@ -64,6 +39,37 @@ export const complex = {
     ㅣ: 'ㅢ',
   },
 };
+export const jong = {
+  $: null,
+  ㄱ: {
+    $: 'ㄱ',
+    ㄱ: 'ㄲ',
+    ㅅ: 'ㄳ',
+  },
+  ㄴ: {
+    $: 'ㄴ',
+    ㅈ: 'ㄵ',
+    ㅎ: 'ㄶ',
+  },
+  ㄹ: {
+    $: 'ㄹ',
+    ㄱ: 'ㄺ',
+    ㅁ: 'ㄻ',
+    ㅂ: 'ㄼ',
+    ㅅ: 'ㄽ',
+    ㅌ: 'ㄾ',
+    ㅍ: 'ㄿ',
+    ㅎ: 'ㅀ',
+  },
+  ㅂ: {
+    $: 'ㅂ',
+    ㅅ: 'ㅄ',
+  },
+  ㅅ: {
+    $: 'ㅅ',
+    ㅅ: 'ㅆ',
+  },
+};
 export const irregular = {
   ㄴ: {
     $: 'ㄴ',
@@ -75,11 +81,13 @@ export const irregular = {
   ㄹ: {
     $: 'ㄹ',
     ㄱ: {
+      isComplex: true,
       $: 'ㄺ',
       ㅅ: 'ㅩ',
     },
     ㄷ: 'ㅪ',
     ㅂ: {
+      isComplex: true,
       $: 'ㄼ',
       ㅅ: 'ㅫ',
     },
@@ -97,6 +105,7 @@ export const irregular = {
     ㄱ: 'ㅲ',
     ㄷ: 'ㅳ',
     ㅅ: {
+      isComplex: true,
       $: 'ㅄ',
       ㄱ: 'ㅴ',
       ㄷ: 'ㅵ',
@@ -142,3 +151,4 @@ export const irregular = {
     ㅣ: 'ㆎ',
   },
 };
+// this file is sure complex...

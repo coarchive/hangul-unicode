@@ -21,12 +21,12 @@ export function transformNonStandardChar(char) {
   }
   return char;
 }
-export default function transform(str, ignoreStandard = false) {
-  const ary = makeAry(str);
+export default function transform(aryLike, ignoreStandard = false) {
+  const ary = makeAry(aryLike);
   if (ignoreStandard) {
-    return ary.split``.map(transformNonStandardChar);
+    return ary.map(transformNonStandardChar);
   }
-  return ary.split``.map(transformChar);
+  return ary.map(transformChar);
 }
 export function transformToString(str) {
   return transform(str).flat();

@@ -8,19 +8,22 @@ import {
   containsHangul,
   containsStandardHangul,
 } from './unicode/groups';
-import assertChar from './assertChar';
+import {
+  cho,
+  jung,
+  jong,
+  irregular
+} from './unicode/complex';
 import composeComplexGenerator from './composeComplex';
 import composeSyllableGenerator from './composeSyllable';
 import decomposeSyllable from './decomposeSyllable';
 import fuel from './fuel';
-import transform, { transformChar } from './transformer';
+import transform from './transformer';
+import toStandard from './toStandard';
+import composeAnyComplex from './composeAnyComplex';
 
-export function isComplex(char) {
-  assertChar(char);
-  return !!(transformChar(char).length - 1);
-}
 export const composeSyllable = fuel(composeSyllableGenerator);
-export const composeComplex = fuel(composeComplexGenerator, true);
+export const composeComplex = fuel(composeComplexGenerator, cho, jung, jong, irregular);
 export {
   isSyllable,
   isHangul,
@@ -32,6 +35,10 @@ export {
   isConsonant,
   isVowel,
   composeSyllableGenerator,
+  composeComplexGenerator,
   decomposeSyllable,
   transform,
+  toStandard,
+  fuel,
+  composeAnyComplex,
 };

@@ -1,5 +1,9 @@
 import makeAry from './array';
 
-export default ((aryLike) => {
+const assemble = aryLike => makeAry(aryLike).map((v) => {
+  if (Array.isArray(v)) {
+    return assemble(v);
+  }
   
 });
+export default (assemble);
