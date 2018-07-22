@@ -8,7 +8,7 @@ export default (...objList) => (...ary) => {
   if (!objects.length) {
     throw new Error('Cannot compose complex without a list of complex to compose!');
   } if (ary.length < 2) {
-    throw new Error('Cannot compose complex of less than 2 characters!');
+    return new R(ary[0]);
   }
   let i = 0;
   let res = '';
@@ -20,6 +20,10 @@ export default (...objList) => (...ary) => {
       // the current char in the array cannot be attached to the previous
       // characters to form a complex character
       res = objects[0].$;
+      if (!res) {
+        res = currentChar;
+        i++;
+      }
       break;
     } if (isAllString(currentObjects)) {
       // if there's only one option to choose from

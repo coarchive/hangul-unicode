@@ -10,21 +10,21 @@ const composeComplexJong = composeComplex(complex.jong);
 
 export default ((...ary) => {
   if (ary.length < 2) {
-    throw new Error('Cannot compose a complex with less than two characters');
+    throw new Error('Cannot compose a syllable with less than two characters');
   }
   const choRes = composeComplexCho(...ary);
   const choChar = choRes.result;
   const cho = choNum[choChar];
-  if (!cho) {
+  if (!Number.isInteger(cho)) {
     return new R(ary[0], ary.slice(1));
   }
-  const jungRes = composeComplexJung(choRes.remainder);
+  const jungRes = composeComplexJung(...choRes.remainder);
   const jungChar = jungRes.result;
   const jung = jungNum[jungChar];
-  if (!jung) {
+  if (!Number.isInteger(jung)) {
     return new R(choChar, choRes.remainder);
   }
-  const jongRes = composeComplexJong(jungRes.remainder);
+  const jongRes = composeComplexJong(...jungRes.remainder);
   const jongChar = jongRes.result;
   const jong = jongNum[jongChar];
   if (!jong) {

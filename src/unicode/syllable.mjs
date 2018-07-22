@@ -59,8 +59,6 @@ export const jong = [
   'ㅇ', 'ㅈ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ',
 ];
 export const jongNum = {
-  null: null,
-  undefined: null,
   ㄱ: 1,
   ㄲ: 2,
   ㄳ: 3,

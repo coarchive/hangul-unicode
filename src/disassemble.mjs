@@ -13,6 +13,6 @@ export default ((aryLike, grouped = false) => {
   if (grouped) {
     return ary;
   }
-  return ary.flat(2).join``;
+  return ary.flat(2);
 }
 );

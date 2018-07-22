@@ -9,6 +9,7 @@ import { isSyllable } from './unicode/blocks';
 import { isConsonant, isVowel } from './unicode/characters';
 import { isHangul, isStandardHangul } from './unicode/groups';
 
+import compose from './compose';
 import composeAnyComplex from './composeAnyComplex';
 import composeSyllable from './composeSyllable';
 import decomposeSyllable from './decomposeSyllable';
@@ -24,6 +25,7 @@ export { isSyllable };
 export { isConsonant, isVowel };
 export { isHangul, isStandardHangul };
 export { decomposeSyllable, disassemble };
+export { compose };
 export { composeAnyComplex as composeComplex };
 export { composeSyllable };
 export { toStandard, toStandardChar };

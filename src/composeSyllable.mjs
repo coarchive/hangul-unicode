@@ -23,7 +23,7 @@ export default ((choChar, jungChar, jongChar = null) => {
     throw new Error(`"${choChar}" is not a valid cho character`);
   } if (!Number.isInteger(jung)) {
     throw new Error(`"${jungChar}" is not a valid jung character`);
-  } if (jong && !Number.isInteger(jong)) {
+  } if (jong) {
     throw new Error(`"${jongChar}" is not a valid jong character`);
   }
   return composeSyllableFn(cho, jung, jong);
