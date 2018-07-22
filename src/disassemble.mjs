@@ -1,18 +1,37 @@
 import { makeAry } from './array';
-import transform from './transformer';
 import { isSyllable } from './unicode/blocks';
+import { cho } from './unicode/complex';
+import composeComplex from './composeComplex';
 import decomposeSyllable from './decomposeSyllable';
+import transform, { transformChar } from './transformer';
 
-export default ((aryLike, grouped = false) => {
+const composeComplexCho = composeComplex(cho);
+
+export default ((aryLike, grouped, disassembleCho) => {
   const ary = makeAry(aryLike).map((char) => {
-    if (isSyllable(char)) {
-      return transform(decomposeSyllable(char));
+    const isSyl = isSyllable(char);
+    let charGroups;
+    if (isSyl) {
+      charGroups = transform(decomposeSyllable(char));
+    } else {
+      charGroups = [makeAry(transformChar(char))];
     }
-    return transform(char)[0];
+    if (!disassembleCho) {
+      charGroups = charGroups.map((charGroup) => {
+        if (Array.isArray(charGroup)) {
+          const comp = composeComplexCho(...charGroup);
+          if (!comp.remainder.length) {
+            return comp.result;
+          }
+          return charGroup;
+        }
+        return charGroup;
+      });
+    }
+    return isSyl ? charGroups : charGroups[0];
   });
   if (grouped) {
     return ary;
   }
   return ary.flat(2);
-}
-);
+});
