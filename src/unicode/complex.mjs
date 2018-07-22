@@ -40,7 +40,6 @@ export const jung = {
   },
 };
 export const jong = {
-  $: null,
   ㄱ: {
     $: 'ㄱ',
     ㄱ: 'ㄲ',
@@ -71,6 +70,7 @@ export const jong = {
   },
 };
 export const irregular = {
+  is: 'irregular',
   ㄴ: {
     $: 'ㄴ',
     ㄴ: 'ㅥ',

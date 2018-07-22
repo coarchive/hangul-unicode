@@ -1,47 +1,41 @@
 import assertChar from './assertChar';
-import Y from './ComposeGeneratorYield';
-import isComplex from './isComplex';
-import fuel from './fuel';
+import { isAll } from './array';
+import R from './Result';
 
-export function* generator(...objList) {
-  if (!objList.length) {
+const isAllString = isAll(v => typeof v === 'string');
+export default (...objList) => (...ary) => {
+  let objects = objList.slice();
+  if (!objects.length) {
     throw new Error('Cannot compose complex without a list of complex to compose!');
+  } if (ary.length < 2) {
+    throw new Error('Cannot compose complex of less than 2 characters!');
   }
-  let charsReceived = 0;
-  while (true) {
-    const previous = typeof objList[0] === 'string' ? objList[0] : objList[0].$;
-    const previousIsComplex = objList[0].isComplex;
-    let currentChar;
-    if (!charsReceived) {
-      currentChar = yield new Y('');
-    } else if (charsReceived === 1) {
-      currentChar = yield new Y('', previous);
-    } else if (previousIsComplex) {
-      currentChar = yield new Y(previous);
-    } else {
-      currentChar = yield new Y('', previous);
-    }
-    charsReceived++;
-    if (currentChar === null) {
-      return new Y(objList[0], currentChar);
-    }
+  let i = 0;
+  let res = '';
+  while (i < ary.length) {
+    const currentChar = ary[i];
     assertChar(currentChar);
-    const currentCharObj = objList.map(obj => obj[currentChar]).filter(v => v);
-    if (typeof currentCharObj[0] === 'string') {
-      return new Y(currentCharObj[0]);
-    } if (!currentCharObj.length) {
-      if (previousIsComplex) {
-        return new Y(previous, currentChar);
-      }
-      if (previous) {
-        return new Y('', previous, currentChar);
-      }
-      if (isComplex(currentChar)) {
-        return new Y(currentChar);
-      }
-      return new Y('', currentChar);
+    const currentObjects = objects.map(obj => obj[currentChar]).filter(v => v);
+    if (!currentObjects.length) {
+      // the current char in the array cannot be attached to the previous
+      // characters to form a complex character
+      res = objects[0].$;
+      break;
+    } if (isAllString(currentObjects)) {
+      // if there's only one option to choose from
+      [res] = currentObjects;
+      i++;
+      break;
     }
-    objList = currentCharObj;
+    objects = currentObjects;
+    i++;
+    if (i === ary.length) {
+      if (typeof currentObjects[0] === 'string') {
+        [res] = currentObjects;
+        break;
+      }
+      res = currentObjects[0].$;
+    }
   }
-}
-export default (fuel(generator));
+  return new R(res, ary.slice(i));
+};

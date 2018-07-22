@@ -1,4 +1,4 @@
-import Y from './ComposeGeneratorYield';
+import R from './Result';
 
 const construct = (gen, yieldObj) => {
   const fn = (...ary) => {
@@ -6,7 +6,7 @@ const construct = (gen, yieldObj) => {
       const val = yieldObj.value;
       return construct(gen, {
         done: true,
-        value: new Y(val.result, ...val.remainder.concat(ary)),
+        value: new R(val.result, ...val.remainder.concat(ary)),
       });
     }
     let currentYieldObj = yieldObj;
@@ -16,7 +16,7 @@ const construct = (gen, yieldObj) => {
     return construct(gen, currentYieldObj);
   };
   const val = yieldObj.value;
-  if (val instanceof Y) {
+  if (val instanceof R) {
     fn.result = val.result;
     fn.remainder = val.remainder;
   }
