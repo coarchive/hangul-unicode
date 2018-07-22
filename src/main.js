@@ -13,7 +13,7 @@ import composeAnyComplex from './composeAnyComplex';
 import composeSyllable from './composeSyllable';
 import decomposeSyllable from './decomposeSyllable';
 import disassemble from './disassemble';
-import transformNonStandardChar from './transformer';
+import toStandard, { toStandardChar } from './toStandard';
 
 export const isAllHangul = isAll(isHangul);
 export const isAllStandardHangul = isAll(isStandardHangul);
@@ -26,4 +26,4 @@ export { isHangul, isStandardHangul };
 export { decomposeSyllable, disassemble };
 export { composeAnyComplex as composeComplex };
 export { composeSyllable };
-export { transformNonStandardChar as transform };
+export { toStandard, toStandardChar };

@@ -922,19 +922,26 @@ var Hangul = (function (exports) {
     }
     return char;
   }
-  function transformNonStandardChar(char) {
-    if (!isStandardHangul(char)) {
-      return transformChar(char);
-    }
-    return [char];
-  }
-  function transform(aryLike, ignoreStandard = false) {
+  function transform(aryLike) {
     const ary = makeAry(aryLike);
-    if (ignoreStandard) {
-      return ary.map(transformNonStandardChar);
-    }
     return ary.map(transformChar);
   }
+
+  function toStandardChar(char) {
+    const v = transformChar(char);
+    if (Array.isArray(v)) {
+      const res = [];
+      let rem = v;
+      while (rem.length) {
+        const comp = composeAnyComplex(...rem);
+        res.push(comp.result);
+        rem = comp.remainder;
+      }
+      return res;
+    }
+    return v;
+  }
+  var toStandard = (aryLike => makeAry(aryLike).map(toStandardChar));
 
   // import Y from './ComposeGeneratorYield';
 
@@ -942,14 +949,17 @@ var Hangul = (function (exports) {
     String.fromCodePoint(cho * 588 + jung * 28 + jong + syllables.start)
   );
   var composeSyllable = ((choChar, jungChar, jongChar = null) => {
-    const cho = choNum[transformNonStandardChar(choChar).join``];
-    const jung = jungNum[transformNonStandardChar(jungChar).join``];
+    const cho = choNum[toStandardChar(choChar)];
+    const jung = jungNum[toStandardChar(jungChar)];
+    // even though toStandardChar sometimes outputs an array
+    // there's no need to check since all we want are the
+    // sincle character standard characters.
     if (!choChar && !jungChar) {
       throw new Error('You must provide a cho and jung character to make a syllable');
     }
     let jong;
     if (jongChar) {
-      jong = jongNum[transformNonStandardChar(jongChar).join``];
+      jong = jongNum[toStandardChar(jongChar)];
     }
     if (!Number.isInteger(cho)) {
       throw new Error(`"${choChar}" is not a valid cho character`);
@@ -1008,7 +1018,8 @@ var Hangul = (function (exports) {
   exports.disassemble = disassemble;
   exports.composeComplex = composeAnyComplex;
   exports.composeSyllable = composeSyllable;
-  exports.transform = transform;
+  exports.toStandard = toStandard;
+  exports.toStandardChar = toStandardChar;
 
   return exports;
 

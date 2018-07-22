@@ -17,9 +17,6 @@ export function transformChar(char) {
 }
 export default function transform(aryLike) {
   const ary = makeAry(aryLike);
-  if (ignoreStandard) {
-    return ary.map(transformNonStandardChar);
-  }
   return ary.map(transformChar);
 }
 export function transformToString(str) {
