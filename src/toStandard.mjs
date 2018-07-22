@@ -1,19 +1,13 @@
-import { makeAry } from './array';
+import { assembleCompose, make } from './array';
 import { transformChar } from './transformer';
 import composeAnyComplex from './composeAnyComplex';
 
+const assembleAnyComplex = assembleCompose(composeAnyComplex);
 export function toStandardChar(char) {
   const v = transformChar(char);
   if (Array.isArray(v)) {
-    const res = [];
-    let rem = v;
-    while (rem.length) {
-      const comp = composeAnyComplex(...rem);
-      res.push(comp.result);
-      rem = comp.remainder;
-    }
-    return res;
+    return assembleAnyComplex(v);
   }
   return v;
 }
-export default (aryLike => makeAry(aryLike).map(toStandardChar));
+export default (aryLike => make(aryLike).map(toStandardChar));

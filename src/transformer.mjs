@@ -1,5 +1,5 @@
 // tries to transform everything into disassembled standard hangul
-import { makeAry } from './array';
+import { make } from './array';
 import { isSyllable } from './unicode/blocks';
 import { isHangul } from './unicode/groups';
 import mappings from './unicode/mappings';
@@ -16,7 +16,7 @@ export function transformChar(char) {
   return char;
 }
 export default function transform(aryLike) {
-  const ary = makeAry(aryLike);
+  const ary = make(aryLike);
   return ary.map(transformChar);
 }
 export function transformToString(str) {

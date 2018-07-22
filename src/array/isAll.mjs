@@ -1,3 +1,3 @@
-import runAry from './runAry';
+import run from './run';
 
-export default (runAry('every'));
+export default (run('every'));

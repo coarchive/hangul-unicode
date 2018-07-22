@@ -1,3 +1,3 @@
-import makeAry from './makeAry';
+import make from './make';
 
-export default (aryLike => makeAry(aryLike).join``);
+export default (aryLike => make(aryLike).join``);

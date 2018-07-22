@@ -1,14 +1,16 @@
+import assembleCompose from './assembleCompose';
 import contains from './contains';
 import isAll from './isAll';
-import makeAry from './makeAry';
+import make from './make';
 import toString from './toString';
 import whatIs from './whatIs';
 import whereIs from './whereIs';
 
 export {
+  assembleCompose,
   contains,
   isAll,
-  makeAry,
+  make,
   toString,
   whatIs,
   whereIs,

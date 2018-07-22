@@ -1,4 +1,4 @@
-import { makeAry } from './array';
+import { make } from './array';
 import { isSyllable } from './unicode/blocks';
 import { cho } from './unicode/complex';
 import composeComplex from './composeComplex';
@@ -8,13 +8,13 @@ import transform, { transformChar } from './transformer';
 const composeComplexCho = composeComplex(cho);
 
 export default ((aryLike, grouped, disassembleCho) => {
-  const ary = makeAry(aryLike).map((char) => {
+  const ary = make(aryLike).map((char) => {
     const isSyl = isSyllable(char);
     let charGroups;
     if (isSyl) {
       charGroups = transform(decomposeSyllable(char));
     } else {
-      charGroups = [makeAry(transformChar(char))];
+      charGroups = [make(transformChar(char))];
     }
     if (!disassembleCho) {
       charGroups = charGroups.map((charGroup) => {

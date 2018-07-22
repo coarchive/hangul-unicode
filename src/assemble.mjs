@@ -1,8 +1,6 @@
-import makeAry from './array';
+import { assembleCompose, make } from './array';
+import compose from './compose';
 
-const assemble = (aryLike) => {
-  if (Array.isArray(v)) {
-    return assemble(v);
-  }
-};
+const assembleAnything = assembleCompose(compose);
+const assemble = aryLike => true;
 export default (assemble);

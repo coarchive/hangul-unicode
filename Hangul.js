@@ -1,7 +1,21 @@
 var Hangul = (function (exports) {
   'use strict';
 
-  var makeAry = (aryLike) => {
+  var assembleCompose = (fn => (ary) => {
+    const res = [];
+    let rem = ary;
+    while (rem.length) {
+      const comp = fn(...rem);
+      res.push(comp.result);
+      rem = comp.remainder;
+    }
+    if (res.length === 1) {
+      return res[0];
+    }
+    return res;
+  });
+
+  var make = (aryLike) => {
     if (typeof aryLike === 'string') {
       return aryLike.split``;
     } if (!Array.isArray(aryLike)) {
@@ -12,11 +26,11 @@ var Hangul = (function (exports) {
 
   // I mean, how am I supposed to describe this?
 
-  var runAry = (method => arg => aryLike => makeAry(aryLike)[method](v => arg(v)));
+  var run = (method => arg => aryLike => make(aryLike)[method](v => arg(v)));
 
-  var contains = (runAry('some'));
+  var contains = (run('some'));
 
-  var isAll = (runAry('every'));
+  var isAll = (run('every'));
 
   class Range {
     constructor(start, end) {
@@ -920,27 +934,21 @@ var Hangul = (function (exports) {
     return char;
   }
   function transform(aryLike) {
-    const ary = makeAry(aryLike);
+    const ary = make(aryLike);
     return ary.map(transformChar);
   }
 
   var composeAnyComplex = (composeComplex(cho, jung, jong, irregular));
 
+  const assembleAnyComplex = assembleCompose(composeAnyComplex);
   function toStandardChar(char) {
     const v = transformChar(char);
     if (Array.isArray(v)) {
-      const res = [];
-      let rem = v;
-      while (rem.length) {
-        const comp = composeAnyComplex(...rem);
-        res.push(comp.result);
-        rem = comp.remainder;
-      }
-      return res;
+      return assembleAnyComplex(v);
     }
     return v;
   }
-  var toStandard = (aryLike => makeAry(aryLike).map(toStandardChar));
+  var toStandard = (aryLike => make(aryLike).map(toStandardChar));
 
   // import Y from './ComposeGeneratorYield';
 
@@ -999,6 +1007,8 @@ var Hangul = (function (exports) {
     return new Result(composeSyllableFn(cho$$1, jung$$1, jong$$1), jongRes.remainder);
   });
 
+  const assemble = aryLike => true;
+
   var decomposeSyllable = ((syllable) => {
     assertChar(syllable);
     if (!isSyllable(syllable)) {
@@ -1015,13 +1025,13 @@ var Hangul = (function (exports) {
   const composeComplexCho$1 = composeComplex(cho);
 
   var disassemble = ((aryLike, grouped, disassembleCho) => {
-    const ary = makeAry(aryLike).map((char) => {
+    const ary = make(aryLike).map((char) => {
       const isSyl = isSyllable(char);
       let charGroups;
       if (isSyl) {
         charGroups = transform(decomposeSyllable(char));
       } else {
-        charGroups = [makeAry(transformChar(char))];
+        charGroups = [make(transformChar(char))];
       }
       if (!disassembleCho) {
         charGroups = charGroups.map((charGroup) => {
@@ -1059,6 +1069,7 @@ var Hangul = (function (exports) {
   exports.isVowel = isVowel;
   exports.isHangul = isHangul;
   exports.isStandardHangul = isStandardHangul;
+  exports.assemble = assemble;
   exports.compose = compose;
   exports.composeComplex = composeAnyComplex;
   exports.composeSyllable = composeSyllable;
