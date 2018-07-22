@@ -15,6 +15,7 @@ import composeSyllable from './composeSyllable';
 import decomposeSyllable from './decomposeSyllable';
 import disassemble from './disassemble';
 import toStandard, { toStandardChar } from './toStandard';
+import transform, { transformChar } from './transformer';
 
 export const isAllHangul = isAll(isHangul);
 export const isAllStandardHangul = isAll(isStandardHangul);
@@ -24,8 +25,11 @@ export const containsHangul = contains(isHangul);
 export { isSyllable };
 export { isConsonant, isVowel };
 export { isHangul, isStandardHangul };
-export { decomposeSyllable, disassemble };
+
 export { compose };
 export { composeAnyComplex as composeComplex };
 export { composeSyllable };
+export { decomposeSyllable };
+export { disassemble };
 export { toStandard, toStandardChar };
+export { transform, transformChar };

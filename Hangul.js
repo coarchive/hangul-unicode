@@ -45,12 +45,9 @@ var Hangul = (function (exports) {
 
   var assertChar = ((char) => {
     if (typeof char !== 'string') {
-      console.error(`Error: the type of char is ${typeof char}`);
-      console.error('char is:');
-      console.log(char);
       throw new TypeError('char must be a string!');
     } if (char.length - 1) {
-      throw new Error(`"${char}" must have a length of one!`);
+      throw new Error(`"${char}" is not a character!`);
     }
   });
 
@@ -1015,19 +1012,36 @@ var Hangul = (function (exports) {
     return [cho$1[choNum$$1], jung$1[jungNum$$1], jong$1[jongNum$$1]].filter(v => v);
   });
 
-  var disassemble = ((aryLike, grouped = false) => {
+  const composeComplexCho$1 = composeComplex(cho);
+
+  var disassemble = ((aryLike, grouped, disassembleCho) => {
     const ary = makeAry(aryLike).map((char) => {
-      if (isSyllable(char)) {
-        return transform(decomposeSyllable(char));
+      const isSyl = isSyllable(char);
+      let charGroups;
+      if (isSyl) {
+        charGroups = transform(decomposeSyllable(char));
+      } else {
+        charGroups = [makeAry(transformChar(char))];
       }
-      return transform(char)[0];
+      if (!disassembleCho) {
+        charGroups = charGroups.map((charGroup) => {
+          if (Array.isArray(charGroup)) {
+            const comp = composeComplexCho$1(...charGroup);
+            if (!comp.remainder.length) {
+              return comp.result;
+            }
+            return charGroup;
+          }
+          return charGroup;
+        });
+      }
+      return isSyl ? charGroups : charGroups[0];
     });
     if (grouped) {
       return ary;
     }
     return ary.flat(2);
-  }
-  );
+  });
 
   // I know I can export everything at once,
 
@@ -1045,13 +1059,15 @@ var Hangul = (function (exports) {
   exports.isVowel = isVowel;
   exports.isHangul = isHangul;
   exports.isStandardHangul = isStandardHangul;
-  exports.decomposeSyllable = decomposeSyllable;
-  exports.disassemble = disassemble;
   exports.compose = compose;
   exports.composeComplex = composeAnyComplex;
   exports.composeSyllable = composeSyllable;
+  exports.decomposeSyllable = decomposeSyllable;
+  exports.disassemble = disassemble;
   exports.toStandard = toStandard;
   exports.toStandardChar = toStandardChar;
+  exports.transform = transform;
+  exports.transformChar = transformChar;
 
   return exports;
 
