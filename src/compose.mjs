@@ -4,31 +4,29 @@ import composeComplex from './composeComplex';
 import { composeSyllableFn } from './composeSyllable';
 import R from './Result';
 
-const composeComplexCho = composeComplex(complex.cho);
-const composeComplexJung = composeComplex(complex.jung);
-const composeComplexJong = composeComplex(complex.jong);
+const composeStandardComplex = composeComplex(complex.cho, complex.jung, complex.jong);
 
 export default ((...ary) => {
   if (ary.length < 2) {
-    throw new Error('Cannot compose a syllable with less than two characters');
+    return new R(ary[0]);
   }
-  const choRes = composeComplexCho(...ary);
+  const choRes = composeStandardComplex(...ary);
   const choChar = choRes.result;
   const cho = choNum[choChar];
   if (!Number.isInteger(cho)) {
-    return new R(ary[0], ary.slice(1));
+    return choRes;
   }
-  const jungRes = composeComplexJung(...choRes.remainder);
+  const jungRes = composeStandardComplex(...choRes.remainder);
   const jungChar = jungRes.result;
   const jung = jungNum[jungChar];
   if (!Number.isInteger(jung)) {
-    return new R(choChar, choRes.remainder);
+    return new R(choChar, [jungChar, ...jungRes.remainder]);
   }
-  const jongRes = composeComplexJong(...jungRes.remainder);
+  const jongRes = composeStandardComplex(...jungRes.remainder);
   const jongChar = jongRes.result;
   const jong = jongNum[jongChar];
   if (!jong) {
-    return new R(composeSyllableFn(cho, jung), jungRes.remainder);
+    return new R(composeSyllableFn(cho, jung), [jongChar, ...jungRes.remainder]);
   }
   return new R(composeSyllableFn(cho, jung, jong), jongRes.remainder);
 });

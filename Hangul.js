@@ -1,20 +1,6 @@
 var Hangul = (function (exports) {
   'use strict';
 
-  var assembleCompose = (fn => (ary) => {
-    const res = [];
-    let rem = ary;
-    while (rem.length) {
-      const comp = fn(...rem);
-      res.push(comp.result);
-      rem = comp.remainder;
-    }
-    if (res.length === 1) {
-      return res[0];
-    }
-    return res;
-  });
-
   var make = (aryLike) => {
     if (typeof aryLike === 'string') {
       return aryLike.split``;
@@ -22,6 +8,37 @@ var Hangul = (function (exports) {
       throw new TypeError('aryLike must be a string or an array!');
     }
     return aryLike;
+  };
+
+  var isCharCollection = ((aryLike) => {
+    if (Array.isArray(aryLike)) {
+      return true;
+    } if (typeof aryLike === 'string') {
+      return aryLike.length !== 1;
+    }
+    return false;
+  });
+
+  const fn = func => (aryLike) => {
+    if (arguments.length > 2) {
+      throw new Error('assembledComposes do not take more than one argument!');
+    }
+    const res = [];
+    let rem = make(aryLike);
+    const thisFn = fn(func);
+    while (rem.some(isCharCollection)) {
+      const subAryIdx = rem.findIndex(isCharCollection);
+      rem.splice(subAryIdx, 1, ...thisFn(aryLike[subAryIdx]));
+    }
+    while (rem.length) {
+      const comp = func(...rem);
+      res.push(comp.result);
+      rem = comp.remainder;
+    }
+    if (res.length === 1) {
+      return res[0];
+    }
+    return res;
   };
 
   // I mean, how am I supposed to describe this?
@@ -400,6 +417,7 @@ var Hangul = (function (exports) {
   }
 
   const isAllString = isAll(v => typeof v === 'string');
+  const get$ = objList => (typeof objList[0] === 'string' ? objList[0] : objList[0].$);
   var composeComplex = (...objList) => (...ary) => {
     let objects = objList.slice();
     if (!objects.length) {
@@ -416,7 +434,7 @@ var Hangul = (function (exports) {
       if (!currentObjects.length) {
         // the current char in the array cannot be attached to the previous
         // characters to form a complex character
-        res = objects[0].$;
+        res = get$(objects);
         if (!res) {
           res = currentChar;
           i++;
@@ -431,11 +449,7 @@ var Hangul = (function (exports) {
       objects = currentObjects;
       i++;
       if (i === ary.length) {
-        if (typeof currentObjects[0] === 'string') {
-          [res] = currentObjects;
-          break;
-        }
-        res = currentObjects[0].$;
+        res = get$(currentObjects);
       }
     }
     return new Result(res, ary.slice(i));
@@ -940,7 +954,7 @@ var Hangul = (function (exports) {
 
   var composeAnyComplex = (composeComplex(cho, jung, jong, irregular));
 
-  const assembleAnyComplex = assembleCompose(composeAnyComplex);
+  const assembleAnyComplex = fn(composeAnyComplex);
   function toStandardChar(char) {
     const v = transformChar(char);
     if (Array.isArray(v)) {
@@ -978,36 +992,35 @@ var Hangul = (function (exports) {
     return composeSyllableFn(cho, jung, jong);
   });
 
-  const composeComplexCho = composeComplex(cho);
-  const composeComplexJung = composeComplex(jung);
-  const composeComplexJong = composeComplex(jong);
+  const composeStandardComplex = composeComplex(cho, jung, jong);
 
   var compose = ((...ary) => {
     if (ary.length < 2) {
-      throw new Error('Cannot compose a syllable with less than two characters');
+      return new Result(ary[0]);
     }
-    const choRes = composeComplexCho(...ary);
+    const choRes = composeStandardComplex(...ary);
     const choChar = choRes.result;
     const cho$$1 = choNum[choChar];
     if (!Number.isInteger(cho$$1)) {
-      return new Result(ary[0], ary.slice(1));
+      return choRes;
     }
-    const jungRes = composeComplexJung(...choRes.remainder);
+    const jungRes = composeStandardComplex(...choRes.remainder);
     const jungChar = jungRes.result;
     const jung$$1 = jungNum[jungChar];
     if (!Number.isInteger(jung$$1)) {
-      return new Result(choChar, choRes.remainder);
+      return new Result(choChar, [jungChar, ...jungRes.remainder]);
     }
-    const jongRes = composeComplexJong(...jungRes.remainder);
+    const jongRes = composeStandardComplex(...jungRes.remainder);
     const jongChar = jongRes.result;
     const jong$$1 = jongNum[jongChar];
     if (!jong$$1) {
-      return new Result(composeSyllableFn(cho$$1, jung$$1), jungRes.remainder);
+      return new Result(composeSyllableFn(cho$$1, jung$$1), [jongChar, ...jungRes.remainder]);
     }
     return new Result(composeSyllableFn(cho$$1, jung$$1, jong$$1), jongRes.remainder);
   });
 
-  const assemble = aryLike => true;
+  const assembleAnything = fn(compose);
+  var assemble = (aryLike => assembleAnything(make(aryLike)).join``);
 
   var decomposeSyllable = ((syllable) => {
     assertChar(syllable);
@@ -1022,7 +1035,7 @@ var Hangul = (function (exports) {
     return [cho$1[choNum$$1], jung$1[jungNum$$1], jong$1[jongNum$$1]].filter(v => v);
   });
 
-  const composeComplexCho$1 = composeComplex(cho);
+  const composeComplexCho = composeComplex(cho);
 
   var disassemble = ((aryLike, grouped, disassembleCho) => {
     const ary = make(aryLike).map((char) => {
@@ -1036,7 +1049,7 @@ var Hangul = (function (exports) {
       if (!disassembleCho) {
         charGroups = charGroups.map((charGroup) => {
           if (Array.isArray(charGroup)) {
-            const comp = composeComplexCho$1(...charGroup);
+            const comp = composeComplexCho(...charGroup);
             if (!comp.remainder.length) {
               return comp.result;
             }

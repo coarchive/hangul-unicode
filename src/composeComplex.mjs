@@ -3,6 +3,7 @@ import { isAll } from './array';
 import R from './Result';
 
 const isAllString = isAll(v => typeof v === 'string');
+const get$ = objList => (typeof objList[0] === 'string' ? objList[0] : objList[0].$);
 export default (...objList) => (...ary) => {
   let objects = objList.slice();
   if (!objects.length) {
@@ -19,7 +20,7 @@ export default (...objList) => (...ary) => {
     if (!currentObjects.length) {
       // the current char in the array cannot be attached to the previous
       // characters to form a complex character
-      res = objects[0].$;
+      res = get$(objects);
       if (!res) {
         res = currentChar;
         i++;
@@ -34,11 +35,7 @@ export default (...objList) => (...ary) => {
     objects = currentObjects;
     i++;
     if (i === ary.length) {
-      if (typeof currentObjects[0] === 'string') {
-        [res] = currentObjects;
-        break;
-      }
-      res = currentObjects[0].$;
+      res = get$(currentObjects);
     }
   }
   return new R(res, ary.slice(i));
