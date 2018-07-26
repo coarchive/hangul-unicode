@@ -1,13 +1,14 @@
-import { choNum, jungNum, jongNum } from './unicode/syllable';
 import { syllables } from './unicode/blocks';
+import { choNum, jungNum, jongNum } from './unicode/syllable';
 import { toStandardChar } from './toStandard';
+import { Character } from './types';
 
 export const composeSyllableFn = (cho, jung, jong = 0) => (
   String.fromCodePoint(cho * 588 + jung * 28 + jong + syllables.start)
 );
 export default ((choChar, jungChar, jongChar = null) => {
-  const cho = choNum[toStandardChar(choChar)];
-  const jung = jungNum[toStandardChar(jungChar)];
+  const cho = choNum[toStandardChar(Character(choChar))];
+  const jung = jungNum[toStandardChar(Character(jungChar))];
   // even though toStandardChar sometimes outputs an array
   // there's no need to check since all we want are the
   // sincle character standard characters.
@@ -16,13 +17,12 @@ export default ((choChar, jungChar, jongChar = null) => {
   }
   let jong;
   if (jongChar) {
-    jong = jongNum[toStandardChar(jongChar)];
-  }
-  if (!Number.isInteger(cho)) {
+    jong = jongNum[toStandardChar(Character(jongChar))];
+  } if (!Number.isInteger(cho)) {
     throw Error(`"${choChar}" is not a valid cho character`);
   } if (!Number.isInteger(jung)) {
     throw Error(`"${jungChar}" is not a valid jung character`);
-  } if (jong) {
+  } if (jongChar && !Number.isInteger(jong)) {
     throw Error(`"${jongChar}" is not a valid jong character`);
   }
   return composeSyllableFn(cho, jung, jong);

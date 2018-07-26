@@ -4,8 +4,8 @@ import {
   jong,
   irregular,
 } from './unicode/complex';
-
+import assembleCompose from './assembleCompose';
 import composeComplex from './composeComplex';
 
-export default (composeComplex(cho, jung, jong, irregular));
-// public default: ...Array[Character] => Result
+export default (assembleCompose(composeComplex(cho, jung, jong, irregular)));
+// public default instanceof AssembledComposedFunction: ...Array[Character] => Result

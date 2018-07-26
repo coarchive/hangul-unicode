@@ -14,8 +14,13 @@ export const isCharacterGroup = (ary) => {
   return false;
 };
 export const CharacterGroup = (ary) => {
-  if ((Array.isArray(ary) || typeof ary === 'string') && ary.length > 1) {
+  if (typeof ary === 'string') {
+    if (ary.length > 1) {
+      return [Character(ary)];
+    }
     return Array.from(ary);
+  } if (Array.isArray(ary)) {
+    return ary;
   }
   throw TypeError('A character group must be a String or Array');
 };

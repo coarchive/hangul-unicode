@@ -1,4 +1,5 @@
-import assertChar from './assertChar';
+import { Character, E } from './internalTypes';
+
 import R from './Result';
 
 const getCurrent = objList => (typeof objList[0] === 'string' ? objList[0] : objList[0].$);
@@ -6,15 +7,14 @@ const getCurrent = objList => (typeof objList[0] === 'string' ? objList[0] : obj
 export default (...objList) => (...ary) => {
   let objects = objList.slice();
   if (!objects.length) {
-    throw new Error('Cannot compose complex without a list of complex to compose!');
+    E('composeComplex', 'Cannot compose complex without a list of complex to compose!');
   } if (ary.length < 2) {
     return new R(ary[0]);
   }
   let i = 0;
   let res = '';
   while (i < ary.length) {
-    const currentChar = ary[i];
-    assertChar(currentChar);
+    const currentChar = Character(ary[i]);
     const currentObjects = objects.map(obj => obj[currentChar]).filter(v => v);
     if (!currentObjects.length) {
       // the current char in the array cannot be attached to the previous
