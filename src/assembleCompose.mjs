@@ -1,19 +1,25 @@
+import { CharacterGroup, E } from './internalTypes';
 import R from './Result';
-import { E } from './internalTypes';
+import { isCharacterGroup } from './types';
 
-import { CharacterGroup, isCharacterGroup } from './types';
-
-const fn = func => (group) => {
-  if (arguments.length > 2) {
-    E('assembleCompose', 'assembledComposes do not take more than one argument!', arguments);
+const fn = func => (group, type) => {
+  if (type !== undefined || Number.isInteger(type)) {
+    E('assembleCompose', "If there's a provided type, it must be an Integer")
+  } if (type < 1 || type > 2) {
+    E('assembleCompose', 'the type of a group may either be 0 for Array or 1 for String')
+  } if (arguments.length > 2) {
+    E('assembleCompose', 'assembledComposes does not take more than two arguments!', arguments);
   }
   const res = [];
   let rem = CharacterGroup(group);
-  const thisFn = fn(func);
-  let subGroupIdx = rem.findIndex(isCharacterGroup);
-  while (~subGroupIdx) {
-    rem.splice(subGroupIdx, 1, ...thisFn(group[subGroupIdx]));
-    subGroupIdx = rem.findIndex(isCharacterGroup);
+  if (!type) {
+    // if the group is not an Array
+    const thisFn = fn(func);
+    let subGroupIdx = rem.findIndex(isCharacterGroup);
+    while (~subGroupIdx) {
+      rem.splice(subGroupIdx, 1, ...thisFn(group[subGroupIdx]));
+      subGroupIdx = rem.findIndex(isCharacterGroup);
+    }
   }
   while (rem.length) {
     const comp = func(...rem);
@@ -29,4 +35,4 @@ const fn = func => (group) => {
   return res;
 };
 export default (fn);
-// fn: ComposeFunction => AssembledComposedFunction
+// fn: ComposeFunction => AssembledComposedFunction => CharacterGroup => Result

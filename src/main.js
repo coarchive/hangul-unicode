@@ -3,7 +3,12 @@
 // I have to adjust the export names and stuff so
 // it's better if it's organized
 
-// Right now it's all being changed
+import composeAnyComplex from './composeAnyComplex';
+import decomposeSyllable from './decomposeSyllable';
+import { Character, CharacterGroup } from './internalTypes';
 import transform from './transformer';
 
+export { Character, CharacterGroup };
+export { composeAnyComplex as composeComplex };
+export { decomposeSyllable };
 export { transform };

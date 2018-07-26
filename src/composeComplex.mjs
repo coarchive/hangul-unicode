@@ -39,4 +39,4 @@ export default (...objList) => (...ary) => {
   }
   return new R(res, ary.slice(i));
 };
-// default: Array[ComplexMap] => ...Array[Character] => Result
+// default instanceof ComposeFunction: Array[ComplexMap] => ...Array[Character] => Result
