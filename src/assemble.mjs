@@ -1,4 +1,3 @@
-import { assembleCompose, make } from './array';
 import compose from './compose';
 
 const assembleAnything = assembleCompose(compose);

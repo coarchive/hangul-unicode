@@ -10,7 +10,7 @@ export default {
     format: 'iife',
     name: 'Hangul',
     strict: true,
-    sourcemap: true,
+    sourcemap: false,
   },
   watch: {
     include: 'src/**',

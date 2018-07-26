@@ -1,5 +1,5 @@
 export const cho = {
-  // the characters that you can type with "one" key + shift
+  // the characters that you can type with key + shift
   ㄱ: {
     $: 'ㄱ',
     ㄱ: 'ㄲ',

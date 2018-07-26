@@ -1,26 +1,24 @@
-import Range from './Range';
-import is from '../is';
+import UnicodeRange, { CombinedRange } from './UnicodeRange';
 
-export const jamo = new Range(0x1100, 0x11FF);
-export const compatibilityJamo = new Range(0x3130, 0x318F);
-export const jamoExtendedA = new Range(0xA960, 0xA97F);
-export const syllables = new Range(0xAC00, 0xD7AF);
-export const jamoExtendedB = new Range(0xD7B0, 0xD7FF);
-export const halfwidth = new Range(0xFFA0, 0xFFDF);
-export const reserved = [
-  0x3130, 0x318F, // compatibilityJamo
-  new Range(0xA97D, 0xA97F), // jamoExtendedA
-  new Range(0xD7A4, 0xD7AF), // syllables
-  new Range(0xD7C7, 0xD7CA), // jamoExtendedB
-  new Range(0xD7FC, 0xD7FF), // jamoExtendedB
-];
-export function isReserved(char) {
-  const code = char.codePointAt(0);
-  return reserved.includes(code) || reserved.filter(v => typeof v !== 'number').some(range => range.contains(code));
-}
-export const isJamo = is(jamo);
-export const isCompatibilityJamo = is(compatibilityJamo);
-export const isJamoExtendedA = is(jamoExtendedA);
-export const isSyllable = is(syllables);
-export const isJamoExtendedB = is(jamoExtendedB);
-export const isHalfwidth = is(halfwidth);
+export const jamo = new UnicodeRange(0x1100, 0x11FF);
+export const compatibilityJamo = new UnicodeRange(0x3130, 0x318F);
+export const jamoExtendedA = new UnicodeRange(0xA960, 0xA97F);
+export const syllables = new UnicodeRange(0xAC00, 0xD7AF);
+export const jamoExtendedB = new UnicodeRange(0xD7B0, 0xD7FF);
+export const halfwidth = new UnicodeRange(0xFFA0, 0xFFDF);
+export const reserved = new CombinedRange({ 0x3130: 1, 0x318F: 1 }, [
+  new UnicodeRange(0xA97D, 0xA97F), // jamoExtendedA
+  new UnicodeRange(0xD7A4, 0xD7AF), // syllables
+  new UnicodeRange(0xD7C7, 0xD7CA), // jamoExtendedB
+  new UnicodeRange(0xD7FC, 0xD7FF), // jamoExtendedB
+]);
+export const standardHangul = new CombinedRange([compatibilityJamo, syllables]);
+export const hangul = new CombinedRange([
+  jamo,
+  compatibilityJamo,
+  jamoExtendedA,
+  syllables,
+  jamoExtendedB,
+  halfwidth,
+  reserved,
+]);
