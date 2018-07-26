@@ -7,3 +7,4 @@ export default class Result {
     this.remainder = remainder;
   }
 }
+// Result { result: Character, remainder: CharacterGroup }

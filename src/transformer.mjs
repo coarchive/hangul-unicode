@@ -4,7 +4,7 @@ import { isSyllable } from './unicode/blocks';
 import { isHangul } from './unicode/groups';
 import mappings from './unicode/mappings';
 
-export function transformChar(char) {
+export function transformCharacter(char) {
   if (isHangul(char) && !isSyllable(char)) {
     // this if-statement isn't REALLY needed
     const comp = mappings[char];
@@ -15,10 +15,12 @@ export function transformChar(char) {
   }
   return char;
 }
+// transformCharacter: Character => CharacterGroup
 export default function transform(aryLike) {
   const ary = make(aryLike);
   return ary.map(transformChar);
 }
+// transform: CharacterGroup => CharacterGroup
 export function transformToString(str) {
   return transform(str).flat();
 }

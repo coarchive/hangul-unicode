@@ -1,9 +1,8 @@
 import assertChar from './assertChar';
-import { isAll } from './array';
 import R from './Result';
 
-const isAllString = isAll(v => typeof v === 'string');
-const get$ = objList => (typeof objList[0] === 'string' ? objList[0] : objList[0].$);
+const getCurrent = objList => (typeof objList[0] === 'string' ? objList[0] : objList[0].$);
+// getCurrent: Array[ComplexMap] => Character
 export default (...objList) => (...ary) => {
   let objects = objList.slice();
   if (!objects.length) {
@@ -20,13 +19,13 @@ export default (...objList) => (...ary) => {
     if (!currentObjects.length) {
       // the current char in the array cannot be attached to the previous
       // characters to form a complex character
-      res = get$(objects);
+      res = getCurrent(objects);
       if (!res) {
         res = currentChar;
         i++;
       }
       break;
-    } if (isAllString(currentObjects)) {
+    } if (currentObjects.every(val => typeof val === 'string')) {
       // if there's only one option to choose from
       [res] = currentObjects;
       i++;
@@ -35,8 +34,9 @@ export default (...objList) => (...ary) => {
     objects = currentObjects;
     i++;
     if (i === ary.length) {
-      res = get$(currentObjects);
+      res = getCurrent(currentObjects);
     }
   }
   return new R(res, ary.slice(i));
 };
+// default: Array[ComplexMap] => ...Array[Character] => Result

@@ -6,4 +6,6 @@ export const Character = (inp) => {
   }
   return str;
 };
+// Character: * => String
 export const CharacterGroup = 1;
+// CharacterGroup * => Array

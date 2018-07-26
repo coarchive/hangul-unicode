@@ -8,3 +8,4 @@ import {
 import composeComplex from './composeComplex';
 
 export default (composeComplex(cho, jung, jong, irregular));
+// public default: ...Array[Character] => Result

@@ -7,7 +7,6 @@ export default class UnicodeRange {
     }
     this.start = start;
     this.end = end;
-    this.length = this.end - this.start + 1;
   }
 
   containsCodePoint(num) {
@@ -18,6 +17,7 @@ export default class UnicodeRange {
     return this.containsCodePoint(Character(char).codePointAt(0));
   }
 }
+// UnicodeRange { start: Integer, end: integer }
 export class CombinedRange {
   constructor(ranges, codePoints = {}) {
     if (Array.isArray(ranges)) {
@@ -38,3 +38,4 @@ export class CombinedRange {
     );
   }
 }
+// CombinedRange { ranges: Array[Range], codePoints: Object }

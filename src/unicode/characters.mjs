@@ -173,3 +173,4 @@ export const fromKeys = {
 };
 // I realize that I can programmatically reverse the key-value pairs during
 // runtime but since I can just do it now, it's just a little faster.
+// * instanceof Object

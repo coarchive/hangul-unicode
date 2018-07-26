@@ -35,3 +35,4 @@ export default ((aryLike, grouped, disassembleCho) => {
   }
   return ary.flat(2);
 });
+// default: CharacterGroup => Boolean => Boolean => CharacterGroup

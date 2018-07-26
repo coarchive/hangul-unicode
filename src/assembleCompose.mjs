@@ -23,3 +23,4 @@ const fn = func => (aryLike) => {
   return res;
 };
 export default (fn);
+// fn: ComposeFunction =>

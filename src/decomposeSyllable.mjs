@@ -14,3 +14,4 @@ export default ((syllable) => {
   const choNum = 0 | q / 21;
   return [cho[choNum], jung[jungNum], jong[jongNum]].filter(v => v);
 });
+// default: Character => CharacterGroup

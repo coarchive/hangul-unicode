@@ -5,6 +5,7 @@ export const E = file => (str, val) => {
   console.groupEnd();
   throw Error('Critical Stop.');
 };
+// E: String => String => * => Undefined
 export const Character = file => (inp) => {
   const str = `${inp}`;
   if (str !== 1) {
@@ -12,3 +13,4 @@ export const Character = file => (inp) => {
   }
   return str;
 };
+// Character: { Character } from './types'

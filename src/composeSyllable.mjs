@@ -1,7 +1,6 @@
 import { choNum, jungNum, jongNum } from './unicode/syllable';
 import { syllables } from './unicode/blocks';
 import { toStandardChar } from './toStandard';
-// import Y from './ComposeGeneratorYield';
 
 export const composeSyllableFn = (cho, jung, jong = 0) => (
   String.fromCodePoint(cho * 588 + jung * 28 + jong + syllables.start)
@@ -20,11 +19,12 @@ export default ((choChar, jungChar, jongChar = null) => {
     jong = jongNum[toStandardChar(jongChar)];
   }
   if (!Number.isInteger(cho)) {
-    throw new Error(`"${choChar}" is not a valid cho character`);
+    throw Error(`"${choChar}" is not a valid cho character`);
   } if (!Number.isInteger(jung)) {
-    throw new Error(`"${jungChar}" is not a valid jung character`);
+    throw Error(`"${jungChar}" is not a valid jung character`);
   } if (jong) {
-    throw new Error(`"${jongChar}" is not a valid jong character`);
+    throw Error(`"${jongChar}" is not a valid jong character`);
   }
   return composeSyllableFn(cho, jung, jong);
 });
+// public default: String => String => String | Null => String

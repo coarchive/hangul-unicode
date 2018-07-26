@@ -152,3 +152,4 @@ export const irregular = {
   },
 };
 // this file is sure complex...
+// * instanceof ComplexMap

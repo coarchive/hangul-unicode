@@ -10,4 +10,6 @@ export function toStandardChar(char) {
   }
   return v;
 }
+// toStandardChar: Character => String
 export default (aryLike => make(aryLike).map(toStandardChar));
+// default: CharacterGroup => String

@@ -477,3 +477,4 @@ export const halfwidth = {
 };
 const all = Object.assign({}, jamo, compatibilityJamo, jamoExtendedA, jamoExtendedB, halfwidth);
 export default (all);
+// * instanceof StandardMapping
