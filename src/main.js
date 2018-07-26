@@ -4,3 +4,6 @@
 // it's better if it's organized
 
 // Right now it's all being changed
+import transform from './transformer';
+
+export { transform };

@@ -1,4 +1,4 @@
-import { E, Character } from '../InternalError';
+import { E, Character } from '../internalTypes';
 
 export default class UnicodeRange {
   constructor(start, end) {
@@ -20,7 +20,7 @@ export default class UnicodeRange {
 // UnicodeRange { start: Integer, end: integer }
 export class CombinedRange {
   constructor(ranges, codePoints = {}) {
-    if (Array.isArray(ranges)) {
+    if (!Array.isArray(ranges)) {
       E('CombinedRange', 'ranges must be an Array!', ranges);
     }
     if (!codePoints && typeof codePoints !== 'object') {

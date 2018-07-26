@@ -17,12 +17,12 @@ export const halfwidth = new UnicodeRange(0xFFA0, 0xFFDF);
   reserved
 } instanceof Range
 */
-export const reserved = new CombinedRange({ 0x3130: 1, 0x318F: 1 }, [
+export const reserved = new CombinedRange([
   new UnicodeRange(0xA97D, 0xA97F), // jamoExtendedA
   new UnicodeRange(0xD7A4, 0xD7AF), // syllables
   new UnicodeRange(0xD7C7, 0xD7CA), // jamoExtendedB
   new UnicodeRange(0xD7FC, 0xD7FF), // jamoExtendedB
-]);
+], { 0x3130: 1, 0x318F: 1 });
 export const standardHangul = new CombinedRange([compatibilityJamo, syllables]);
 export const hangul = new CombinedRange([
   jamo,

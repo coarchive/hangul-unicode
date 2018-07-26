@@ -1,26 +1,21 @@
 // tries to transform everything into disassembled standard hangul
-import { make } from './array';
-import { isSyllable } from './unicode/blocks';
-import { isHangul } from './unicode/groups';
+import { Character, CharacterGroup } from './internalTypes';
+import { hangul, syllables } from './unicode/blocks';
 import mappings from './unicode/mappings';
 
-export function transformCharacter(char) {
-  if (isHangul(char) && !isSyllable(char)) {
+export function transformCharacter(val) {
+  const char = Character(val);
+  if (hangul.contains(char) && !syllables.contains(char)) {
     // this if-statement isn't REALLY needed
     const comp = mappings[char];
     if (comp) {
       return comp;
     }
-    return char;
   }
   return char;
 }
 // transformCharacter: Character => CharacterGroup
-export default function transform(aryLike) {
-  const ary = make(aryLike);
-  return ary.map(transformChar);
+export default function transform(group) {
+  return CharacterGroup(group).map(transformCharacter);
 }
 // transform: CharacterGroup => CharacterGroup
-export function transformToString(str) {
-  return transform(str).flat();
-}
