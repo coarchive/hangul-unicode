@@ -1,19 +1,25 @@
-import make from './make';
-import isCharCollection from '../isCharCollection';
+import R from './Result';
+import { E } from './internalTypes';
 
-const fn = func => (aryLike) => {
+import { CharacterGroup, isCharacterGroup } from './types';
+
+const fn = func => (group) => {
   if (arguments.length > 2) {
-    throw new Error('assembledComposes do not take more than one argument!');
+    E('assembleCompose', 'assembledComposes do not take more than one argument!', arguments);
   }
   const res = [];
-  let rem = make(aryLike);
+  let rem = CharacterGroup(group);
   const thisFn = fn(func);
-  while (rem.some(isCharCollection)) {
-    const subAryIdx = rem.findIndex(isCharCollection);
-    rem.splice(subAryIdx, 1, ...thisFn(aryLike[subAryIdx]));
+  let subGroupIdx = rem.findIndex(isCharacterGroup);
+  while (~subGroupIdx) {
+    rem.splice(subGroupIdx, 1, ...thisFn(group[subGroupIdx]));
+    subGroupIdx = rem.findIndex(isCharacterGroup);
   }
   while (rem.length) {
     const comp = func(...rem);
+    if (!(comp instanceof R)) {
+      E('assembleCompose', 'the ComposeFunction did not return a Result!', comp);
+    }
     res.push(comp.result);
     rem = comp.remainder;
   }
@@ -23,4 +29,4 @@ const fn = func => (aryLike) => {
   return res;
 };
 export default (fn);
-// fn: ComposeFunction =>
+// fn: ComposeFunction => AssembledComposedFunction

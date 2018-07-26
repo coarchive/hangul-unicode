@@ -7,8 +7,14 @@ export const Character = (inp) => {
   return str;
 };
 // Character: * => String
+export const isCharacterGroup = (ary) => {
+  if ((Array.isArray(ary) || typeof ary === 'string') && ary.length > 1) {
+    return true;
+  }
+  return false;
+};
 export const CharacterGroup = (ary) => {
-  if (Array.isArray(ary) || typeof ary === 'string') {
+  if ((Array.isArray(ary) || typeof ary === 'string') && ary.length > 1) {
     return Array.from(ary);
   }
   throw TypeError('A character group must be a String or Array');

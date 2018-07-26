@@ -11,7 +11,6 @@ var Hangul = (function (exports) {
   // E: String => String => * => Undefined
   const Character = (inp) => {
     const str = `${inp}`;
-    console.log(str);
     if (str.length !== 1) {
       E('Character', "Strings longer than one aren't Characters", str, inp);
     }
@@ -19,7 +18,7 @@ var Hangul = (function (exports) {
   };
   // Character: { Character } from './types'
   const CharacterGroup = (ary) => {
-    if (Array.isArray(ary) || typeof ary === 'string') {
+    if ((Array.isArray(ary) || typeof ary === 'string') && ary.length > 1) {
       return Array.from(ary);
     }
     E('CharacterGroup', 'A character group must be a String or Array', ary);
@@ -359,67 +358,6 @@ var Hangul = (function (exports) {
     ᇾ: ['ㄱ', 'ㅎ'],
     ᇿ: ['ㄴ', 'ㄴ'],
   };
-  const compatibilityJamo$1 = {
-    // this object is missing a lot of characters in the block since
-    // this file maps archaic characters to compatibilityJamo.
-    ㄲ: ['ㄱ', 'ㄱ'],
-    ㄳ: ['ㄱ', 'ㅅ'],
-    ㄵ: ['ㄴ', 'ㅈ'],
-    ㄶ: ['ㄴ', 'ㅎ'],
-    ㄸ: ['ㄷ', 'ㄷ'],
-    ㄻ: ['ㄹ', 'ㅁ'],
-    ㄺ: ['ㄹ', 'ㄱ'],
-    ㄼ: ['ㄹ', 'ㅂ'],
-    ㄽ: ['ㄹ', 'ㅅ'],
-    ㄾ: ['ㄹ', 'ㅌ'],
-    ㄿ: ['ㄹ', 'ㅍ'],
-    ㅀ: ['ㄹ', 'ㅎ'],
-    ㅃ: ['ㅂ', 'ㅂ'],
-    ㅄ: ['ㅂ', 'ㅅ'],
-    ㅆ: ['ㅅ', 'ㅅ'],
-    ㅉ: ['ㅈ', 'ㅈ'],
-    ㅘ: ['ㅗ', 'ㅏ'],
-    ㅙ: ['ㅗ', 'ㅐ'],
-    ㅚ: ['ㅗ', 'ㅣ'],
-    ㅝ: ['ㅜ', 'ㅓ'],
-    ㅞ: ['ㅜ', 'ㅔ'],
-    ㅟ: ['ㅜ', 'ㅣ'],
-    ㅢ: ['ㅡ', 'ㅣ'],
-    ㅥ: ['ㄴ', 'ㄴ'],
-    ㅦ: ['ㄴ', 'ㄷ'],
-    ㅧ: ['ㄴ', 'ㅅ'],
-    ㅨ: ['ㄴ', 'ㅿ'],
-    ㅩ: ['ㄹ', 'ㄱ', 'ㅅ'],
-    ㅪ: ['ㄹ', 'ㄷ'],
-    ㅫ: ['ㄹ', 'ㅂ', 'ㅅ'],
-    ㅬ: ['ㄹ', 'ㅿ'],
-    ㅭ: ['ㄹ', 'ㆆ'],
-    ㅮ: ['ㅁ', 'ㅂ'],
-    ㅯ: ['ㅁ', 'ㅅ'],
-    ㅰ: ['ㅁ', 'ㅿ'],
-    ㅲ: ['ㅂ', 'ㄱ'],
-    ㅳ: ['ㅂ', 'ㄷ'],
-    ㅴ: ['ㅂ', 'ㅅ', 'ㄱ'],
-    ㅵ: ['ㅂ', 'ㅅ', 'ㄷ'],
-    ㅶ: ['ㅂ', 'ㅈ'],
-    ㅷ: ['ㅂ', 'ㅌ'],
-    ㅺ: ['ㅅ', 'ㄱ'],
-    ㅻ: ['ㅅ', 'ㄴ'],
-    ㅼ: ['ㅅ', 'ㄷ'],
-    ㅽ: ['ㅅ', 'ㅂ'],
-    ㅾ: ['ㅅ', 'ㅈ'],
-    ㆀ: ['ㅇ', 'ㅇ'],
-    ㆂ: ['ㆁ', 'ㅅ'],
-    ㆃ: ['ㆁ', 'ㅿ'],
-    ㆅ: ['ㅎ', 'ㅎ'],
-    ㆇ: ['ㅛ', 'ㅑ'],
-    ㆈ: ['ㅛ', 'ㅒ'],
-    ㆉ: ['ㅛ', 'ㅣ'],
-    ㆊ: ['ㅠ', 'ㅕ'],
-    ㆋ: ['ㅠ', 'ㅖ'],
-    ㆌ: ['ㅠ', 'ㅣ'],
-    ㆎ: ['ㆍ', 'ㅣ'],
-  };
   const jamoExtendedA$1 = {
     ꥠ: ['ㄷ', 'ㅁ'],
     ꥡ: ['ㄷ', 'ㅂ'],
@@ -578,19 +516,16 @@ var Hangul = (function (exports) {
     ￛ: ['ㅡ', 'ㅣ'],
     ￜ: 'ㅣ',
   };
-  const all = Object.assign({}, jamo$1, compatibilityJamo$1, jamoExtendedA$1, jamoExtendedB$1, halfwidth$1);
+  const all = Object.assign({}, jamo$1, jamoExtendedA$1, jamoExtendedB$1, halfwidth$1);
   // * instanceof StandardMapping
 
   // tries to transform everything into disassembled standard hangul
 
   function transformCharacter(val) {
     const char = Character(val);
-    if (hangul.contains(char) && !syllables.contains(char)) {
+    if (!standardHangul.contains(char)) {
       // this if-statement isn't REALLY needed
-      const comp = all[char];
-      if (comp) {
-        return comp;
-      }
+      return all[char] || char;
     }
     return char;
   }
