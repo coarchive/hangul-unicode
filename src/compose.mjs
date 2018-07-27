@@ -30,4 +30,4 @@ export default ((...ary) => {
   }
   return new R(composeSyllableFn(cho, jung, jong), jongRes.remainder);
 });
-// default instanceof ComposeFunction: ...Array[Character] => Result
+// default instanceof ComposeFunction: ...Character => Result
