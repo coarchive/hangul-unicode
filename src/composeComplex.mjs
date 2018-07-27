@@ -4,7 +4,7 @@ import R from './Result';
 
 const getCurrent = objList => (typeof objList[0] === 'string' ? objList[0] : objList[0].$);
 // getCurrent: Array[ComplexMap] => Character
-export default (...objList) => (...ary) => {
+export default (...objList) => (ary) => {
   let objects = objList.slice();
   if (!objects.length) {
     E('composeComplex', 'Cannot compose complex without a list of complex to compose!');
@@ -13,7 +13,11 @@ export default (...objList) => (...ary) => {
   }
   let i = 0;
   let res = '';
+  console.groupCollapsed('composeComplex');
+  console.log(ary);
   while (i < ary.length) {
+    console.log(i);
+    console.log(ary[i]);
     const currentChar = Character(ary[i]);
     const currentObjects = objects.map(obj => obj[currentChar]).filter(v => v);
     if (!currentObjects.length) {
@@ -37,6 +41,7 @@ export default (...objList) => (...ary) => {
       res = getCurrent(currentObjects);
     }
   }
+  console.groupEnd();
   return new R(res, ary.slice(i));
 };
-// default instanceof ComposeFunction: Array[ComplexMap] => ...Array[Character] => Result
+// default instanceof ComposeFunction: Array[ComplexMap] => Array[Character] => Result

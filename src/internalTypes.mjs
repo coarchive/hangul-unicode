@@ -7,7 +7,6 @@ export const E = (group, str, val) => {
 };
 // E: String => String => * => Undefined
 export const Character = (inp) => {
-  console.info(`Verifying Character ${inp}`);
   const str = `${inp}`;
   if (str.length !== 1) {
     E('Character', "Strings longer than one aren't Characters", str, inp);
@@ -22,9 +21,6 @@ export const Character = (inp) => {
 };
 // Character: { Character } from './types'
 export const CharacterGroup = (ary) => {
-  console.groupCollapsed(`Verifying CharacterGroup`);
-  console.log(ary);
-  console.groupEnd();
   if (typeof ary === 'string') {
     let mod;
     if (ary.length > 1) {

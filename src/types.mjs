@@ -8,30 +8,20 @@ export const Character = (val) => {
 };
 // Character: * => String
 export const isCharacterGroup = (val) => {
-  if (val.length > 1) {
-    if (Array.isArray(val)) {
-      return 'array';
-    } if (typeof val === 'string') {
-      return 'string';
-    }
+  if (val.length > 1 && (Array.isArray(val) || typeof val === 'string')) {
+    return true;
   }
   return false;
 };
 // isCharacterGroup: Array | String => String
-class CharacterGroupClass extends Array {
-  constructor(ary) {
-    super();
-
-  }
-}
-export const CharacterGroup = (ary) => {
-  if (typeof ary === 'string') {
-    if (ary.length > 1) {
-      return Array.from(ary);
+export const CharacterGroup = (val) => {
+  if (typeof val === 'string') {
+    if (val.length > 1) {
+      return val;
     }
-    return [Character(ary)];
-  } if (Array.isArray(ary)) {
-    return ary;
+    return [Character(val)];
+  } if (Array.isArray(val)) {
+    return val;
   }
   throw TypeError('A character group must be a String or Array');
 };
