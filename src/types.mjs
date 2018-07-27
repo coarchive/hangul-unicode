@@ -1,4 +1,5 @@
 // this file is for checking types so that Hangul can error correctly
+// all values prefixed by "UP:>" should be using some part of this module
 export const Character = (val) => {
   const str = `${val}`;
   if (str.length !== 1) {
@@ -17,7 +18,7 @@ export const isCharacterGroup = (val) => {
 export const CharacterGroup = (val) => {
   if (typeof val === 'string') {
     if (val.length > 1) {
-      return val;
+      return Array.from(val);
     }
     return [Character(val)];
   } if (Array.isArray(val)) {

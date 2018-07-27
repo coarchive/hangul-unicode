@@ -27,4 +27,4 @@ export default ((choChar, jungChar, jongChar = null) => {
   }
   return composeSyllableFn(cho, jung, jong);
 });
-// public default: String => String => String | Null => String
+// default: UP:>String => UP:>String => UP:>String | Null => String

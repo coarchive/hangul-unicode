@@ -490,7 +490,7 @@ var Hangul = (function (exports) {
   // this file is sure complex...
   // * instanceof ComplexMap
 
-  const E$1 = (group, str, val) => {
+  const E = (group, str, val) => {
     console.groupCollapsed(group);
     console.error(str);
     console.log(val);
@@ -501,7 +501,7 @@ var Hangul = (function (exports) {
   const Character = (inp) => {
     const str = `${inp}`;
     if (str.length !== 1) {
-      E$1('Character', "Strings longer than one aren't Characters", str, inp);
+      E('Character', "Strings longer than one aren't Characters", str, inp);
     } if (str !== inp) {
       console.groupCollapsed('Not Paranoia @ Character');
       console.trace();
@@ -529,7 +529,7 @@ var Hangul = (function (exports) {
     } if (Array.isArray(ary)) {
       return ary;
     }
-    E$1('CharacterGroup', 'A character group must be a String or Array', ary);
+    E('CharacterGroup', 'A character group must be a String or Array', ary);
   };
   // CharacterGroup: { CharacterGroup } from './types'
 
@@ -560,12 +560,12 @@ var Hangul = (function (exports) {
 
   const fn = func => (group) => {
     if (arguments.length > 2) {
-      E$1('assembleCompose', 'assembledComposes does not take more than two arguments!', arguments);
+      E('assembleCompose', 'assembledComposes does not take more than two arguments!', arguments);
     }
     let res;
     // string concatination is faster
     let rem = CharacterGroup(group);
-    if (Array.isArray(rem)) {
+    if (Array.isArray(group)) {
       res = [];
       // if the group is not a String
       const thisFn = fn(func);
@@ -577,7 +577,7 @@ var Hangul = (function (exports) {
       while (rem.length) {
         const comp = func(rem);
         if (!(comp instanceof Result)) {
-          E$1('assembleCompose', 'the ComposeFunction did not return a Result!', comp);
+          E('assembleCompose', 'the ComposeFunction did not return a Result!', comp);
         }
         res.push(comp.result);
         rem = comp.remainder;
@@ -587,7 +587,7 @@ var Hangul = (function (exports) {
       while (rem.length) {
         const comp = func(rem);
         if (!(comp instanceof Result)) {
-          E$1('assembleCompose', 'the ComposeFunction did not return a Result!', comp);
+          E('assembleCompose', 'the ComposeFunction did not return a Result!', comp);
         }
         res += comp.result;
         rem = comp.remainder;
@@ -597,26 +597,35 @@ var Hangul = (function (exports) {
   };
   // fn: ComposeFunction => AssembledComposedFunction => CharacterGroup => Result
 
-  var composeComplex = (...objList) => (ary) => {
-    const obj = Object.apply({}, ...objList);
+  var composeComplex = (...objList) => (group) => {
+    const obj = Object.assign({}, ...objList);
+    let str;
+    if (Array.isArray(group)) {
+      str = group.join('');
+    } else {
+      str = group;
+    }
+    console.log(obj);
+    console.log(str);
     if (!objList.length) {
       E('composeComplex', 'Cannot compose complex without a list of complex to compose!');
-    } if (ary.length < 2) {
-      return new Result(ary[0]);
+    } if (str.length < 2) {
+      return new Result(str[0]);
     }
     let i = 2;
     let res = '';
     while (i < 4) { // complex key length is always a maximum of three unless unicode changes
-      const comp = obj[ary.slice(0, i)];
+      const comp = obj[str.slice(0, i)];
       if (comp) {
         res = Character(comp);
         break;
       }
       i++;
     }
-    return new Result(res, ary.slice(i));
+    console.log(res);
+    return new Result(res, str.slice(i));
   };
-  // default instanceof ComposeFunction: ...ComplexMap => CharacterGroup => Result
+  // default instanceof ComposeFunction: ...ComplexMap => CharacterGroup | String => Result
 
   var composeAnyComplex = (fn(composeComplex(cho, jung, jong, irregular)));
   // default instanceof AssembledComposedFunction: CharacterGroup => Result
@@ -624,7 +633,7 @@ var Hangul = (function (exports) {
   class UnicodeRange {
     constructor(start, end) {
       if (!Number.isInteger(start + end)) {
-        E$1('UnicodeRange', 'Both arguments to the Range constructor must be Integers!', { start, end });
+        E('UnicodeRange', 'Both arguments to the Range constructor must be Integers!', { start, end });
       }
       this.start = start;
       this.end = end;
@@ -642,10 +651,10 @@ var Hangul = (function (exports) {
   class CombinedRange {
     constructor(ranges, codePoints = {}) {
       if (!Array.isArray(ranges)) {
-        E$1('CombinedRange', 'ranges must be an Array!', ranges);
+        E('CombinedRange', 'ranges must be an Array!', ranges);
       }
       if (!codePoints && typeof codePoints !== 'object') {
-        E$1('CombinedRange', 'codePoints must be an Object!', codePoints);
+        E('CombinedRange', 'codePoints must be an Object!', codePoints);
       }
       this.ranges = ranges;
       this.codePoints = codePoints;

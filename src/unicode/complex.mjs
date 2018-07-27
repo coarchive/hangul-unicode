@@ -124,5 +124,4 @@ export const pairs = {
   ㆌ: ['ㅠ', 'ㅣ'],
   ㆎ: ['ㆍ', 'ㅣ'],
 };
-// this file is sure complex...
-// * instanceof ComplexMap
+// * @ComplexMap

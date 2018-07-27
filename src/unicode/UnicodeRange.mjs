@@ -17,7 +17,7 @@ export default class UnicodeRange {
     return this.containsCodePoint(Character(char).codePointAt(0));
   }
 }
-// UnicodeRange { start: Integer, end: integer }
+// UnicodeRange: UI:> Number => UI:> Number => UnicodeRange
 export class CombinedRange {
   constructor(ranges, codePoints = {}) {
     if (!Array.isArray(ranges)) {
@@ -38,4 +38,4 @@ export class CombinedRange {
     );
   }
 }
-// CombinedRange { ranges: Array[Range], codePoints: Object }
+// CombinedRange: UI:>Array => UI:> Object => CombinedRange

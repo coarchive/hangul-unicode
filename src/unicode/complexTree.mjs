@@ -1,3 +1,5 @@
+// this module isn't used anymore but I put so much work into it that
+// I didn't want to delete it. It's not like it causes slowdowns anyways
 export const cho = {
   // the characters that you can type with key + shift
   ㄱ: {

@@ -12,8 +12,8 @@ export function transformCharacter(val) {
   }
   return char;
 }
-// transformCharacter: Character => CharacterGroup
+// transformCharacter: UI:>Character => CharacterGroup
 export default function transform(group) {
   return CharacterGroup(group).map(transformCharacter);
 }
-// transform: CharacterGroup => CharacterGroup
+// transform: UI:>CharacterGroup => CharacterGroup

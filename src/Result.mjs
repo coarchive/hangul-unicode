@@ -1,9 +1,9 @@
-import { CharacterGroup } from './internalTypes';
+import { Character, CharacterGroup } from './internalTypes';
 
 export default class Result {
   constructor(result = '', remainder = []) {
-    this.result = result;
+    this.result = Character(result);
     this.remainder = CharacterGroup(remainder);
   }
 }
-// Result { result: Character, remainder: CharacterGroup }
+// Result: UI:>Character => UI:>CharacterGroup => Result

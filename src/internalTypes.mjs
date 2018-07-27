@@ -1,3 +1,4 @@
+// all values prefixed by "UI:>" should be using some part of this module
 export const E = (group, str, val) => {
   console.groupCollapsed(group);
   console.error(str);

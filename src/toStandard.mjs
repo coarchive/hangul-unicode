@@ -7,10 +7,10 @@ const assembleAnyComplex = assembleCompose(composeAnyComplex);
 export function toStandardCharacter(char) {
   const v = transformCharacter(char);
   if (Array.isArray(v)) {
-    return assembleAnyComplex(v);
+    return composeAnyComplex(v);
   }
   return v;
 }
-// toStandardChar: Character => String
+// toStandardCharacter: UI:>Character => CharacterGroup
 export default (group => CharacterGroup(group).map(toStandardCharacter));
-// public default: CharacterGroup => String
+// default: UP:>CharacterGroup => String

@@ -8,4 +8,4 @@ import assembleCompose from './assembleCompose';
 import composeComplex from './composeComplex';
 
 export default (assembleCompose(composeComplex(cho, jung, jong, irregular)));
-// default instanceof AssembledComposedFunction: CharacterGroup => Result
+// default @AssembledComposedFunction: CharacterGroup => Result

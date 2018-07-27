@@ -15,7 +15,7 @@ export const halfwidth = new UnicodeRange(0xFFA0, 0xFFDF);
   jamoExtendedB,
   halfwidth,
   reserved
-} instanceof Range
+} @Range
 */
 export const reserved = new CombinedRange([
   new UnicodeRange(0xA97D, 0xA97F), // jamoExtendedA
@@ -33,4 +33,4 @@ export const hangul = new CombinedRange([
   halfwidth,
   reserved,
 ]);
-// { reserved, standardHangul, hangul } instanceof CombinedRange
+// { reserved, standardHangul, hangul } @CombinedRange

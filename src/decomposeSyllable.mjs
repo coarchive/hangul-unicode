@@ -16,4 +16,4 @@ export default ((val) => {
   return [cho[choNum], jung[jungNum], jong[jongNum]].filter(v => v);
   // the .filter(v => v) removes blank space in the array
 });
-// public default: Character => CharacterGroup
+// default: UP:>Character => CharacterGroup
