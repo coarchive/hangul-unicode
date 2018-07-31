@@ -10,7 +10,7 @@ const fn = func => (group) => {
   // string concatination is faster
   let rem = CharacterGroup(group);
   if (Array.isArray(group)) {
-    // if the group is not a String
+    // if the group is not a String then there can't be any sub groups
     const thisFn = fn(func);
     let subGroupIdx = rem.findIndex(isCharacterGroup);
     while (~subGroupIdx) {

@@ -1,9 +1,136 @@
 var Hangul = (function (exports) {
   'use strict';
 
+  class CharacterGroup {
+    static isCharacterGroup(val) {
+      // while Characters can be a CharacterGroup this function ignores characters
+      return val.length > 1 && (Array.isArray(val) || typeof val === 'string');
+    }
+
+    constructor(arrayLike, wasArray = Array.isArray(arrayLike)) {
+      // it's not the ChraacterGroup constructor's job to check if everything's
+      // a character. That's delagated to the actual functions that use it.
+      if (wasArray) {
+        this.ary = arrayLike;
+      } else if (typeof arrayLike === 'string') {
+        this.ary = Array.from(arrayLike);
+      } else {
+        throw TypeError('A character group must be a String or Array');
+      }
+      this.wasArray = wasArray;
+    }
+
+    deepMap(func) {
+      const res = [];
+      let rem = this.ary.slice();
+      if (this.wasArray) {
+        // if the group is not a String then there can't be any sub groups
+        let subGroupIdx = rem.findIndex(CharacterGroup.isCharacterGroup);
+        while (subGroupIdx !== -1) { // I could use
+          const group = new CharacterGroup(this.ary[subGroupIdx]);
+          rem.splice(subGroupIdx, 1, ...group.deepMap(func));
+          subGroupIdx = rem.findIndex(CharacterGroup.isCharacterGroup);
+        }
+      }
+      while (rem.length) {
+        const comp = func(rem);
+        // func needs to return a Result like interface for this to work
+        res.push(comp.result);
+        rem = comp.remainder;
+      }
+      if (res.length === 1) {
+        return res[0];
+      }
+      return res;
+    }
+  }
+
+  const cho = {
+    ㄱㄱ: 'ㄲ',
+    ㄷㄷ: 'ㄸ',
+    ㅅㅅ: 'ㅆ',
+    ㅈㅈ: 'ㅉ',
+    ㅂㅂ: 'ㅃ',
+  };
+  const jung = {
+    ㅗㅏ: 'ㅘ',
+    ㅗㅐ: 'ㅙ',
+    ㅗㅣ: 'ㅚ',
+    ㅜㅓ: 'ㅝ',
+    ㅜㅔ: 'ㅞ',
+    ㅜㅣ: 'ㅟ',
+    ㅡㅣ: 'ㅢ',
+  };
+  const jong = {
+    ㄱㄱ: 'ㄲ',
+    ㄱㅅ: 'ㄳ',
+    ㄴㅈ: 'ㄵ',
+    ㄴㅎ: 'ㄶ',
+    ㄹㄱ: 'ㄺ',
+    ㄹㅁ: 'ㄻ',
+    ㄹㅂ: 'ㄼ',
+    ㄹㅅ: 'ㄽ',
+    ㄹㅌ: 'ㄾ',
+    ㄹㅍ: 'ㄿ',
+    ㄹㅎ: 'ㅀ',
+    ㅂㅅ: 'ㅄ',
+    ㅅㅅ: 'ㅆ',
+  };
+  const irregular = {
+    ㄴㄴ: 'ㅥ',
+    ㄴㄷ: 'ㅦ',
+    ㄴㅅ: 'ㅧ',
+    ㄴㅿ: 'ㅨ',
+    ㄹㄱㅅ: 'ㅩ',
+    ㄹㄷ: 'ㅪ',
+    ㄹㅂㅅ: 'ㅫ',
+    ㄹㅿ: 'ㅬ',
+    ㄹㆆ: 'ㅭ',
+    ㅁㅂ: 'ㅮ',
+    ㅁㅅ: 'ㅯ',
+    ㅁㅿ: 'ㅰ',
+    ㅂㄱ: 'ㅲ',
+    ㅂㄷ: 'ㅳ',
+    ㅂㅅㄱ: 'ㅴ',
+    ㅂㅅㄷ: 'ㅵ',
+    ㅂㅈ: 'ㅶ',
+    ㅂㅌ: 'ㅷ',
+    ㅅㄱ: 'ㅺ',
+    ㅅㄴ: 'ㅻ',
+    ㅅㄷ: 'ㅼ',
+    ㅅㅂ: 'ㅽ',
+    ㅅㅈ: 'ㅾ',
+    ㅇㅇ: 'ㆀ',
+    ㆁㅅ: 'ㆁ',
+    ㆁㅿ: 'ㅿ',
+    ㅎㅎ: 'ㆅ',
+    ㅛㅑ: 'ㆇ',
+    ㅛㅒ: 'ㆈ',
+    ㅛㅣ: 'ㆉ',
+    ㅠㅕ: 'ㆊ',
+    ㅠㅖ: 'ㆋ',
+    ㅠㅣ: 'ㆌ',
+    ㆍㅣ: 'ㆎ',
+  };
+  const all = Object.assign({}, cho, jung, jong, irregular);
+
+  // CombinedRange: T:>Array => T:> Object => CombinedRange
+
+  // { reserved, standardHangul, hangul } @CombinedRange
+
+  // default: T:>Integer, T:>Integer [, T:>Integer] => Character
+
+  class Result {
+    constructor(result = '', remainder = []) {
+      this.result = result;
+      this.remainder = remainder;
+    }
+  }
+  // Result: T:>Character => T:>CharacterGroup => Result
+
   // if you're gonna copy this part, at least give me credit.
   // I had to do all of this manually.
-  const jamo = {
+  const jamo$1 = {
     ᄀ: 'ㄱ',
     ᄁ: ['ㄱ', 'ㄱ'],
     ᄂ: 'ㄴ',
@@ -259,7 +386,7 @@ var Hangul = (function (exports) {
     ᇾ: ['ㄱ', 'ㅎ'],
     ᇿ: ['ㄴ', 'ㄴ'],
   };
-  const jamoExtendedA = {
+  const jamoExtendedA$1 = {
     ꥠ: ['ㄷ', 'ㅁ'],
     ꥡ: ['ㄷ', 'ㅂ'],
     ꥢ: ['ㄷ', 'ㅅ'],
@@ -290,7 +417,7 @@ var Hangul = (function (exports) {
     ꥻ: ['ㅎ', 'ㅅ'],
     ꥼ: ['ㆆ', 'ㆆ'],
   };
-  const jamoExtendedB = {
+  const jamoExtendedB$1 = {
     ힰ: ['ㅗ', 'ㅕ'],
     ힱ: ['ㅗ', 'ㅗ', 'ㅣ'],
     ힲ: ['ㅛ', 'ㅏ'],
@@ -364,7 +491,7 @@ var Hangul = (function (exports) {
     ퟺ: ['ㅍ', 'ㅅ'],
     ퟻ: ['ㅍ', 'ㅌ'],
   };
-  const halfwidth = {
+  const halfwidth$1 = {
     ﾡ: 'ㄱ',
     ﾢ: ['ㄱ', 'ㄱ'],
     ﾣ: ['ㄱ', 'ㅅ'],
@@ -417,350 +544,46 @@ var Hangul = (function (exports) {
     ￛ: ['ㅡ', 'ㅣ'],
     ￜ: 'ㅣ',
   };
-  const all = Object.assign({}, jamo, jamoExtendedA, jamoExtendedB, halfwidth);
-  // * instanceof StandardMapping
-
-  const cho = {
-    ㄱㄱ: 'ㄲ',
-    ㄷㄷ: 'ㄸ',
-    ㅅㅅ: 'ㅆ',
-    ㅈㅈ: 'ㅉ',
-    ㅂㅂ: 'ㅃ',
-  };
-  const jung = {
-    ㅗㅏ: 'ㅘ',
-    ㅗㅐ: 'ㅙ',
-    ㅗㅣ: 'ㅚ',
-    ㅜㅓ: 'ㅝ',
-    ㅜㅔ: 'ㅞ',
-    ㅜㅣ: 'ㅟ',
-    ㅡㅣ: 'ㅢ',
-  };
-  const jong = {
-    ㄱㄱ: 'ㄲ',
-    ㄱㅅ: 'ㄳ',
-    ㄴㅈ: 'ㄵ',
-    ㄴㅎ: 'ㄶ',
-    ㄹㄱ: 'ㄺ',
-    ㄹㅁ: 'ㄻ',
-    ㄹㅂ: 'ㄼ',
-    ㄹㅅ: 'ㄽ',
-    ㄹㅌ: 'ㄾ',
-    ㄹㅍ: 'ㄿ',
-    ㄹㅎ: 'ㅀ',
-    ㅂㅅ: 'ㅄ',
-    ㅅㅅ: 'ㅆ',
-  };
-  const irregular = {
-    ㄴㄴ: 'ㅥ',
-    ㄴㄷ: 'ㅦ',
-    ㄴㅅ: 'ㅧ',
-    ㄴㅿ: 'ㅨ',
-    ㄹㄱㅅ: 'ㅩ',
-    ㄹㄷ: 'ㅪ',
-    ㄹㅂㅅ: 'ㅫ',
-    ㄹㅿ: 'ㅬ',
-    ㄹㆆ: 'ㅭ',
-    ㅁㅂ: 'ㅮ',
-    ㅁㅅ: 'ㅯ',
-    ㅁㅿ: 'ㅰ',
-    ㅂㄱ: 'ㅲ',
-    ㅂㄷ: 'ㅳ',
-    ㅂㅅㄱ: 'ㅴ',
-    ㅂㅅㄷ: 'ㅵ',
-    ㅂㅈ: 'ㅶ',
-    ㅂㅌ: 'ㅷ',
-    ㅅㄱ: 'ㅺ',
-    ㅅㄴ: 'ㅻ',
-    ㅅㄷ: 'ㅼ',
-    ㅅㅂ: 'ㅽ',
-    ㅅㅈ: 'ㅾ',
-    ㅇㅇ: 'ㆀ',
-    ㆁㅅ: 'ㆁ',
-    ㆁㅿ: 'ㅿ',
-    ㅎㅎ: 'ㆅ',
-    ㅛㅑ: 'ㆇ',
-    ㅛㅒ: 'ㆈ',
-    ㅛㅣ: 'ㆉ',
-    ㅠㅕ: 'ㆊ',
-    ㅠㅖ: 'ㆋ',
-    ㅠㅣ: 'ㆌ',
-    ㆍㅣ: 'ㆎ',
-  };
-  // this file is sure complex...
-  // * instanceof ComplexMap
-
-  const E = (group, str, val) => {
-    console.groupCollapsed(group);
-    console.error(str);
-    console.log(val);
-    console.groupEnd();
-    throw Error(`Critical Stop @ ${group}`);
-  };
-  // E: String => String => * => Undefined
-  const Character = (inp) => {
-    const str = `${inp}`;
-    if (str.length !== 1) {
-      E('Character', "Strings longer than one aren't Characters", str, inp);
-    } if (str !== inp) {
-      console.groupCollapsed('Not Paranoia @ Character');
-      console.trace();
-      console.warn("It's not paranoia, calls to internalTypes are changing things!");
-      console.table({ original: { value: inp }, modified: { value: str } });
-      console.groupEnd();
-    }
-    return str;
-  };
-  // Character: { Character } from './types'
-  const CharacterGroup = (ary) => {
-    if (typeof ary === 'string') {
-      let mod;
-      if (ary.length > 1) {
-        mod = Array.from(ary);
-      } else {
-        mod = [Character(ary)];
-      }
-      console.groupCollapsed('Not Paranoia @ CharacterGroup');
-      console.trace();
-      console.warn("It's not paranoia, calls to internalTypes are changing things!");
-      console.table({ original: { value: ary }, modified: { value: mod } });
-      console.groupEnd();
-      return mod;
-    } if (Array.isArray(ary)) {
-      return ary;
-    }
-    E('CharacterGroup', 'A character group must be a String or Array', ary);
-  };
-  // CharacterGroup: { CharacterGroup } from './types'
-
-  class Result {
-    constructor(result = '', remainder = []) {
-      this.result = result;
-      this.remainder = CharacterGroup(remainder);
-    }
-  }
-  // Result { result: Character, remainder: CharacterGroup }
-
-  // this file is for checking types so that Hangul can error correctly
-  const Character$1 = (val) => {
-    const str = `${val}`;
-    if (str.length !== 1) {
-      throw Error("Strings longer than one aren't Characters");
-    }
-    return str;
-  };
-  // Character: * => String
-  const isCharacterGroup = (val) => {
-    if (val.length > 1 && (Array.isArray(val) || typeof val === 'string')) {
-      return true;
-    }
-    return false;
-  };
-  // CharacterGroup * => Array
-
-  const fn = func => (group) => {
-    if (arguments.length > 2) {
-      E('assembleCompose', 'assembledComposes does not take more than two arguments!', arguments);
-    }
-    let res;
-    // string concatination is faster
-    let rem = CharacterGroup(group);
-    if (Array.isArray(group)) {
-      res = [];
-      // if the group is not a String
-      const thisFn = fn(func);
-      let subGroupIdx = rem.findIndex(isCharacterGroup);
-      while (~subGroupIdx) {
-        rem.splice(subGroupIdx, 1, ...thisFn(group[subGroupIdx]));
-        subGroupIdx = rem.findIndex(isCharacterGroup);
-      }
-      while (rem.length) {
-        const comp = func(rem);
-        if (!(comp instanceof Result)) {
-          E('assembleCompose', 'the ComposeFunction did not return a Result!', comp);
-        }
-        res.push(comp.result);
-        rem = comp.remainder;
-      }
-    } else {
-      res = '';
-      while (rem.length) {
-        const comp = func(rem);
-        if (!(comp instanceof Result)) {
-          E('assembleCompose', 'the ComposeFunction did not return a Result!', comp);
-        }
-        res += comp.result;
-        rem = comp.remainder;
-      }
-    }
-    return res;
-  };
-  // fn: ComposeFunction => AssembledComposedFunction => CharacterGroup => Result
-
-  var composeComplex = (...objList) => (group) => {
-    const obj = Object.assign({}, ...objList);
-    let str;
-    if (Array.isArray(group)) {
-      str = group.join('');
-    } else {
-      str = group;
-    }
-    console.log(obj);
-    console.log(str);
-    if (!objList.length) {
-      E('composeComplex', 'Cannot compose complex without a list of complex to compose!');
-    } if (str.length < 2) {
-      return new Result(str[0]);
-    }
-    let i = 2;
-    let res = '';
-    while (i < 4) { // complex key length is always a maximum of three unless unicode changes
-      const comp = obj[str.slice(0, i)];
-      if (comp) {
-        res = Character(comp);
-        break;
-      }
-      i++;
-    }
-    console.log(res);
-    return new Result(res, str.slice(i));
-  };
-  // default instanceof ComposeFunction: ...ComplexMap => CharacterGroup | String => Result
-
-  var composeAnyComplex = (fn(composeComplex(cho, jung, jong, irregular)));
-  // default instanceof AssembledComposedFunction: CharacterGroup => Result
-
-  class UnicodeRange {
-    constructor(start, end) {
-      if (!Number.isInteger(start + end)) {
-        E('UnicodeRange', 'Both arguments to the Range constructor must be Integers!', { start, end });
-      }
-      this.start = start;
-      this.end = end;
-    }
-
-    containsCodePoint(num) {
-      return num >= this.start && num <= this.end;
-    }
-
-    contains(char) {
-      return this.containsCodePoint(Character(char).codePointAt(0));
-    }
-  }
-  // UnicodeRange { start: Integer, end: integer }
-  class CombinedRange {
-    constructor(ranges, codePoints = {}) {
-      if (!Array.isArray(ranges)) {
-        E('CombinedRange', 'ranges must be an Array!', ranges);
-      }
-      if (!codePoints && typeof codePoints !== 'object') {
-        E('CombinedRange', 'codePoints must be an Object!', codePoints);
-      }
-      this.ranges = ranges;
-      this.codePoints = codePoints;
-    }
-
-    contains(char) {
-      const num = Character(char).codePointAt(0);
-      return (
-        (this.codePoints && this.codePoints[char])
-        || this.ranges.some(range => range.containsCodePoint(num))
-      );
-    }
-  }
-  // CombinedRange { ranges: Array[Range], codePoints: Object }
-
-  const jamo$1 = new UnicodeRange(0x1100, 0x11FF);
-  const compatibilityJamo = new UnicodeRange(0x3130, 0x318F);
-  const jamoExtendedA$1 = new UnicodeRange(0xA960, 0xA97F);
-  const syllables = new UnicodeRange(0xAC00, 0xD7AF);
-  const jamoExtendedB$1 = new UnicodeRange(0xD7B0, 0xD7FF);
-  const halfwidth$1 = new UnicodeRange(0xFFA0, 0xFFDF);
-  /*
-  {
-    jamo,
-    compatibilityJamo,
-    jamoExtendedA,
-    syllables,
-    jamoExtendedB,
-    halfwidth,
-    reserved
-  } instanceof Range
-  */
-  const reserved = new CombinedRange([
-    new UnicodeRange(0xA97D, 0xA97F), // jamoExtendedA
-    new UnicodeRange(0xD7A4, 0xD7AF), // syllables
-    new UnicodeRange(0xD7C7, 0xD7CA), // jamoExtendedB
-    new UnicodeRange(0xD7FC, 0xD7FF), // jamoExtendedB
-  ], { 0x3130: 1, 0x318F: 1 });
-  const standardHangul = new CombinedRange([compatibilityJamo, syllables]);
-  const hangul = new CombinedRange([
-    jamo$1,
-    compatibilityJamo,
-    jamoExtendedA$1,
-    syllables,
-    jamoExtendedB$1,
-    halfwidth$1,
-    reserved,
-  ]);
-  // { reserved, standardHangul, hangul } instanceof CombinedRange
-
-  const cho$1 = [
-    'ㄱ', 'ㄲ', 'ㄴ', 'ㄷ', 'ㄸ', 'ㄹ', 'ㅁ',
-    'ㅂ', 'ㅃ', 'ㅅ', 'ㅆ', 'ㅇ', 'ㅈ', 'ㅉ',
-    'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ',
-  ];
-  const jung$1 = [
-    'ㅏ', 'ㅐ', 'ㅑ', 'ㅒ', 'ㅓ', 'ㅔ', 'ㅕ',
-    'ㅖ', 'ㅗ', 'ㅘ', 'ㅙ', 'ㅚ', 'ㅛ', 'ㅜ',
-    'ㅝ', 'ㅞ', 'ㅟ', 'ㅠ', 'ㅡ', 'ㅢ', 'ㅣ',
-  ];
-  const jong$1 = [
-    null, 'ㄱ', 'ㄲ', 'ㄳ', 'ㄴ', 'ㄵ', 'ㄶ',
-    'ㄷ', 'ㄹ', 'ㄺ', 'ㄻ', 'ㄼ', 'ㄽ', 'ㄾ',
-    'ㄿ', 'ㅀ', 'ㅁ', 'ㅂ', 'ㅄ', 'ㅅ', 'ㅆ',
-    'ㅇ', 'ㅈ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ',
-  ];
-
-  var decomposeSyllable = ((val) => {
-    const char = Character$1(val);
-    if (!syllables.contains(char)) {
-      throw Error('Decomposing a syllable requires a syllable to decompose!');
-    }
-    const code = char.codePointAt(0) - syllables.start;
-    const jongNum$$1 = code % 28;
-    const q = (code - jongNum$$1) / 28;
-    const jungNum$$1 = q % 21;
-    const choNum$$1 = 0 | q / 21; // basically Math.floor(q / 21)
-    return [cho$1[choNum$$1], jung$1[jungNum$$1], jong$1[jongNum$$1]].filter(v => v);
-    // the .filter(v => v) removes blank space in the array
-  });
-  // public default: Character => CharacterGroup
+  const all$1 = Object.assign({}, jamo$1, jamoExtendedA$1, jamoExtendedB$1, halfwidth$1);
+  // * @StandardMapping
 
   // tries to transform everything into disassembled standard hangul
+  // transformCharacter: T:>Character => CharacterGroup
 
-  function transformCharacter(val) {
-    const char = Character(val);
-    if (!standardHangul.contains(char)) {
-      // this if-statement isn't REALLY needed
-      return all[char] || char;
+  const composeComplex = (...objList) => (ary) => {
+    const obj = Object.assign({}, ...objList);
+    // const str = ary.map(transformAll).flat().join('');
+    const str = ary.join();
+    console.log(str);
+    if (str.length < 2) {
+      return new Result(str[0]);
     }
-    return char;
-  }
-  // transformCharacter: Character => CharacterGroup
-  function transform(group) {
-    return CharacterGroup(group).map(transformCharacter);
-  }
-  // transform: CharacterGroup => CharacterGroup
+    const comp2 = obj[str.slice(0, 2)];
+    if (comp2) {
+      const comp3 = obj[str.slice(0, 3)];
+      if (comp3) {
+        return new Result(comp3, str.slice(3));
+      }
+      return new Result(comp2, str.slice(2));
+    }
+    return new Result(str);
+  };
+  //
+  const composeAnyComplex = composeComplex(
+    cho,
+    jung,
+    jong,
+    irregular,
+  );
+  // default @ComposeFunction: ...Character => Result
 
-  const str = Object.keys(all).join``;
+  // export { default as decomposeSyllable } from './decomposeSyllable';
+  // new Hangul.CharacterGroup(['ㄱㄱ', ['ㄹ', 'ㄱ']]).deepMap(Hangul.composeAnyComplex)
+  // code to run tomorrow ^
 
-  exports.str = str;
-  exports.composeAnyComplex = composeAnyComplex;
-  exports.decomposeSyllable = decomposeSyllable;
-  exports.Character = Character;
   exports.CharacterGroup = CharacterGroup;
-  exports.transform = transform;
+  exports.composeComplex = composeComplex;
+  exports.composeAnyComplex = composeAnyComplex;
 
   return exports;
 

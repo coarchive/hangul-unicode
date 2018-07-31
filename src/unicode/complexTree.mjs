@@ -1,5 +1,4 @@
-// this module isn't used anymore but I put so much work into it that
-// I didn't want to delete it. It's not like it causes slowdowns anyways
+// Yes, all of this, just to give nice error messages
 export const cho = {
   // the characters that you can type with key + shift
   ㄱ: {
@@ -150,6 +149,106 @@ export const irregular = {
   },
   ㆍ: {
     $: 'ㆍ',
+    ㅣ: 'ㆎ',
+  },
+};
+// all is the only one of these that's actually used
+export const all = {
+  ㄱ: {
+    ㄱ: 'ㄲ',
+    ㅅ: 'ㄳ',
+  },
+  ㄷ: {
+    ㄷ: 'ㄸ',
+  },
+  ㅅ: {
+    ㅅ: 'ㅆ',
+    ㄱ: 'ㅺ',
+    ㄴ: 'ㅻ',
+    ㄷ: 'ㅼ',
+    ㅂ: 'ㅽ',
+    ㅈ: 'ㅾ',
+  },
+  ㅈ: {
+    ㅈ: 'ㅉ',
+  },
+  ㅂ: {
+    ㅂ: 'ㅃ',
+    ㅅ: {
+      $: 'ㅄ',
+      ㄱ: 'ㅴ',
+      ㄷ: 'ㅵ',
+    },
+    ㄱ: 'ㅲ',
+    ㄷ: 'ㅳ',
+    ㅈ: 'ㅶ',
+    ㅌ: 'ㅷ',
+  },
+  ㅗ: {
+    ㅏ: 'ㅘ',
+    ㅐ: 'ㅙ',
+    ㅣ: 'ㅚ',
+  },
+  ㅜ: {
+    ㅓ: 'ㅝ',
+    ㅔ: 'ㅞ',
+    ㅣ: 'ㅟ',
+  },
+  ㅡ: {
+    ㅣ: 'ㅢ',
+  },
+  ㄴ: {
+    ㅈ: 'ㄵ',
+    ㅎ: 'ㄶ',
+    ㄴ: 'ㅥ',
+    ㄷ: 'ㅦ',
+    ㅅ: 'ㅧ',
+    ㅿ: 'ㅨ',
+  },
+  ㄹ: {
+    ㄱ: {
+      $: 'ㄺ',
+      ㅅ: 'ㅩ',
+    },
+    ㅁ: 'ㄻ',
+    ㅂ: {
+      $: 'ㄼ',
+      ㅅ: 'ㅫ',
+    },
+    ㅅ: 'ㄽ',
+    ㅌ: 'ㄾ',
+    ㅍ: 'ㄿ',
+    ㅎ: 'ㅀ',
+    ㄷ: 'ㅪ',
+    ㅿ: 'ㅬ',
+    ㆆ: 'ㅭ',
+  },
+  ㅁ: {
+    ㅂ: 'ㅮ',
+    ㅅ: 'ㅯ',
+    ㅿ: 'ㅰ',
+  },
+  ㅇ: {
+    ㅇ: 'ㆀ',
+  },
+  ㆁ: {
+    ㅅ: 'ㆁ',
+    ㅿ: 'ㅿ',
+  },
+  ㅎ: {
+    ㅎ: 'ㆅ',
+  },
+  ㅛ: {
+    ㅑ: 'ㆇ',
+    ㅒ: 'ㆈ',
+    ㅣ: 'ㆉ',
+  },
+  ㅠ: {
+    ㅕ: 'ㆊ',
+    ㅖ: 'ㆋ',
+    ㅣ: 'ㆌ',
+  },
+  ㆍ: {
     ㅣ: 'ㆎ',
   },
 };

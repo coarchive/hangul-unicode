@@ -1,7 +1,8 @@
-import mappings from './unicode/mappings';
-
-export const str = Object.keys(mappings).join``;
-export { default as composeAnyComplex } from './composeAnyComplex';
-export { default as decomposeSyllable } from './decomposeSyllable';
-export { Character, CharacterGroup } from './internalTypes';
-export { default as transform } from './transformer';
+// export { default as decomposeSyllable } from './decomposeSyllable';
+// export { Character, EnforceArray } from './internalTypes';
+// export { complex as composeComplex, syllable as composeSyllable } from './publicCompose';
+// export { default as transform } from './transformer';
+export { CharacterGroup } from './types';
+export { composeComplex, composeAnyComplex } from './compose';
+// new Hangul.CharacterGroup(['ㄱㄱ', ['ㄹ', 'ㄱ']]).deepMap(Hangul.composeAnyComplex)
+// code to run tomorrow ^
