@@ -530,6 +530,23 @@ var Hangul = (function (exports) {
   var transformCharacter = (char => (!standardHangul.contains(char) && all$1[char]) || char);
   // transformCharacter: T:>Character => CharacterGroup
 
+  const cho$1 = [
+    'ㄱ', 'ㄲ', 'ㄴ', 'ㄷ', 'ㄸ', 'ㄹ', 'ㅁ',
+    'ㅂ', 'ㅃ', 'ㅅ', 'ㅆ', 'ㅇ', 'ㅈ', 'ㅉ',
+    'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ',
+  ];
+  const jung$1 = [
+    'ㅏ', 'ㅐ', 'ㅑ', 'ㅒ', 'ㅓ', 'ㅔ', 'ㅕ',
+    'ㅖ', 'ㅗ', 'ㅘ', 'ㅙ', 'ㅚ', 'ㅛ', 'ㅜ',
+    'ㅝ', 'ㅞ', 'ㅟ', 'ㅠ', 'ㅡ', 'ㅢ', 'ㅣ',
+  ];
+  const jong$1 = [
+    null, 'ㄱ', 'ㄲ', 'ㄳ', 'ㄴ', 'ㄵ', 'ㄶ',
+    'ㄷ', 'ㄹ', 'ㄺ', 'ㄻ', 'ㄼ', 'ㄽ', 'ㄾ',
+    'ㄿ', 'ㅀ', 'ㅁ', 'ㅂ', 'ㅄ', 'ㅅ', 'ㅆ',
+    'ㅇ', 'ㅈ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ',
+  ];
+
   // default: T:>Integer, T:>Integer [, T:>Integer] => Character
 
   class Result {
@@ -604,6 +621,7 @@ var Hangul = (function (exports) {
     jong,
     irregular,
   );
+  const composeComplexChoBase = composeComplex(cho);
   const composeAnyComplex = ary => deepFlatMap(ary, composeAnyComplexBase);
   // default @ComposeFunction: ...Character => Result
 
@@ -619,10 +637,29 @@ var Hangul = (function (exports) {
   var standardize = (group => noResDeepFlatMap(group, standardizeCharacter));
   // default: UP:>CharacterGroup => String
 
+  var decomposeSyllable = ((val, hardFail) => {
+    const char = Character(val);
+    if (!syllables.contains(char)) {
+      if (hardFail) {
+        throw Error('Decomposing a syllable requires a syllable to decompose!');
+      }
+      return val;
+    }
+    const code = char.codePointAt(0) - syllables.start;
+    const jongNum$$1 = code % 28;
+    const q = (code - jongNum$$1) / 28;
+    const jungNum$$1 = q % 21;
+    const choNum$$1 = 0 | q / 21; // basically Math.floor(q / 21)
+    return [cho$1[choNum$$1], jung$1[jungNum$$1], jong$1[jongNum$$1]].filter(v => v);
+    // the .filter(v => v) removes blank space in the array
+  });
+  // default: UP:>Character => CharacterGroup
+
   exports.standardize = standardize;
   exports.deepFlatMap = deepFlatMap;
   exports.composeComplex = composeComplex;
   exports.composeAnyComplex = composeAnyComplex;
+  exports.decomposeSyllable = decomposeSyllable;
 
   return exports;
 

@@ -2,7 +2,7 @@ import * as complex from './unicode/complex';
 import { choNum, jungNum, jongNum } from './unicode/syllable';
 import composeSyllableFn from './composeSyllable';
 import R from './Result';
-import { deepFlatMap } from './types';
+import { deepFlatResMap } from './types';
 
 export const composeComplex = (...objList) => {
   const obj = Object.assign({}, ...objList);
@@ -28,8 +28,9 @@ const composeAnyComplexBase = composeComplex(
   complex.jong,
   complex.irregular,
 );
-export const composeAnyComplex = ary => deepFlatMap(ary, composeAnyComplexBase);
-
+const composeComplexChoBase = composeComplex(complex.cho);
+export const composeAnyComplex = ary => deepFlatResMap(ary, composeAnyComplexBase);
+export const composeComplexCho = ary => deepFlatResMap(ary, composeComplexChoBase);
 export const composeSyllable = (ary) => {
   if (ary.length < 2) {
     return new R(ary[0]);

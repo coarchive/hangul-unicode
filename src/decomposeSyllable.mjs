@@ -3,10 +3,13 @@ import { syllables } from './unicode/blocks';
 import { cho, jung, jong } from './unicode/syllable';
 
 
-export default ((val) => {
+export default ((val, hardFail) => {
   const char = Character(val);
   if (!syllables.contains(char)) {
-    throw Error('Decomposing a syllable requires a syllable to decompose!');
+    if (hardFail) {
+      throw Error('Decomposing a syllable requires a syllable to decompose!');
+    }
+    return val;
   }
   const code = char.codePointAt(0) - syllables.start;
   const jongNum = code % 28;

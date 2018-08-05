@@ -1,7 +1,6 @@
 import transformCharacter from './transform';
 import { composeAnyComplex } from './compose';
-import { Character, noResDeepFlatMap } from './types';
-import R from './Result';
+import { Character, deepFlatMap } from './types';
 
 export function standardizeCharacter(val) {
   const v = transformCharacter(Character(val));
@@ -12,5 +11,5 @@ export function standardizeCharacter(val) {
 }
 // standardizeCharacter: TI:>Character => CharacterGroup
 
-export default (group => noResDeepFlatMap(group, standardizeCharacter));
+export default (group => deepFlatMap(group, standardizeCharacter));
 // default: UP:>CharacterGroup => String

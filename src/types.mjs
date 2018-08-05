@@ -14,7 +14,7 @@ export const deepMap = (ary, func) => (
     isCharacterGroup(val) ? deepMap(val, func) : func(val)
   ))
 );
-export const deepFlatMap = (data, func) => {
+export const deepFlatResMap = (data, func) => {
   let res = ''; // changing this to an array makes the entire thing not flat
   // of course, the concatination in the while loop would need to be changed
   // too, but it's neat how a change in a data type makes changes this dramatic
@@ -23,7 +23,7 @@ export const deepFlatMap = (data, func) => {
   if (Array.isArray(data)) {
     rem = data.map((val) => {
       if (isCharacterGroup(val)) {
-        return deepFlatMap(val, func);
+        return deepFlatResMap(val, func);
       }
       return val;
     });
@@ -38,7 +38,7 @@ export const deepFlatMap = (data, func) => {
   }
   return res;
 };
-export const noResDeepFlatMap = (data, func) => {
+export const deepFlatMap = (data, func) => {
   let res = '';
   toArray(data).forEach(val => res += isCharacterGroup(val) ? noResDeepFlatMap(val) : func(val));
   return res;
