@@ -6,29 +6,29 @@ export const Character = (val) => {
   }
   return str;
 };
+const toArray = aryOrStr => (Array.isArray(aryOrStr) ? aryOrStr : aryOrStr.split(''));
 export const isCharacterGroup = val => val.length > 1 && (Array.isArray(val) || typeof val === 'string');
 // while Characters can be a CharacterGroup, this function ignores characters
-export const deepMap = (aryOrStr, func) => (
-  (Array.isArray(aryOrStr) ? aryOrStr : aryOrStr.split(''))
-    .map(val => (
-      isCharacterGroup(val) ? deepMap(val, func) : func(val)
-    ))
+export const deepMap = (ary, func) => (
+  toArray(ary).map(val => (
+    isCharacterGroup(val) ? deepMap(val, func) : func(val)
+  ))
 );
-export const deepFlatMap = (aryOrStr, func) => {
+export const deepFlatMap = (data, func) => {
   let res = ''; // changing this to an array makes the entire thing not flat
   // of course, the concatination in the while loop would need to be changed
   // too, but it's neat how a change in a data type makes changes this dramatic
   let rem;
   // if the group is not a String then there can't be any sub groups
-  if (Array.isArray(aryOrStr)) {
-    rem = aryOrStr.map((val) => {
+  if (Array.isArray(data)) {
+    rem = data.map((val) => {
       if (isCharacterGroup(val)) {
         return deepFlatMap(val, func);
       }
       return val;
     });
   } else {
-    rem = aryOrStr.split('');
+    rem = data.split('');
   }
   while (rem.length) {
     const comp = func(rem);
@@ -36,5 +36,10 @@ export const deepFlatMap = (aryOrStr, func) => {
     res += comp.result;
     rem = comp.remainder;
   }
+  return res;
+};
+export const noResDeepFlatMap = (data, func) => {
+  let res = '';
+  toArray(data).forEach(val => res += isCharacterGroup(val) ? noResDeepFlatMap(val) : func(val));
   return res;
 };
