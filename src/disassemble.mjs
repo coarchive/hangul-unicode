@@ -15,4 +15,3 @@ function disassembleCharacter(char) {
   return res;
 }
 export default ((data, grouped) => (grouped ? deepMap : deepFlatMap)(data, disassembleCharacter));
-// default: UP:>CharacterGroup => TP:>Boolean => TP:>Boolean => CharacterGroup

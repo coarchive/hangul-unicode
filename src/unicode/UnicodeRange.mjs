@@ -12,7 +12,6 @@ export default class UnicodeRange {
     return this.containsCodePoint(char.codePointAt(0));
   }
 }
-// UnicodeRange: T:> Number => T:> Number => UnicodeRange
 export class CombinedRange {
   constructor(ranges, codePoints = {}) {
     this.ranges = ranges;
@@ -27,4 +26,3 @@ export class CombinedRange {
     );
   }
 }
-// CombinedRange: T:>Array => T:> Object => CombinedRange

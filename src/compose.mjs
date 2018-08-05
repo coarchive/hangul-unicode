@@ -55,4 +55,3 @@ export const composeSyllable = (ary) => {
   }
   return new R(composeSyllableFn(cho, jung, jong), jongRes.remainder);
 };
-// default @ComposeFunction: ...Character => Result

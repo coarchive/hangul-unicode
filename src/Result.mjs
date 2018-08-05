@@ -4,4 +4,3 @@ export default class Result {
     this.remainder = remainder;
   }
 }
-// Result: T:>Character => T:>CharacterGroup => Result

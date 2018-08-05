@@ -66,8 +66,6 @@ export const irregular = {
   ㆍㅣ: 'ㆎ',
 };
 export const all = Object.assign({}, cho, jung, jong, irregular);
-// { cho, jung, jong, all } @ComplexMap
-
 export const pairs = {
   ㄲ: ['ㄱ', 'ㄱ'],
   ㄳ: ['ㄱ', 'ㅅ'],

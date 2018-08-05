@@ -9,7 +9,4 @@ export function standardizeCharacter(val) {
   }
   return v;
 }
-// standardizeCharacter: TI:>Character => CharacterGroup
-
 export default (group => deepFlatMap(group, standardizeCharacter));
-// default: UP:>CharacterGroup => String

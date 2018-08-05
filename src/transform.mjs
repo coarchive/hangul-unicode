@@ -6,4 +6,3 @@ import mappings from './unicode/mappings';
 
 export default (char => (!standardHangul.contains(char) && mappings[char]) || char);
 export const transformEverything = char => (standardHangul.contains(char) ? pairs : mappings)[char] || char;
-// transformCharacter: T:>Character => CharacterGroup

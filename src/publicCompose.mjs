@@ -35,7 +35,6 @@ export const complex = (first, second, third = '', hardFail) => {
   }
   return obj.$;
 };
-complex.displayName = '[Hangul.composeComplex]';
 export const syllable = (choChar, jungChar, jongChar = '', hardFail) => {
   const choT = transform(Character(choChar));
   const cho = choNum[transform(choChar)];
@@ -61,5 +60,3 @@ export const syllable = (choChar, jungChar, jongChar = '', hardFail) => {
   }
   return composeSyllable(cho, jung, jong);
 };
-syllable.displayName = '[Hangul.composeSyllable]';
-// default: UP:>Character, UP:>Character [, UP:>Character] => String

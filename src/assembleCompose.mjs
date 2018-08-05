@@ -32,5 +32,3 @@ const fn = func => (group) => {
   return res;
 };
 export default (fn);
-// fn: T:>ComposeFunction => AssembledComposedFunction
-// AssembledComposedFunction: UI:> CharacterGroup => Result

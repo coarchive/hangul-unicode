@@ -15,7 +15,6 @@ var Hangul = (function (exports) {
       return this.containsCodePoint(char.codePointAt(0));
     }
   }
-  // UnicodeRange: T:> Number => T:> Number => UnicodeRange
   class CombinedRange {
     constructor(ranges, codePoints = {}) {
       this.ranges = ranges;
@@ -30,12 +29,10 @@ var Hangul = (function (exports) {
       );
     }
   }
-  // CombinedRange: T:>Array => T:> Object => CombinedRange
 
   const compatibilityJamo = new UnicodeRange(0x3130, 0x318F);
   const syllables = new UnicodeRange(0xAC00, 0xD7AF);
   const standardHangul = new CombinedRange([compatibilityJamo, syllables]);
-  // { reserved, standardHangul, hangul } @CombinedRange
 
   const cho = {
     ㄱㄱ: 'ㄲ',
@@ -105,8 +102,6 @@ var Hangul = (function (exports) {
     ㆍㅣ: 'ㆎ',
   };
   const all = Object.assign({}, cho, jung, jong, irregular);
-  // { cho, jung, jong, all } @ComplexMap
-
   const pairs = {
     ㄲ: ['ㄱ', 'ㄱ'],
     ㄳ: ['ㄱ', 'ㅅ'],
@@ -584,13 +579,11 @@ var Hangul = (function (exports) {
     ￜ: 'ㅣ',
   };
   const all$1 = Object.assign({}, jamo$1, jamoExtendedA$1, jamoExtendedB$1, halfwidth$1);
-  // * @StandardMapping
 
   // tries to transform everything into disassembled standard hangul
 
   var transformCharacter = (char => (!standardHangul.contains(char) && all$1[char]) || char);
   const transformEverything = char => (standardHangul.contains(char) ? pairs : all$1)[char] || char;
-  // transformCharacter: T:>Character => CharacterGroup
 
   const cho$1 = [
     'ㄱ', 'ㄲ', 'ㄴ', 'ㄷ', 'ㄸ', 'ㄹ', 'ㅁ',
@@ -609,15 +602,12 @@ var Hangul = (function (exports) {
     'ㅇ', 'ㅈ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ',
   ];
 
-  // default: T:>Integer, T:>Integer [, T:>Integer] => Character
-
   class Result {
     constructor(result = '', remainder = []) {
       this.result = result;
       this.remainder = remainder;
     }
   }
-  // Result: T:>Character => T:>CharacterGroup => Result
 
   const Character = (val) => {
     const str = `${val}`;
@@ -629,8 +619,6 @@ var Hangul = (function (exports) {
   };
   const toArray = aryOrStr => (Array.isArray(aryOrStr) ? aryOrStr : aryOrStr.split(''));
   const isCharacterGroup = (val) => {
-    console.log(val);
-    console.log('isCharacterGroup?');
     if (val.length < 1) {
       return false;
     } if (Array.isArray(val)) {
@@ -705,7 +693,6 @@ var Hangul = (function (exports) {
   );
   const composeComplexChoBase = composeComplex(cho);
   const composeAnyComplex = ary => deepFlatResMap(ary, composeAnyComplexBase);
-  // default @ComposeFunction: ...Character => Result
 
   function standardizeCharacter(val) {
     const v = transformCharacter(Character(val));
@@ -714,10 +701,7 @@ var Hangul = (function (exports) {
     }
     return v;
   }
-  // standardizeCharacter: TI:>Character => CharacterGroup
-
   var standardize = (group => deepFlatMap(group, standardizeCharacter));
-  // default: UP:>CharacterGroup => String
 
   var decomposeSyllable = ((val, hardFail) => {
     const char = Character(val);
@@ -735,7 +719,6 @@ var Hangul = (function (exports) {
     return [cho$1[choNum$$1], jung$1[jungNum$$1], jong$1[jongNum$$1]].filter(v => v);
     // the .filter(v => v) removes blank space in the array
   });
-  // default: UP:>Character => CharacterGroup
 
   function disassembleCharacter(char) {
     let res;
@@ -749,7 +732,6 @@ var Hangul = (function (exports) {
     return res;
   }
   var disassemble = ((data, grouped) => (grouped ? deepMap : deepFlatMap)(data, disassembleCharacter));
-  // default: UP:>CharacterGroup => TP:>Boolean => TP:>Boolean => CharacterGroup
 
   exports.standardize = standardize;
   exports.deepFlatMap = deepFlatMap;

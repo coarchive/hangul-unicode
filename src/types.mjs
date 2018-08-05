@@ -8,8 +8,6 @@ export const Character = (val) => {
 };
 const toArray = aryOrStr => (Array.isArray(aryOrStr) ? aryOrStr : aryOrStr.split(''));
 export const isCharacterGroup = (val) => {
-  console.log(val);
-  console.log('isCharacterGroup?');
   if (val.length < 1) {
     return false;
   } if (Array.isArray(val)) {
@@ -54,6 +52,6 @@ export const deepFlatResMap = (data, func) => {
 };
 export const deepFlatMap = (data, func) => {
   let res = '';
-  toArray(data).forEach(val => res += isCharacterGroup(val) ? deepFlatMap(val) : func(val));
+  toArray(data).forEach(val => res += isCharacterGroup(val) ? deepFlatMap(val, func) : func(val));
   return res;
 };
