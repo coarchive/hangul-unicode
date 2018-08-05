@@ -2,33 +2,33 @@ import * as complex from './unicode/complex';
 import { choNum, jungNum, jongNum } from './unicode/syllable';
 import composeSyllableFn from './composeSyllable';
 import R from './Result';
-import { transformAll } from './transformCharacter';
+import { deepFlatMap } from './types';
 
-export const composeComplex = (...objList) => (ary) => {
+export const composeComplex = (...objList) => {
   const obj = Object.assign({}, ...objList);
-  // const str = ary.map(transformAll).flat().join('');
-  const str = ary.join();
-  console.log(str);
-  if (str.length < 2) {
-    return new R(str[0]);
-  }
-  const comp2 = obj[str.slice(0, 2)];
-  if (comp2) {
-    const comp3 = obj[str.slice(0, 3)];
-    if (comp3) {
-      return new R(comp3, str.slice(3));
+  return ((ary) => {
+    if (ary.length < 2) {
+      return new R(ary[0]);
     }
-    return new R(comp2, str.slice(2));
-  }
-  return new R(str);
+    const comp2 = obj[ary.slice(0, 2).join('')];
+    if (comp2) {
+      const comp3 = ary.length > 2 && obj[ary.slice(0, 3).join('')];
+      if (comp3) {
+        return new R(comp3, ary.slice(3));
+      }
+      return new R(comp2, ary.slice(2));
+    }
+    return new R(ary[0], ary.slice(1));
+  });
 };
 //
-export const composeAnyComplex = composeComplex(
+const composeAnyComplexBase = composeComplex(
   complex.cho,
   complex.jung,
   complex.jong,
   complex.irregular,
 );
+export const composeAnyComplex = ary => deepFlatMap(ary, composeAnyComplexBase);
 
 export const composeSyllable = (ary) => {
   if (ary.length < 2) {

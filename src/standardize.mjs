@@ -1,5 +1,4 @@
-import composeAnyComplex from './composeAnyComplex';
-import transformCharacter from './transformCharacter';
+import transformCharacter from './transform';
 import { CharacterGroup } from './types';
 
 export function standardizeCharacter(char) {

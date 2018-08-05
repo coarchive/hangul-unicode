@@ -1,32 +1,33 @@
 import { all } from './unicode/complexTree';
 import { choNum, jungNum, jongNum } from './unicode/syllable';
 import composeSyllable from './composeSyllable';
-import { standardizeCharacter } from './standardize';
-import { isCharacter, Character } from './types';
+import transform from './transform';
+import { Character } from './types';
 // since these functions are exposed, the characters must be
 // standardized so that the libaray can function properly
-// standardizeCharacter is untrusting so there's no need
-// to worry about typechecking.
 
-export const complex = (first, second, third) => {
-  if (!isCharacter(first) || !isCharacter(second)) {
-    throw TypeError('Composing a complex requires at least two Characters');
-  }
-  let obj = all[standardizeCharacter(first)];
+export const complex = (first, second, third = '', hardFail) => {
+  let obj = all[transform(first)];
   if (!obj) {
-    throw Error(`There's no complex character that starts with ${first}`);
+    if (hardFail) {
+      throw Error(`There's no complex character that starts with ${first}`);
+    }
+    return `${first}${second}${third}`;
   }
-  obj = obj[standardizeCharacter(second)];
+  obj = obj[transform(second)];
   if (!obj) {
-    throw Error(`Cannot combine ${first} and ${second}`);
+    if (hardFail) {
+      throw Error(`Cannot combine ${first} and ${second}`);
+    }
+    return `${first}${second}${third}`;
   }
   if (third) {
-    if (!isCharacter(third)) {
-      throw TypeError('The third argument is not a Character');
-    }
-    obj = obj[standardizeCharacter(third)];
+    obj = obj[transform(third)];
     if (!obj) {
-      throw Error(`Cannot combine ${first}, ${second}, and ${third}`);
+      if (hardFail) {
+        throw Error(`Cannot combine ${first}, ${second}, and ${third}`);
+      }
+      return `${first}${second}${third}`;
     }
     return obj; // this should always be a string
   } if (typeof obj === 'string') {
@@ -34,22 +35,31 @@ export const complex = (first, second, third) => {
   }
   return obj.$;
 };
-export const syllable = (choChar, jungChar, jongChar) => {
-  if (!isCharacter(choChar) || !isCharacter(choChar)) {
-    throw TypeError('Composing a syllable requires a cho Character and a jung Character');
-  }
-  const cho = choNum[standardizeCharacter(choChar)];
-  const jung = jungNum[standardizeCharacter(jungChar)];
+complex.displayName = '[Hangul.composeComplex]';
+export const syllable = (choChar, jungChar, jongChar = '', hardFail) => {
+  const choT = transform(Character(choChar));
+  const cho = choNum[transform(choChar)];
+  const jung = jungNum[transform(jungChar)];
   let jong;
   if (jongChar) {
-    jong = jongNum[standardizeCharacter(Character(jongChar))];
+    jong = jongNum[transform(Character(jongChar))];
   } if (!Number.isInteger(cho)) {
-    throw Error(`"${choChar}" is not a valid cho Character`);
+    if (hardFail) {
+      throw Error(`"${choChar}" is not a valid cho Character`);
+    }
+    return `${choChar}${jungChar}${jungChar}`;
   } if (!Number.isInteger(jung)) {
-    throw Error(`"${jungChar}" is not a valid jung Character`);
+    if (hardFail) {
+      throw Error(`"${jungChar}" is not a valid jung Character`);
+    }
+    return `${choChar}${jungChar}${jungChar}`;
   } if (jongChar && !Number.isInteger(jong)) {
-    throw Error(`"${jongChar}" is not a valid jong character`);
+    if (hardFail) {
+      throw Error(`"${jongChar}" is not a valid jong character`);
+    }
+    return `${choChar}${jungChar}${jungChar}`;
   }
   return composeSyllable(cho, jung, jong);
 };
+syllable.displayName = '[Hangul.composeSyllable]';
 // default: UP:>Character, UP:>Character [, UP:>Character] => String

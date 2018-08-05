@@ -3,7 +3,9 @@
 import { standardHangul } from './unicode/blocks';
 import { pairs } from './unicode/complex';
 import mappings from './unicode/mappings';
+import { deepMap } from './types';
 
-export default (char => (!standardHangul.contains(char) && mappings[char]) || char);
+export const transform = (char => (!standardHangul.contains(char) && mappings[char]) || char);
 export const transformAll = char => (standardHangul.contains(char) ? pairs : mappings)[char] || char;
+export const transformGroup = group => group.map();
 // transformCharacter: T:>Character => CharacterGroup
