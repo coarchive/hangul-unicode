@@ -7,7 +7,21 @@ export const Character = (val) => {
   return str;
 };
 const toArray = aryOrStr => (Array.isArray(aryOrStr) ? aryOrStr : aryOrStr.split(''));
-export const isCharacterGroup = val => val.length > 1 && (Array.isArray(val) || typeof val === 'string');
+export const isCharacterGroup = (val) => {
+  console.log(val);
+  console.log('isCharacterGroup?');
+  if (val.length < 1) {
+    return false;
+  } if (Array.isArray(val)) {
+    if (val.length > 1) {
+      return true;
+    }
+    return isCharacterGroup(val[0]);
+  } if (typeof val === 'string' && val.length > 1) {
+    return true;
+  }
+  return false;
+};
 // while Characters can be a CharacterGroup, this function ignores characters
 export const deepMap = (ary, func) => (
   toArray(ary).map(val => (
@@ -40,6 +54,6 @@ export const deepFlatResMap = (data, func) => {
 };
 export const deepFlatMap = (data, func) => {
   let res = '';
-  toArray(data).forEach(val => res += isCharacterGroup(val) ? noResDeepFlatMap(val) : func(val));
+  toArray(data).forEach(val => res += isCharacterGroup(val) ? deepFlatMap(val) : func(val));
   return res;
 };
