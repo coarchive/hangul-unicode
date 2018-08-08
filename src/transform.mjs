@@ -5,4 +5,9 @@ import { pairs } from './unicode/complex';
 import mappings from './unicode/mappings';
 
 export default (char => (!standardHangul.contains(char) && mappings[char]) || char);
-export const transformEverything = char => (standardHangul.contains(char) ? pairs : mappings)[char] || char;
+export const transformEverything = char => (
+  (standardHangul.contains(char) ? pairs : mappings)[char]
+  || char
+);
+// transform everything just means that it also transforms
+// standard hangul characters instead of ignoring them

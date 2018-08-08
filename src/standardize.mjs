@@ -7,6 +7,8 @@ export function standardizeCharacter(val) {
   if (Array.isArray(v)) {
     return composeAnyComplex(v);
   }
+  // if it's not an array, that means that transforming the
+  // character was just a string so we can just return it
   return v;
 }
 export default (group => deepFlatMap(group, standardizeCharacter));

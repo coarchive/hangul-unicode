@@ -7,7 +7,6 @@ const fn = func => (group) => {
     E('assembleCompose', 'assembledComposes does not take more than two arguments!', arguments);
   }
   const res = [];
-  // string concatination is faster
   let rem = CharacterGroup(group);
   if (Array.isArray(group)) {
     // if the group is not a String then there can't be any sub groups

@@ -35,6 +35,10 @@ export const complex = (first, second, third = '', hardFail) => {
   }
   return obj.$;
 };
+// this function will always return a String (or it'll error)
+// there's probably a better way to structure these if-statements
+// so if anyone comes up with one, I'll take it
+
 export const syllable = (choChar, jungChar, jongChar = '', hardFail) => {
   const choT = transform(Character(choChar));
   const cho = choNum[transform(choChar)];

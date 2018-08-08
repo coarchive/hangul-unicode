@@ -171,5 +171,10 @@ export const fromKeys = {
   n: 'ㅜ',
   m: 'ㅡ',
 };
+// the reason the data is stored like this is because iterating
+// through an array is slower than just getting a key from an object
+// In this case though, it might be faster since arrays are allocated
+// on the heap instead of the stack?
+
 // I realize that I can programmatically reverse the key-value pairs during
 // runtime but since I can just do it now, it's just a little faster.

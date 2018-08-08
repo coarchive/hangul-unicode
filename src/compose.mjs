@@ -6,6 +6,7 @@ import { deepFlatResMap } from './types';
 
 export const composeComplex = (...objList) => {
   const obj = Object.assign({}, ...objList);
+  // obj is stored in this scope to revent redundant operations
   return ((ary) => {
     if (ary.length < 2) {
       return new R(ary[0]);
@@ -21,7 +22,6 @@ export const composeComplex = (...objList) => {
     return new R(ary[0], ary.slice(1));
   });
 };
-//
 const composeAnyComplexBase = composeComplex(
   complex.cho,
   complex.jung,
@@ -29,6 +29,8 @@ const composeAnyComplexBase = composeComplex(
   complex.irregular,
 );
 const composeComplexChoBase = composeComplex(complex.cho);
+// both of these base functions return Results so that's why
+// they need deepFlatResMaps instead of deepFlatMaps
 export const composeAnyComplex = ary => deepFlatResMap(ary, composeAnyComplexBase);
 export const composeComplexCho = ary => deepFlatResMap(ary, composeComplexChoBase);
 export const composeSyllable = (ary) => {

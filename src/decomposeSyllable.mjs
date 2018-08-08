@@ -9,7 +9,9 @@ export default ((val, hardFail) => {
     if (hardFail) {
       throw Error('Decomposing a syllable requires a syllable to decompose!');
     }
-    return val;
+    return [val];
+    // if there's no hardFail, the function must
+    // still return the same type as it would have
   }
   const code = char.codePointAt(0) - syllables.start;
   const jongNum = code % 28;

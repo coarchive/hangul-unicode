@@ -6,7 +6,10 @@ export const Character = (val) => {
   }
   return str;
 };
+// this function turns values into characters if it can
+// otherwise it just fails
 const toArray = aryOrStr => (Array.isArray(aryOrStr) ? aryOrStr : aryOrStr.split(''));
+// as a general note, calling .split like that instead of .split`` is faster
 export const isCharacterGroup = (val) => {
   if (val.length < 1) {
     return false;
@@ -20,18 +23,33 @@ export const isCharacterGroup = (val) => {
   }
   return false;
 };
-// while Characters can be a CharacterGroup, this function ignores characters
-export const deepMap = (ary, func) => (
-  toArray(ary).map(val => (
-    isCharacterGroup(val) ? deepMap(val, func) : func(val)
-  ))
-);
+// while Characters can be a CharacterGroup,
+// this function ignores characters
+export const deepMap = (data, func) => {
+  const ary = toArray(data);
+  if (Array.isArray(data)) {
+    return ary.map(val => (isCharacterGroup(val) ? deepMap(val, func) : func(val)));
+  }
+  // since the data was a string, the array created from
+  // the string won't contain any character groups
+  return ary.map(char => func(char));
+  // I could write it "ary.map(func)" but I'm not
+  // just in case func has more than one argument
+};
+export const deepFlatMap = (data, func) => {
+  let res = '';
+  const ary = toArray(data);
+  if (Array.isArray(data)) {
+    ary.forEach(val => res += isCharacterGroup(val) ? deepFlatMap(val, func) : func(val));
+  } else {
+    ary.forEach(char => func(char));
+  }
+  return res;
+};
 export const deepFlatResMap = (data, func) => {
-  let res = ''; // changing this to an array makes the entire thing not flat
-  // of course, the concatination in the while loop would need to be changed
-  // too, but it's neat how a change in a data type makes changes this dramatic
+  // this is different since it deals with functions that return Result objects.
+  let res = '';
   let rem;
-  // if the group is not a String then there can't be any sub groups
   if (Array.isArray(data)) {
     rem = data.map((val) => {
       if (isCharacterGroup(val)) {
@@ -45,13 +63,9 @@ export const deepFlatResMap = (data, func) => {
   while (rem.length) {
     const comp = func(rem);
     // func needs to return a Result like interface for this to work
+    // otherwise we'll get a really nasty to debug error
     res += comp.result;
     rem = comp.remainder;
   }
-  return res;
-};
-export const deepFlatMap = (data, func) => {
-  let res = '';
-  toArray(data).forEach(val => res += isCharacterGroup(val) ? deepFlatMap(val, func) : func(val));
   return res;
 };

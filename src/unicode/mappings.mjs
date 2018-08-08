@@ -1,5 +1,7 @@
 // if you're gonna copy this part, at least give me credit.
 // I had to do all of this manually.
+// also, I think turning all of these arrays into strings
+// might speed up composition by a bit.
 export const jamo = {
   ᄀ: 'ㄱ',
   ᄁ: ['ㄱ', 'ㄱ'],

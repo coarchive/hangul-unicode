@@ -1,4 +1,4 @@
-// Yes, all of this, just to give nice error messages
+// This file is only used in ../publicCompose
 export const cho = {
   // the characters that you can type with key + shift
   ㄱ: {
