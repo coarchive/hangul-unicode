@@ -2,7 +2,7 @@
   "name": "hangul",
   "version": "0.0.1",
   "description": "",
-  "main": "Hangul.js",
+  "main": "dist/Hangul.js",
   "scripts": {
     "test": "echo \"No, stop. Don't do that.\" && exit 1",
     "start": "rollup -c -w",

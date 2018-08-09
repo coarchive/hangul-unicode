@@ -3,25 +3,42 @@ import serve from 'rollup-plugin-serve';
 import { terser } from 'rollup-plugin-terser';
 
 const production = !process.env.ROLLUP_WATCH;
-const options = {
+const base = {
   input: 'src/main.js',
   moduleName: 'Hangul',
   output: {
-    file: 'dev/bundle.js',
     format: 'umd',
     name: 'Hangul',
     strict: true,
-    sourcemap: true,
   },
   plugins: [
     resolve(),
   ],
 };
+let options;
 if (production) {
-  options.output.file = 'dist/bundle.js';
-  options.plugins.push(terser());
+  base.output.file = 'dist/Hangul.js';
+  options = [
+    base,
+    {
+      input: 'src/main.js',
+      moduleName: 'Hangul',
+      output: {
+        file: 'dist/Hangul.min.js',
+        format: 'umd',
+        name: 'Hangul',
+        strict: true,
+      },
+      plugins: [
+        resolve(),
+        terser(),
+      ],
+    },
+  ];
 } else {
+  options = base;
   options.output.file = 'dev/bundle.js';
+  options.output.sourcemap = true;
   options.watch = {
     include: 'src/**',
   };
