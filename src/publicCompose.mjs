@@ -6,11 +6,11 @@ import { standardizeCharacter } from './standardize';
 // standardized so that the libaray can function properly
 
 export const complex = (first, second, third = '', hardFail) => {
+  if (first === undefined || second === undefined) {
+    throw Error('Cannot compose a complex with less than two values!');
+  }
   const d1 = all[standardizeCharacter(first)];
   // depth 1
-  // we don't need to call standardizeCharacter on the first
-  // and second characters since we don't know if it'll
-  // reach depth 1 yet.
   if (!d1) {
     if (hardFail) {
       throw Error(`There's no complex character that starts with ${first}`);
@@ -51,7 +51,7 @@ export const complex = (first, second, third = '', hardFail) => {
 // there's probably a better way to structure these if-statements
 // so if anyone comes up with one, I'll take it
 
-export const syllable = (choChar, jungChar, jongChar = '', hardFail) => {
+export const syllable = (choChar, jungChar = '', jongChar = '', hardFail) => {
   const cho = choNum[standardizeCharacter(choChar)];
   const jung = jungNum[standardizeCharacter(jungChar)];
   let jong;
@@ -61,12 +61,12 @@ export const syllable = (choChar, jungChar, jongChar = '', hardFail) => {
     if (hardFail) {
       throw Error(`"${choChar}" is not a valid cho Character`);
     }
-    return `${choChar}${jungChar}${jungChar}`;
+    return `${choChar}${jungChar}${jongChar}`;
   } if (!Number.isInteger(jung)) {
     if (hardFail) {
       throw Error(`"${jungChar}" is not a valid jung Character`);
     }
-    return `${choChar}${jungChar}${jungChar}`;
+    return `${choChar}${jungChar}${jongChar}`;
   } if (jongChar && !Number.isInteger(jong)) {
     // check if it exists because !Number.isInteger(undefined)
     // is true and we don't want that happening since jongChar
@@ -76,7 +76,7 @@ export const syllable = (choChar, jungChar, jongChar = '', hardFail) => {
     }
     // getting here means that the cho and jung
     // characters were valid, so call composeSyllable
-    return `${composeSyllable(cho, jung)}${jungChar}`;
+    return `${composeSyllable(cho, jung)}${jongChar}`;
   }
   return composeSyllable(cho, jung, jong);
 };

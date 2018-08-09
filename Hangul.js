@@ -610,6 +610,86 @@ var Hangul = (function (exports) {
     'ㄿ', 'ㅀ', 'ㅁ', 'ㅂ', 'ㅄ', 'ㅅ', 'ㅆ',
     'ㅇ', 'ㅈ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ',
   ];
+  const choNum = {
+    ㄱ: 0,
+    ㄲ: 1,
+    ㄴ: 2,
+    ㄷ: 3,
+    ㄸ: 4,
+    ㄹ: 5,
+    ㅁ: 6,
+    ㅂ: 7,
+    ㅃ: 8,
+    ㅅ: 9,
+    ㅆ: 10,
+    ㅇ: 11,
+    ㅈ: 12,
+    ㅉ: 13,
+    ㅊ: 14,
+    ㅋ: 15,
+    ㅌ: 16,
+    ㅍ: 17,
+    ㅎ: 18,
+  };
+  const jungNum = {
+    ㅏ: 0,
+    ㅐ: 1,
+    ㅑ: 2,
+    ㅒ: 3,
+    ㅓ: 4,
+    ㅔ: 5,
+    ㅕ: 6,
+    ㅖ: 7,
+    ㅗ: 8,
+    ㅘ: 9,
+    ㅙ: 10,
+    ㅚ: 11,
+    ㅛ: 12,
+    ㅜ: 13,
+    ㅝ: 14,
+    ㅞ: 15,
+    ㅟ: 16,
+    ㅠ: 17,
+    ㅡ: 18,
+    ㅢ: 19,
+    ㅣ: 20,
+  };
+  const jongNum = {
+    ㄱ: 1,
+    ㄲ: 2,
+    ㄳ: 3,
+    ㄴ: 4,
+    ㄵ: 5,
+    ㄶ: 6,
+    ㄷ: 7,
+    ㄹ: 8,
+    ㄺ: 9,
+    ㄻ: 10,
+    ㄼ: 11,
+    ㄽ: 12,
+    ㄾ: 13,
+    ㄿ: 14,
+    ㅀ: 15,
+    ㅁ: 16,
+    ㅂ: 17,
+    ㅄ: 18,
+    ㅅ: 19,
+    ㅆ: 20,
+    ㅇ: 21,
+    ㅈ: 22,
+    ㅊ: 23,
+    ㅋ: 24,
+    ㅌ: 25,
+    ㅍ: 26,
+    ㅎ: 27,
+  };
+
+  var composeSyllableFn = ((cho, jung, jong = 0) => (
+    String.fromCodePoint(cho * 588 + jung * 28 + jong + syllables.start)
+    // this is the actual function that makes unicode syllable characters
+    // where the characters are mapped to numbers. Take a look at
+    // { choNum, jungNum, jongNum } from './unicode/syllable'
+  ));
 
   class Result {
     constructor(result = '', remainder = []) {
@@ -771,12 +851,197 @@ var Hangul = (function (exports) {
   // this is a shady function, it calls either deepMap or
   // deepFlatMap with the data and disassembleCharacter
 
+  // This file is only used in ../publicCompose
+  // all is the only one of these that's actually used
+  const all$2 = {
+    ㄱ: {
+      ㄱ: 'ㄲ',
+      ㅅ: 'ㄳ',
+    },
+    ㄷ: {
+      ㄷ: 'ㄸ',
+    },
+    ㅅ: {
+      ㅅ: 'ㅆ',
+      ㄱ: 'ㅺ',
+      ㄴ: 'ㅻ',
+      ㄷ: 'ㅼ',
+      ㅂ: 'ㅽ',
+      ㅈ: 'ㅾ',
+    },
+    ㅈ: {
+      ㅈ: 'ㅉ',
+    },
+    ㅂ: {
+      ㅂ: 'ㅃ',
+      ㅅ: {
+        $: 'ㅄ',
+        ㄱ: 'ㅴ',
+        ㄷ: 'ㅵ',
+      },
+      ㄱ: 'ㅲ',
+      ㄷ: 'ㅳ',
+      ㅈ: 'ㅶ',
+      ㅌ: 'ㅷ',
+    },
+    ㅗ: {
+      ㅏ: 'ㅘ',
+      ㅐ: 'ㅙ',
+      ㅣ: 'ㅚ',
+    },
+    ㅜ: {
+      ㅓ: 'ㅝ',
+      ㅔ: 'ㅞ',
+      ㅣ: 'ㅟ',
+    },
+    ㅡ: {
+      ㅣ: 'ㅢ',
+    },
+    ㄴ: {
+      ㅈ: 'ㄵ',
+      ㅎ: 'ㄶ',
+      ㄴ: 'ㅥ',
+      ㄷ: 'ㅦ',
+      ㅅ: 'ㅧ',
+      ㅿ: 'ㅨ',
+    },
+    ㄹ: {
+      ㄱ: {
+        $: 'ㄺ',
+        ㅅ: 'ㅩ',
+      },
+      ㅁ: 'ㄻ',
+      ㅂ: {
+        $: 'ㄼ',
+        ㅅ: 'ㅫ',
+      },
+      ㅅ: 'ㄽ',
+      ㅌ: 'ㄾ',
+      ㅍ: 'ㄿ',
+      ㅎ: 'ㅀ',
+      ㄷ: 'ㅪ',
+      ㅿ: 'ㅬ',
+      ㆆ: 'ㅭ',
+    },
+    ㅁ: {
+      ㅂ: 'ㅮ',
+      ㅅ: 'ㅯ',
+      ㅿ: 'ㅰ',
+    },
+    ㅇ: {
+      ㅇ: 'ㆀ',
+    },
+    ㆁ: {
+      ㅅ: 'ㆁ',
+      ㅿ: 'ㅿ',
+    },
+    ㅎ: {
+      ㅎ: 'ㆅ',
+    },
+    ㅛ: {
+      ㅑ: 'ㆇ',
+      ㅒ: 'ㆈ',
+      ㅣ: 'ㆉ',
+    },
+    ㅠ: {
+      ㅕ: 'ㆊ',
+      ㅖ: 'ㆋ',
+      ㅣ: 'ㆌ',
+    },
+    ㆍ: {
+      ㅣ: 'ㆎ',
+    },
+  };
+
+  // since these functions are exposed, the characters must be
+  // standardized so that the libaray can function properly
+
+  const complex = (first, second, third = '', hardFail) => {
+    if (first === undefined || second === undefined) {
+      throw Error('Cannot compose a complex with less than two values!');
+    }
+    const d1 = all$2[standardizeCharacter(first)];
+    // depth 1
+    if (!d1) {
+      if (hardFail) {
+        throw Error(`There's no complex character that starts with ${first}`);
+      }
+      return `${first}${second}${third}`;
+    }
+    const d2 = d1[standardizeCharacter(second)];
+    // depth 2
+    if (!d2) {
+      if (hardFail) {
+        throw Error(`Cannot combine ${first} and ${second}`);
+      }
+      return `${first}${second}${third}`;
+    }
+    const d2val = d2.$ || d2;
+    if (third) {
+      // if there's a third character (optional)
+      const d3 = d2[standardizeCharacter(third)];
+      // depth 3
+      if (!d3) {
+        // if depth 3 doesn't exist
+        if (hardFail) {
+          throw Error(`Found ${d2val} but cannot combine ${first}, ${second}, and ${third}`);
+          // the reason for this ^^^ is because sometimes
+          // d2 is a string rather than an object
+        }
+        return `${d2val}${third}`;
+        // at depth three, there should be a complex formed from
+        // the first and second characters so return that instead
+        // of the inputs concatenated
+      }
+      return d3; // this should always be a string
+    }
+    // the third character was falsey so just return the composition
+    return d2val;
+  };
+  // this function will always return a String or it'll error (hardFail)
+  // there's probably a better way to structure these if-statements
+  // so if anyone comes up with one, I'll take it
+
+  const syllable = (choChar, jungChar = '', jongChar = '', hardFail) => {
+    const cho = choNum[standardizeCharacter(choChar)];
+    const jung = jungNum[standardizeCharacter(jungChar)];
+    let jong;
+    if (jongChar) {
+      jong = jongNum[standardizeCharacter(jongChar)];
+    } if (!Number.isInteger(cho)) {
+      if (hardFail) {
+        throw Error(`"${choChar}" is not a valid cho Character`);
+      }
+      return `${choChar}${jungChar}${jongChar}`;
+    } if (!Number.isInteger(jung)) {
+      if (hardFail) {
+        throw Error(`"${jungChar}" is not a valid jung Character`);
+      }
+      return `${choChar}${jungChar}${jongChar}`;
+    } if (jongChar && !Number.isInteger(jong)) {
+      // check if it exists because !Number.isInteger(undefined)
+      // is true and we don't want that happening since jongChar
+      // is optional
+      if (hardFail) {
+        throw Error(`"${jongChar}" is not a valid jong character`);
+      }
+      // getting here means that the cho and jung
+      // characters were valid, so call composeSyllable
+      return `${composeSyllableFn(cho, jung)}${jongChar}`;
+    }
+    return composeSyllableFn(cho, jung, jong);
+  };
+  // by nesting all if-statements under if (hardFail)
+  // there might be a little better performance but I'm
+  // sure that it's pretty trivial.
+
   exports.standardize = standardize;
   exports.deepFlatMap = deepFlatMap;
-  exports.composeComplex = composeComplex;
-  exports.composeAnyComplex = composeAnyComplex;
   exports.decomposeSyllable = decomposeSyllable;
   exports.disasseble = disassemble;
+  exports.composeComplex = complex;
+  exports.composeSyllable = syllable;
+  exports.standardizeCharacter = standardizeCharacter;
 
   return exports;
 
