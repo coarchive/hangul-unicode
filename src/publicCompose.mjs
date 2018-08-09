@@ -1,51 +1,62 @@
 import { all } from './unicode/complexTree';
 import { choNum, jungNum, jongNum } from './unicode/syllable';
 import composeSyllable from './composeSyllable';
-import transform from './transform';
-import { Character } from './types';
+import { standardizeCharacter } from './standardize';
 // since these functions are exposed, the characters must be
 // standardized so that the libaray can function properly
 
 export const complex = (first, second, third = '', hardFail) => {
-  let obj = all[transform(first)];
-  if (!obj) {
+  const d1 = all[standardizeCharacter(first)];
+  // depth 1
+  // we don't need to call standardizeCharacter on the first
+  // and second characters since we don't know if it'll
+  // reach depth 1 yet.
+  if (!d1) {
     if (hardFail) {
       throw Error(`There's no complex character that starts with ${first}`);
     }
     return `${first}${second}${third}`;
   }
-  obj = obj[transform(second)];
-  if (!obj) {
+  const d2 = d1[standardizeCharacter(second)];
+  // depth 2
+  if (!d2) {
     if (hardFail) {
       throw Error(`Cannot combine ${first} and ${second}`);
     }
     return `${first}${second}${third}`;
   }
+  const d2val = d2.$ || d2;
   if (third) {
-    obj = obj[transform(third)];
-    if (!obj) {
+    // if there's a third character (optional)
+    const d3 = d2[standardizeCharacter(third)];
+    // depth 3
+    if (!d3) {
+      // if depth 3 doesn't exist
       if (hardFail) {
-        throw Error(`Cannot combine ${first}, ${second}, and ${third}`);
+        throw Error(`Found ${d2val} but cannot combine ${first}, ${second}, and ${third}`);
+        // the reason for this ^^^ is because sometimes
+        // d2 is a string rather than an object
       }
-      return `${first}${second}${third}`;
+      return `${d2val}${third}`;
+      // at depth three, there should be a complex formed from
+      // the first and second characters so return that instead
+      // of the inputs concatenated
     }
-    return obj; // this should always be a string
-  } if (typeof obj === 'string') {
-    return obj;
+    return d3; // this should always be a string
   }
-  return obj.$;
+  // the third character was falsey so just return the composition
+  return d2val;
 };
-// this function will always return a String (or it'll error)
+// this function will always return a String or it'll error (hardFail)
 // there's probably a better way to structure these if-statements
 // so if anyone comes up with one, I'll take it
 
 export const syllable = (choChar, jungChar, jongChar = '', hardFail) => {
-  const choT = transform(Character(choChar));
-  const cho = choNum[transform(choChar)];
-  const jung = jungNum[transform(jungChar)];
+  const cho = choNum[standardizeCharacter(choChar)];
+  const jung = jungNum[standardizeCharacter(jungChar)];
   let jong;
   if (jongChar) {
-    jong = jongNum[transform(Character(jongChar))];
+    jong = jongNum[standardizeCharacter(jongChar)];
   } if (!Number.isInteger(cho)) {
     if (hardFail) {
       throw Error(`"${choChar}" is not a valid cho Character`);
@@ -57,10 +68,18 @@ export const syllable = (choChar, jungChar, jongChar = '', hardFail) => {
     }
     return `${choChar}${jungChar}${jungChar}`;
   } if (jongChar && !Number.isInteger(jong)) {
+    // check if it exists because !Number.isInteger(undefined)
+    // is true and we don't want that happening since jongChar
+    // is optional
     if (hardFail) {
       throw Error(`"${jongChar}" is not a valid jong character`);
     }
-    return `${choChar}${jungChar}${jungChar}`;
+    // getting here means that the cho and jung
+    // characters were valid, so call composeSyllable
+    return `${composeSyllable(cho, jung)}${jungChar}`;
   }
   return composeSyllable(cho, jung, jong);
 };
+// by nesting all if-statements under if (hardFail)
+// there might be a little better performance but I'm
+// sure that it's pretty trivial.

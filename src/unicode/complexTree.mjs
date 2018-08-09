@@ -1,4 +1,5 @@
 // This file is only used in ../publicCompose
+// and the export "all" is the only one that's used
 export const cho = {
   // the characters that you can type with key + shift
   ㄱ: {

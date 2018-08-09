@@ -15,7 +15,7 @@ function disassembleCharacter(char) {
   if (Array.isArray(res)) {
     // res SHOULD only be an array of characters
     // so there's no need to worry about .join('')
-    // leaving residue commas
+    // leaving residue commas behind or something
     res = res.join('');
   }
   return res;

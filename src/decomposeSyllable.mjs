@@ -12,6 +12,7 @@ export default ((val, hardFail) => {
     return [val];
     // if there's no hardFail, the function must
     // still return the same type as it would have
+    // if it didn't fail
   }
   const code = char.codePointAt(0) - syllables.start;
   const jongNum = code % 28;

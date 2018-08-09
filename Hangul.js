@@ -102,6 +102,8 @@ var Hangul = (function (exports) {
     ㆍㅣ: 'ㆎ',
   };
   const all = Object.assign({}, cho, jung, jong, irregular);
+  // well, I guess the code lies since this export is not all
+  // there's still the stuff below.
   const pairs = {
     ㄲ: ['ㄱ', 'ㄱ'],
     ㄳ: ['ㄱ', 'ㅅ'],
@@ -164,6 +166,8 @@ var Hangul = (function (exports) {
 
   // if you're gonna copy this part, at least give me credit.
   // I had to do all of this manually.
+  // also, I think turning all of these arrays into strings
+  // might speed up composition by a bit.
   const jamo$1 = {
     ᄀ: 'ㄱ',
     ᄁ: ['ㄱ', 'ㄱ'],
@@ -583,7 +587,12 @@ var Hangul = (function (exports) {
   // tries to transform everything into disassembled standard hangul
 
   var transformCharacter = (char => (!standardHangul.contains(char) && all$1[char]) || char);
-  const transformEverything = char => (standardHangul.contains(char) ? pairs : all$1)[char] || char;
+  const transformEverything = char => (
+    (standardHangul.contains(char) ? pairs : all$1)[char]
+    || char
+  );
+  // transform everything just means that it also transforms
+  // standard hangul characters instead of ignoring them
 
   const cho$1 = [
     'ㄱ', 'ㄲ', 'ㄴ', 'ㄷ', 'ㄸ', 'ㄹ', 'ㅁ',
@@ -617,7 +626,10 @@ var Hangul = (function (exports) {
     }
     return str;
   };
+  // this function turns values into characters if it can
+  // otherwise it just fails
   const toArray = aryOrStr => (Array.isArray(aryOrStr) ? aryOrStr : aryOrStr.split(''));
+  // as a general note, calling .split like that instead of .split`` is faster
   const isCharacterGroup = (val) => {
     if (val.length < 1) {
       return false;
@@ -631,18 +643,33 @@ var Hangul = (function (exports) {
     }
     return false;
   };
-  // while Characters can be a CharacterGroup, this function ignores characters
-  const deepMap = (ary, func) => (
-    toArray(ary).map(val => (
-      isCharacterGroup(val) ? deepMap(val, func) : func(val)
-    ))
-  );
+  // while Characters can be a CharacterGroup,
+  // this function ignores characters
+  const deepMap = (data, func) => {
+    const ary = toArray(data);
+    if (Array.isArray(data)) {
+      return ary.map(val => (isCharacterGroup(val) ? deepMap(val, func) : func(val)));
+    }
+    // since the data was a string, the array created from
+    // the string won't contain any character groups
+    return ary.map(char => func(char));
+    // I could write it "ary.map(func)" but I'm not
+    // just in case func has more than one argument
+  };
+  const deepFlatMap = (data, func) => {
+    let res = '';
+    const ary = toArray(data);
+    if (Array.isArray(data)) {
+      ary.forEach(val => res += isCharacterGroup(val) ? deepFlatMap(val, func) : func(val));
+    } else {
+      ary.forEach(char => func(char));
+    }
+    return res;
+  };
   const deepFlatResMap = (data, func) => {
-    let res = ''; // changing this to an array makes the entire thing not flat
-    // of course, the concatination in the while loop would need to be changed
-    // too, but it's neat how a change in a data type makes changes this dramatic
+    // this is different since it deals with functions that return Result objects.
+    let res = '';
     let rem;
-    // if the group is not a String then there can't be any sub groups
     if (Array.isArray(data)) {
       rem = data.map((val) => {
         if (isCharacterGroup(val)) {
@@ -656,19 +683,16 @@ var Hangul = (function (exports) {
     while (rem.length) {
       const comp = func(rem);
       // func needs to return a Result like interface for this to work
+      // otherwise we'll get a really nasty to debug error
       res += comp.result;
       rem = comp.remainder;
     }
     return res;
   };
-  const deepFlatMap = (data, func) => {
-    let res = '';
-    toArray(data).forEach(val => res += isCharacterGroup(val) ? deepFlatMap(val, func) : func(val));
-    return res;
-  };
 
   const composeComplex = (...objList) => {
     const obj = Object.assign({}, ...objList);
+    // obj is stored in this scope to revent redundant operations
     return ((ary) => {
       if (ary.length < 2) {
         return new Result(ary[0]);
@@ -684,7 +708,6 @@ var Hangul = (function (exports) {
       return new Result(ary[0], ary.slice(1));
     });
   };
-  //
   const composeAnyComplexBase = composeComplex(
     cho,
     jung,
@@ -692,6 +715,8 @@ var Hangul = (function (exports) {
     irregular,
   );
   const composeComplexChoBase = composeComplex(cho);
+  // both of these base functions return Results so that's why
+  // they need deepFlatResMaps instead of deepFlatMaps
   const composeAnyComplex = ary => deepFlatResMap(ary, composeAnyComplexBase);
 
   function standardizeCharacter(val) {
@@ -699,6 +724,8 @@ var Hangul = (function (exports) {
     if (Array.isArray(v)) {
       return composeAnyComplex(v);
     }
+    // if it's not an array, that means that transforming the
+    // character was just a string so we can just return it
     return v;
   }
   var standardize = (group => deepFlatMap(group, standardizeCharacter));
@@ -709,7 +736,10 @@ var Hangul = (function (exports) {
       if (hardFail) {
         throw Error('Decomposing a syllable requires a syllable to decompose!');
       }
-      return val;
+      return [val];
+      // if there's no hardFail, the function must
+      // still return the same type as it would have
+      // if it didn't fail
     }
     const code = char.codePointAt(0) - syllables.start;
     const jongNum$$1 = code % 28;
@@ -723,15 +753,23 @@ var Hangul = (function (exports) {
   function disassembleCharacter(char) {
     let res;
     if (syllables.contains(char)) {
-      res = decomposeSyllable(char);
+      res = decomposeSyllable(char).map(transformEverything);
+      // that .map(transformEverything) catches the complex
+      // characters that decomposeSyllable returns
+    } else {
+      res = transformEverything(char);
     }
-    res = transformEverything(char);
     if (Array.isArray(res)) {
+      // res SHOULD only be an array of characters
+      // so there's no need to worry about .join('')
+      // leaving residue commas behind or something
       res = res.join('');
     }
     return res;
   }
   var disassemble = ((data, grouped) => (grouped ? deepMap : deepFlatMap)(data, disassembleCharacter));
+  // this is a shady function, it calls either deepMap or
+  // deepFlatMap with the data and disassembleCharacter
 
   exports.standardize = standardize;
   exports.deepFlatMap = deepFlatMap;

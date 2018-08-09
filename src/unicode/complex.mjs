@@ -66,6 +66,8 @@ export const irregular = {
   ㆍㅣ: 'ㆎ',
 };
 export const all = Object.assign({}, cho, jung, jong, irregular);
+// well, I guess the code lies since this export is not all
+// there's still the stuff below.
 export const pairs = {
   ㄲ: ['ㄱ', 'ㄱ'],
   ㄳ: ['ㄱ', 'ㅅ'],
