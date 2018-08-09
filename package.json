@@ -15,6 +15,7 @@
     "eslint-config-airbnb-base": "^13.0.0",
     "eslint-plugin-import": "^2.13.0",
     "rollup": "^0.62.0",
+    "rollup-plugin-livereload": "^0.6.0",
     "rollup-plugin-node-resolve": "^3.3.0",
     "rollup-plugin-serve": "^0.4.2",
     "rollup-plugin-terser": "^1.0.1"

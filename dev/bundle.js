@@ -1,3 +1,4 @@
+(function(l, i, v, e) { v = l.createElement(i); v.async = 1; v.src = '//' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1'; e = l.getElementsByTagName(i)[0]; e.parentNode.insertBefore(v, e)})(document, 'script');
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
   typeof define === 'function' && define.amd ? define(['exports'], factory) :
@@ -1031,6 +1032,8 @@
   // by nesting all if-statements under if (hardFail)
   // there might be a little better performance but I'm
   // sure that it's pretty trivial.
+
+  console.log('foobarbaz');
 
   exports.deepFlatMap = deepFlatMap;
   exports.decomposeSyllable = decomposeSyllable;

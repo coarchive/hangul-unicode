@@ -1,3 +1,4 @@
+import livereload from 'rollup-plugin-livereload'
 import resolve from 'rollup-plugin-node-resolve';
 import serve from 'rollup-plugin-serve';
 import { terser } from 'rollup-plugin-terser';
@@ -45,6 +46,6 @@ if (production) {
   options.plugins.push(serve({
     contentBase: 'dev',
     port: 8080,
-  }));
+  }), livereload('dev'));
 }
 export default (options);
