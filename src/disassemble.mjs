@@ -4,6 +4,7 @@ import decomposeSyllable from './decomposeSyllable';
 import { deepMap, deepFlatMap } from './types';
 
 function disassembleCharacter(char) {
+  console.log(char);
   let res;
   if (syllables.contains(char)) {
     res = decomposeSyllable(char).map(transformEverything);
@@ -11,12 +12,6 @@ function disassembleCharacter(char) {
     // characters that decomposeSyllable returns
   } else {
     res = transformEverything(char);
-  }
-  if (Array.isArray(res)) {
-    // res SHOULD only be an array of characters
-    // so there's no need to worry about .join('')
-    // leaving residue commas behind or something
-    res = res.join('');
   }
   return res;
 }

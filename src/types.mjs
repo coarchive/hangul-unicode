@@ -36,13 +36,12 @@ export const deepMap = (data, func) => {
   // I could write it "ary.map(func)" but I'm not
   // just in case func has more than one argument
 };
-export const deepFlatMap = (data, func) => {
-  let res = '';
+export const deepFlatMap = (data, func, res = []) => {
   const ary = toArray(data);
   if (Array.isArray(data)) {
     ary.forEach(val => res += isCharacterGroup(val) ? deepFlatMap(val, func) : func(val));
   } else {
-    ary.forEach(char => func(char));
+    ary.forEach(char => res += func(char));
   }
   return res;
 };

@@ -1,5 +1,8 @@
-var Hangul = (function (exports) {
-  'use strict';
+(function (global, factory) {
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
+  typeof define === 'function' && define.amd ? define(['exports'], factory) :
+  (factory((global.Hangul = {})));
+}(this, (function (exports) { 'use strict';
 
   const Character = (val) => {
     const str = `${val}`;
@@ -39,13 +42,12 @@ var Hangul = (function (exports) {
     // I could write it "ary.map(func)" but I'm not
     // just in case func has more than one argument
   };
-  const deepFlatMap = (data, func) => {
-    let res = '';
+  const deepFlatMap = (data, func, res = []) => {
     const ary = toArray(data);
     if (Array.isArray(data)) {
       ary.forEach(val => res += isCharacterGroup(val) ? deepFlatMap(val, func) : func(val));
     } else {
-      ary.forEach(char => func(char));
+      ary.forEach(char => res += func(char));
     }
     return res;
   };
@@ -777,6 +779,7 @@ var Hangul = (function (exports) {
   // standard hangul characters instead of ignoring them
 
   function disassembleCharacter(char) {
+    console.log(char);
     let res;
     if (syllables.contains(char)) {
       res = decomposeSyllable(char).map(transformEverything);
@@ -784,12 +787,6 @@ var Hangul = (function (exports) {
       // characters that decomposeSyllable returns
     } else {
       res = transformEverything(char);
-    }
-    if (Array.isArray(res)) {
-      // res SHOULD only be an array of characters
-      // so there's no need to worry about .join('')
-      // leaving residue commas behind or something
-      res = res.join('');
     }
     return res;
   }
@@ -1043,7 +1040,7 @@ var Hangul = (function (exports) {
   exports.standardize = standardize;
   exports.standardizeCharacter = standardizeCharacter;
 
-  return exports;
+  Object.defineProperty(exports, '__esModule', { value: true });
 
-}({}));
-//# sourceMappingURL=Hangul.js.map
+})));
+//# sourceMappingURL=bundle.js.map

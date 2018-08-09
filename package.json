@@ -5,8 +5,7 @@
   "main": "Hangul.js",
   "scripts": {
     "test": "echo \"No, stop. Don't do that.\" && exit 1",
-    "start": "http-server",
-    "dev": "rollup -c -w",
+    "start": "rollup -c -w",
     "build": "rollup -c"
   },
   "author": "Cole Gannon",
@@ -15,9 +14,9 @@
     "eslint": "^4.19.1",
     "eslint-config-airbnb-base": "^13.0.0",
     "eslint-plugin-import": "^2.13.0",
-    "http-server": "^0.11.1",
     "rollup": "^0.62.0",
     "rollup-plugin-node-resolve": "^3.3.0",
+    "rollup-plugin-serve": "^0.4.2",
     "rollup-plugin-terser": "^1.0.1"
   },
   "dependencies": {}
