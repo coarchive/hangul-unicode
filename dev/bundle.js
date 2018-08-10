@@ -5,77 +5,6 @@
   (factory((global.Hangul = {})));
 }(this, (function (exports) { 'use strict';
 
-  const Character = (val) => {
-    const str = `${val}`;
-    // not using .toString because Symbol.toPrimitive overrides when present
-    if (str.length !== 1) {
-      throw Error(`"${str}" is not a Character!`);
-    }
-    return str;
-  };
-  // this function turns values into characters if it can
-  // otherwise it just fails
-  const toArray = aryOrStr => (Array.isArray(aryOrStr) ? aryOrStr : aryOrStr.split(''));
-  // as a general note, calling .split like that instead of .split`` is faster
-  const isCharacterGroup = (val) => {
-    if (val.length < 1) {
-      return false;
-    } if (Array.isArray(val)) {
-      if (val.length > 1) {
-        return true;
-      }
-      return isCharacterGroup(val[0]);
-    } if (typeof val === 'string' && val.length > 1) {
-      return true;
-    }
-    return false;
-  };
-  // while Characters can be a CharacterGroup,
-  // this function ignores characters
-  const deepMap = (data, func) => {
-    const ary = toArray(data);
-    if (Array.isArray(data)) {
-      return ary.map(val => (isCharacterGroup(val) ? deepMap(val, func) : func(val)));
-    }
-    // since the data was a string, the array created from
-    // the string won't contain any character groups
-    return ary.map(char => func(char));
-    // I could write it "ary.map(func)" but I'm not
-    // just in case func has more than one argument
-  };
-  const deepFlatMap = (data, func, res = []) => {
-    const ary = toArray(data);
-    if (Array.isArray(data)) {
-      ary.forEach(val => res += isCharacterGroup(val) ? deepFlatMap(val, func) : func(val));
-    } else {
-      ary.forEach(char => res += func(char));
-    }
-    return res;
-  };
-  const deepFlatResMap = (data, func) => {
-    // this is different since it deals with functions that return Result objects.
-    let res = '';
-    let rem;
-    if (Array.isArray(data)) {
-      rem = data.map((val) => {
-        if (isCharacterGroup(val)) {
-          return deepFlatResMap(val, func);
-        }
-        return val;
-      });
-    } else {
-      rem = data.split('');
-    }
-    while (rem.length) {
-      const comp = func(rem);
-      // func needs to return a Result like interface for this to work
-      // otherwise we'll get a really nasty to debug error
-      res += comp.result;
-      rem = comp.remainder;
-    }
-    return res;
-  };
-
   class UnicodeRange {
     constructor(start, end) {
       this.start = start;
@@ -109,124 +38,14 @@
   const syllables = new UnicodeRange(0xAC00, 0xD7AF);
   const standardHangul = new CombinedRange([compatibilityJamo, syllables]);
 
-  const cho = [
-    'ㄱ', 'ㄲ', 'ㄴ', 'ㄷ', 'ㄸ', 'ㄹ', 'ㅁ',
-    'ㅂ', 'ㅃ', 'ㅅ', 'ㅆ', 'ㅇ', 'ㅈ', 'ㅉ',
-    'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ',
-  ];
-  const jung = [
-    'ㅏ', 'ㅐ', 'ㅑ', 'ㅒ', 'ㅓ', 'ㅔ', 'ㅕ',
-    'ㅖ', 'ㅗ', 'ㅘ', 'ㅙ', 'ㅚ', 'ㅛ', 'ㅜ',
-    'ㅝ', 'ㅞ', 'ㅟ', 'ㅠ', 'ㅡ', 'ㅢ', 'ㅣ',
-  ];
-  const jong = [
-    null, 'ㄱ', 'ㄲ', 'ㄳ', 'ㄴ', 'ㄵ', 'ㄶ',
-    'ㄷ', 'ㄹ', 'ㄺ', 'ㄻ', 'ㄼ', 'ㄽ', 'ㄾ',
-    'ㄿ', 'ㅀ', 'ㅁ', 'ㅂ', 'ㅄ', 'ㅅ', 'ㅆ',
-    'ㅇ', 'ㅈ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ',
-  ];
-  const choNum = {
-    ㄱ: 0,
-    ㄲ: 1,
-    ㄴ: 2,
-    ㄷ: 3,
-    ㄸ: 4,
-    ㄹ: 5,
-    ㅁ: 6,
-    ㅂ: 7,
-    ㅃ: 8,
-    ㅅ: 9,
-    ㅆ: 10,
-    ㅇ: 11,
-    ㅈ: 12,
-    ㅉ: 13,
-    ㅊ: 14,
-    ㅋ: 15,
-    ㅌ: 16,
-    ㅍ: 17,
-    ㅎ: 18,
-  };
-  const jungNum = {
-    ㅏ: 0,
-    ㅐ: 1,
-    ㅑ: 2,
-    ㅒ: 3,
-    ㅓ: 4,
-    ㅔ: 5,
-    ㅕ: 6,
-    ㅖ: 7,
-    ㅗ: 8,
-    ㅘ: 9,
-    ㅙ: 10,
-    ㅚ: 11,
-    ㅛ: 12,
-    ㅜ: 13,
-    ㅝ: 14,
-    ㅞ: 15,
-    ㅟ: 16,
-    ㅠ: 17,
-    ㅡ: 18,
-    ㅢ: 19,
-    ㅣ: 20,
-  };
-  const jongNum = {
-    ㄱ: 1,
-    ㄲ: 2,
-    ㄳ: 3,
-    ㄴ: 4,
-    ㄵ: 5,
-    ㄶ: 6,
-    ㄷ: 7,
-    ㄹ: 8,
-    ㄺ: 9,
-    ㄻ: 10,
-    ㄼ: 11,
-    ㄽ: 12,
-    ㄾ: 13,
-    ㄿ: 14,
-    ㅀ: 15,
-    ㅁ: 16,
-    ㅂ: 17,
-    ㅄ: 18,
-    ㅅ: 19,
-    ㅆ: 20,
-    ㅇ: 21,
-    ㅈ: 22,
-    ㅊ: 23,
-    ㅋ: 24,
-    ㅌ: 25,
-    ㅍ: 26,
-    ㅎ: 27,
-  };
-
-  var decomposeSyllable = ((val, hardFail) => {
-    const char = Character(val);
-    if (!syllables.contains(char)) {
-      if (hardFail) {
-        throw Error('Decomposing a syllable requires a syllable to decompose!');
-      }
-      return [val];
-      // if there's no hardFail, the function must
-      // still return the same type as it would have
-      // if it didn't fail
-    }
-    const code = char.codePointAt(0) - syllables.start;
-    const jongNum$$1 = code % 28;
-    const q = (code - jongNum$$1) / 28;
-    const jungNum$$1 = q % 21;
-    const choNum$$1 = 0 | q / 21; // basically Math.floor(q / 21)
-    return [cho[choNum$$1], jung[jungNum$$1], jong[jongNum$$1]].filter(v => v);
-    // the .filter(v => v) removes blank space in the array
-  });
-
-  const cho$1 = {
+  const cho = {
     ㄱㄱ: 'ㄲ',
     ㄷㄷ: 'ㄸ',
     ㅅㅅ: 'ㅆ',
     ㅈㅈ: 'ㅉ',
     ㅂㅂ: 'ㅃ',
   };
-  const jung$1 = {
+  const jung = {
     ㅗㅏ: 'ㅘ',
     ㅗㅐ: 'ㅙ',
     ㅗㅣ: 'ㅚ',
@@ -235,7 +54,7 @@
     ㅜㅣ: 'ㅟ',
     ㅡㅣ: 'ㅢ',
   };
-  const jong$1 = {
+  const jong = {
     ㄱㄱ: 'ㄲ',
     ㄱㅅ: 'ㄳ',
     ㄴㅈ: 'ㄵ',
@@ -286,7 +105,7 @@
     ㅠㅣ: 'ㆌ',
     ㆍㅣ: 'ㆎ',
   };
-  const all = Object.assign({}, cho$1, jung$1, jong$1, irregular);
+  const all = Object.assign({}, cho, jung, jong, irregular);
   // well, I guess the code lies since this export is not all
   // there's still the stuff below.
   const pairs = {
@@ -347,6 +166,17 @@
     ㆋ: ['ㅠ', 'ㅖ'],
     ㆌ: ['ㅠ', 'ㅣ'],
     ㆎ: ['ㆍ', 'ㅣ'],
+  };
+  const stronger = {
+    ㄱ: 'ㄲ',
+    ㅋ: 'ㄲ',
+    ㄷ: 'ㄸ',
+    ㅌ: 'ㄸ',
+    ㅂ: 'ㅃ',
+    ㅍ: 'ㅃ',
+    ㅅ: 'ㅆ',
+    ㅈ: 'ㅉ',
+    ㅊ: 'ㅉ',
   };
 
   // if you're gonna copy this part, at least give me credit.
@@ -771,7 +601,7 @@
 
   // tries to transform everything into disassembled standard hangul
 
-  var transformCharacter = (char => (!standardHangul.contains(char) && all$1[char]) || char);
+  const transformCharacter = char => (!standardHangul.contains(char) && all$1[char]) || char;
   const transformEverything = char => (
     (standardHangul.contains(char) ? pairs : all$1)[char]
     || char
@@ -779,21 +609,243 @@
   // transform everything just means that it also transforms
   // standard hangul characters instead of ignoring them
 
-  function disassembleCharacter(char) {
-    console.log(char);
-    let res;
-    if (syllables.contains(char)) {
-      res = decomposeSyllable(char).map(transformEverything);
-      // that .map(transformEverything) catches the complex
-      // characters that decomposeSyllable returns
+  const Character = (val) => {
+    const str = `${val}`;
+    // not using .toString because Symbol.toPrimitive overrides when present
+    if (str.length !== 1) {
+      throw Error(`"${str}" is not a Character!`);
+    }
+    return str;
+  };
+  // this function turns values into characters if it can
+  // otherwise it just fails
+  const toArray = aryOrStr => (Array.isArray(aryOrStr) ? aryOrStr : aryOrStr.split(''));
+  // as a general note, calling .split like that instead of .split`` is faster
+  const isCharacterGroup = (val) => {
+    if (val.length < 1) {
+      return false;
+    } if (Array.isArray(val)) {
+      if (val.length > 1) {
+        return true;
+      }
+      return isCharacterGroup(val[0]);
+    } if (typeof val === 'string' && val.length > 1) {
+      return true;
+    }
+    return false;
+  };
+  // while Characters can be a CharacterGroup,
+  // this function ignores characters
+  const deepMap = (data, func) => {
+    if (Array.isArray(data)) {
+      return data.map(val => (isCharacterGroup(val) ? deepMap(val, func) : toArray(func(val))));
+    } if (typeof data === 'string') {
+      // since the data was a string, the array created from
+      // the string won't contain any character groups
+      return data.split('').map(char => toArray(func(char)));
+    }
+    throw TypeError('The data must be an Array or a String!');
+  };
+  const identity = i => i;
+  const deepFlatMap = (data, func, resary = []) => {
+    // resary === resulting array
+    if (Array.isArray(data)) {
+      const len = data.length;
+      for (let i = 0; i < len; i++) {
+        const val = data[i];
+        if (isCharacterGroup(val)) {
+          deepFlatMap(val, func, resary);
+        } else {
+          const res = func(val);
+          if (isCharacterGroup(res)) {
+            deepFlatMap(res, identity, resary);
+          } else {
+            resary.push(res);
+          }
+        }
+      }
+    } else if (typeof data === 'string') {
+      const len = data.length;
+      for (let i = 0; i < len; i++) {
+        const res = func(data[i]);
+        if (isCharacterGroup(res)) {
+          deepFlatMap(res, identity, resary);
+        } else {
+          resary.push(res);
+        }
+      }
+    }
+    return resary;
+  };
+  const deepFlatResMap = (data, func) => {
+    // this is different since it deals with functions that return Result objects.
+    // consumeLeftovers
+    let rem;
+    // remaining
+    const res = [];
+    // result
+    if (Array.isArray(data)) {
+      rem = [];
+      const len = data.length;
+      for (let i = 0; i < len; i++) {
+        const val = data[i];
+        if (isCharacterGroup(val)) {
+          rem.push(...deepFlatResMap(val, func));
+          // deepFlatResMap always returns an array
+          // (or at least it should)
+        } else {
+          rem.push(val);
+        }
+      }
+    } else if (typeof data === 'string') {
+      rem = data.split('');
+      // could have used toArray but since we already know
+      // the type of this, there's no need to
     } else {
-      res = transformEverything(char);
+      // it's not an Array or a String
+      throw TypeError('The data must be an Array or a String!');
+    }
+    while (rem.length) {
+      const comp = func(rem);
+      // func needs to return a Result like interface for this to work
+      // otherwise we'll get a really nasty to debug error
+      res.push(comp.result);
+      rem = comp.remainder;
     }
     return res;
+  };
+
+  const cho$1 = [
+    'ㄱ', 'ㄲ', 'ㄴ', 'ㄷ', 'ㄸ', 'ㄹ', 'ㅁ',
+    'ㅂ', 'ㅃ', 'ㅅ', 'ㅆ', 'ㅇ', 'ㅈ', 'ㅉ',
+    'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ',
+  ];
+  const jung$1 = [
+    'ㅏ', 'ㅐ', 'ㅑ', 'ㅒ', 'ㅓ', 'ㅔ', 'ㅕ',
+    'ㅖ', 'ㅗ', 'ㅘ', 'ㅙ', 'ㅚ', 'ㅛ', 'ㅜ',
+    'ㅝ', 'ㅞ', 'ㅟ', 'ㅠ', 'ㅡ', 'ㅢ', 'ㅣ',
+  ];
+  const jong$1 = [
+    null, 'ㄱ', 'ㄲ', 'ㄳ', 'ㄴ', 'ㄵ', 'ㄶ',
+    'ㄷ', 'ㄹ', 'ㄺ', 'ㄻ', 'ㄼ', 'ㄽ', 'ㄾ',
+    'ㄿ', 'ㅀ', 'ㅁ', 'ㅂ', 'ㅄ', 'ㅅ', 'ㅆ',
+    'ㅇ', 'ㅈ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ',
+  ];
+  const choNum = {
+    ㄱ: 0,
+    ㄲ: 1,
+    ㄴ: 2,
+    ㄷ: 3,
+    ㄸ: 4,
+    ㄹ: 5,
+    ㅁ: 6,
+    ㅂ: 7,
+    ㅃ: 8,
+    ㅅ: 9,
+    ㅆ: 10,
+    ㅇ: 11,
+    ㅈ: 12,
+    ㅉ: 13,
+    ㅊ: 14,
+    ㅋ: 15,
+    ㅌ: 16,
+    ㅍ: 17,
+    ㅎ: 18,
+  };
+  const jungNum = {
+    ㅏ: 0,
+    ㅐ: 1,
+    ㅑ: 2,
+    ㅒ: 3,
+    ㅓ: 4,
+    ㅔ: 5,
+    ㅕ: 6,
+    ㅖ: 7,
+    ㅗ: 8,
+    ㅘ: 9,
+    ㅙ: 10,
+    ㅚ: 11,
+    ㅛ: 12,
+    ㅜ: 13,
+    ㅝ: 14,
+    ㅞ: 15,
+    ㅟ: 16,
+    ㅠ: 17,
+    ㅡ: 18,
+    ㅢ: 19,
+    ㅣ: 20,
+  };
+  const jongNum = {
+    ㄱ: 1,
+    ㄲ: 2,
+    ㄳ: 3,
+    ㄴ: 4,
+    ㄵ: 5,
+    ㄶ: 6,
+    ㄷ: 7,
+    ㄹ: 8,
+    ㄺ: 9,
+    ㄻ: 10,
+    ㄼ: 11,
+    ㄽ: 12,
+    ㄾ: 13,
+    ㄿ: 14,
+    ㅀ: 15,
+    ㅁ: 16,
+    ㅂ: 17,
+    ㅄ: 18,
+    ㅅ: 19,
+    ㅆ: 20,
+    ㅇ: 21,
+    ㅈ: 22,
+    ㅊ: 23,
+    ㅋ: 24,
+    ㅌ: 25,
+    ㅍ: 26,
+    ㅎ: 27,
+  };
+
+  var decomposeSyllable = ((val, hardFail) => {
+    const char = Character(val);
+    if (!syllables.contains(char)) {
+      if (hardFail) {
+        throw Error('Decomposing a syllable requires a syllable to decompose!');
+      }
+      return [val];
+      // if there's no hardFail, the function must
+      // still return the same type as it would have
+      // if it didn't fail
+    }
+    const code = char.codePointAt(0) - syllables.start;
+    const jongNum$$1 = code % 28;
+    const q = (code - jongNum$$1) / 28;
+    const jungNum$$1 = q % 21;
+    const choNum$$1 = 0 | q / 21; // basically Math.floor(q / 21)
+    return [cho$1[choNum$$1], jung$1[jungNum$$1], jong$1[jongNum$$1]].filter(v => v);
+    // the .filter(v => v) removes blank space in the array
+  });
+
+  function disassembleEveryCharacter(char) {
+    if (syllables.contains(char)) {
+      return decomposeSyllable(char).map(transformEverything);
+      // that .map(transformEverything) catches the complex
+      // characters that decomposeSyllable returns
+    }
+    // otherwise try breaking complex characters apart
+    return transformEverything(char);
   }
-  var disassemble = ((data, grouped) => (grouped ? deepMap : deepFlatMap)(data, disassembleCharacter));
-  // this is a shady function, it calls either deepMap or
-  // deepFlatMap with the data and disassembleCharacter
+  function disassembleCharacter(char) {
+    if (syllables.contains(char)) {
+      return decomposeSyllable(char).map(transformCharacter);
+      // that .map(transformEverything) catches the complex
+      // characters that decomposeSyllable returns
+    }
+    // otherwise try breaking complex characters apart
+    return transformCharacter(char);
+  }
+  var disassemble = ((data, grouped, disassembleDouble) => (grouped ? deepMap : deepFlatMap)(data, disassembleDouble ? disassembleEveryCharacter : disassembleCharacter));
+  // I know this looks really bad since it's all on
+  // one line but ESlint was being really finicky
 
   // This file is only used in ../publicCompose
   // all is the only one of these that's actually used
@@ -911,6 +963,11 @@
     }
   }
 
+  // important note!
+  // these functions aren't going to really make any sense until
+  // you understand how they work in conjunction with the stuff
+  // that's in './types'. Read './Result' and './Types' first.
+  // then read this.
   const composeComplex = (...objList) => {
     const obj = Object.assign({}, ...objList);
     // obj is stored in this scope to revent redundant operations
@@ -918,24 +975,29 @@
       if (ary.length < 2) {
         return new Result(ary[0]);
       }
-      const comp2 = obj[ary.slice(0, 2).join('')];
-      if (comp2) {
-        const comp3 = ary.length > 2 && obj[ary.slice(0, 3).join('')];
-        if (comp3) {
-          return new Result(comp3, ary.slice(3));
+      const d1 = obj[ary.slice(0, 2).join('')];
+      // this makes sense if you read * from './unicode/complex' (so read it)
+      // depth 1, two combined characters
+      if (d1) {
+        const d2 = ary.length > 2 && obj[ary.slice(0, 3).join('')];
+        if (d2) {
+          return new Result(d2, ary.slice(3));
         }
-        return new Result(comp2, ary.slice(2));
+        // depth 2 doesn't exist or was never specified
+        return new Result(d1, ary.slice(2));
       }
+      // couldn't find any depth 1 objects for the
+      // first character within ary
       return new Result(ary[0], ary.slice(1));
     });
   };
   const composeAnyComplexBase = composeComplex(
-    cho$1,
-    jung$1,
-    jong$1,
+    cho,
+    jung,
+    jong,
     irregular,
   );
-  const composeComplexChoBase = composeComplex(cho$1);
+  const composeComplexChoBase = composeComplex(cho);
   // both of these base functions return Results so that's why
   // they need deepFlatResMaps instead of deepFlatMaps
   const composeAnyComplex = ary => deepFlatResMap(ary, composeAnyComplexBase);
@@ -943,13 +1005,14 @@
   function standardizeCharacter(val) {
     const v = transformCharacter(Character(val));
     if (Array.isArray(v)) {
+      // atempt compose only if the value is an array
       return composeAnyComplex(v);
+      // returns an Array
     }
-    // if it's not an array, that means that transforming the
-    // character was just a string so we can just return it
     return v;
+    // always return the same type
   }
-  var standardize = (group => deepFlatMap(group, standardizeCharacter));
+  var standardize = ((group, grouped) => (grouped ? deepMap : deepFlatMap)(group, standardizeCharacter));
 
   // since these functions are exposed, the characters must be
   // standardized so that the libaray can function properly
@@ -1001,22 +1064,22 @@
   // so if anyone comes up with one, I'll take it
 
   const syllable = (choChar, jungChar = '', jongChar = '', hardFail) => {
-    const cho$$1 = choNum[standardizeCharacter(choChar)];
-    const jung$$1 = jungNum[standardizeCharacter(jungChar)];
-    let jong$$1;
+    const cho = choNum[standardizeCharacter(choChar)];
+    const jung = jungNum[standardizeCharacter(jungChar)];
+    let jong;
     if (jongChar) {
-      jong$$1 = jongNum[standardizeCharacter(jongChar)];
-    } if (!Number.isInteger(cho$$1)) {
+      jong = jongNum[standardizeCharacter(jongChar)];
+    } if (!Number.isInteger(cho)) {
       if (hardFail) {
         throw Error(`"${choChar}" is not a valid cho Character`);
       }
       return `${choChar}${jungChar}${jongChar}`;
-    } if (!Number.isInteger(jung$$1)) {
+    } if (!Number.isInteger(jung)) {
       if (hardFail) {
         throw Error(`"${jungChar}" is not a valid jung Character`);
       }
       return `${choChar}${jungChar}${jongChar}`;
-    } if (jongChar && !Number.isInteger(jong$$1)) {
+    } if (jongChar && !Number.isInteger(jong)) {
       // check if it exists because !Number.isInteger(undefined)
       // is true and we don't want that happening since jongChar
       // is optional
@@ -1025,23 +1088,30 @@
       }
       // getting here means that the cho and jung
       // characters were valid, so call composeSyllable
-      return `${composeSyllableFn(cho$$1, jung$$1)}${jongChar}`;
+      return `${composeSyllableFn(cho, jung)}${jongChar}`;
     }
-    return composeSyllableFn(cho$$1, jung$$1, jong$$1);
+    return composeSyllableFn(cho, jung, jong);
   };
   // by nesting all if-statements under if (hardFail)
   // there might be a little better performance but I'm
   // sure that it's pretty trivial.
 
-  console.log('foobarbaz');
+  var stronger$1 = (group => standardize(group).map(char => stronger[char] || char));
 
+  var decomposeComplex = (val => toArray(transformEverything(Character(val))));
+
+  // ᆋ
+
+  exports.disassemble = disassemble;
+  exports.d = disassemble;
   exports.deepFlatMap = deepFlatMap;
   exports.decomposeSyllable = decomposeSyllable;
-  exports.disassemble = disassemble;
   exports.composeComplex = complex;
   exports.composeSyllable = syllable;
-  exports.standardize = standardize;
-  exports.standardizeCharacter = standardizeCharacter;
+  exports.toStandard = standardize;
+  exports.toStandardCharacter = standardizeCharacter;
+  exports.stronger = stronger$1;
+  exports.decomposeComplex = decomposeComplex;
 
   Object.defineProperty(exports, '__esModule', { value: true });
 

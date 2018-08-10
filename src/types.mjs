@@ -8,7 +8,7 @@ export const Character = (val) => {
 };
 // this function turns values into characters if it can
 // otherwise it just fails
-const toArray = aryOrStr => (Array.isArray(aryOrStr) ? aryOrStr : aryOrStr.split(''));
+export const toArray = aryOrStr => (Array.isArray(aryOrStr) ? aryOrStr : aryOrStr.split(''));
 // as a general note, calling .split like that instead of .split`` is faster
 export const isCharacterGroup = (val) => {
   if (val.length < 1) {
@@ -26,44 +26,79 @@ export const isCharacterGroup = (val) => {
 // while Characters can be a CharacterGroup,
 // this function ignores characters
 export const deepMap = (data, func) => {
-  const ary = toArray(data);
   if (Array.isArray(data)) {
-    return ary.map(val => (isCharacterGroup(val) ? deepMap(val, func) : func(val)));
+    return data.map(val => (isCharacterGroup(val) ? deepMap(val, func) : toArray(func(val))));
+  } if (typeof data === 'string') {
+    // since the data was a string, the array created from
+    // the string won't contain any character groups
+    return data.split('').map(char => toArray(func(char)));
   }
-  // since the data was a string, the array created from
-  // the string won't contain any character groups
-  return ary.map(char => func(char));
-  // I could write it "ary.map(func)" but I'm not
-  // just in case func has more than one argument
+  throw TypeError('The data must be an Array or a String!');
 };
-export const deepFlatMap = (data, func, res = []) => {
-  const ary = toArray(data);
+const identity = i => i;
+export const deepFlatMap = (data, func, resary = []) => {
+  // resary === resulting array
   if (Array.isArray(data)) {
-    ary.forEach(val => res += isCharacterGroup(val) ? deepFlatMap(val, func) : func(val));
-  } else {
-    ary.forEach(char => res += func(char));
+    const len = data.length;
+    for (let i = 0; i < len; i++) {
+      const val = data[i];
+      if (isCharacterGroup(val)) {
+        deepFlatMap(val, func, resary);
+      } else {
+        const res = func(val);
+        if (isCharacterGroup(res)) {
+          deepFlatMap(res, identity, resary);
+        } else {
+          resary.push(res);
+        }
+      }
+    }
+  } else if (typeof data === 'string') {
+    const len = data.length;
+    for (let i = 0; i < len; i++) {
+      const res = func(data[i]);
+      if (isCharacterGroup(res)) {
+        deepFlatMap(res, identity, resary);
+      } else {
+        resary.push(res);
+      }
+    }
   }
-  return res;
+  return resary;
 };
 export const deepFlatResMap = (data, func) => {
   // this is different since it deals with functions that return Result objects.
-  let res = '';
+  // consumeLeftovers
   let rem;
+  // remaining
+  const res = [];
+  // result
   if (Array.isArray(data)) {
-    rem = data.map((val) => {
+    rem = [];
+    const len = data.length;
+    for (let i = 0; i < len; i++) {
+      const val = data[i];
       if (isCharacterGroup(val)) {
-        return deepFlatResMap(val, func);
+        rem.push(...deepFlatResMap(val, func));
+        // deepFlatResMap always returns an array
+        // (or at least it should)
+      } else {
+        rem.push(val);
       }
-      return val;
-    });
-  } else {
+    }
+  } else if (typeof data === 'string') {
     rem = data.split('');
+    // could have used toArray but since we already know
+    // the type of this, there's no need to
+  } else {
+    // it's not an Array or a String
+    throw TypeError('The data must be an Array or a String!');
   }
   while (rem.length) {
     const comp = func(rem);
     // func needs to return a Result like interface for this to work
     // otherwise we'll get a really nasty to debug error
-    res += comp.result;
+    res.push(comp.result);
     rem = comp.remainder;
   }
   return res;

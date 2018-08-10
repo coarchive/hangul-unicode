@@ -1,14 +1,15 @@
-import transformCharacter from './transform';
+import { transformCharacter } from './transform';
 import { composeAnyComplex } from './compose';
-import { Character, deepFlatMap } from './types';
+import { Character, deepMap, deepFlatMap } from './types';
 
 export function standardizeCharacter(val) {
   const v = transformCharacter(Character(val));
   if (Array.isArray(v)) {
+    // atempt compose only if the value is an array
     return composeAnyComplex(v);
+    // returns an Array
   }
-  // if it's not an array, that means that transforming the
-  // character was just a string so we can just return it
   return v;
+  // always return the same type
 }
-export default (group => deepFlatMap(group, standardizeCharacter));
+export default ((group, grouped) => (grouped ? deepMap : deepFlatMap)(group, standardizeCharacter));

@@ -4,6 +4,11 @@ import composeSyllableFn from './composeSyllable';
 import R from './Result';
 import { deepFlatResMap } from './types';
 
+// important note!
+// these functions aren't going to really make any sense until
+// you understand how they work in conjunction with the stuff
+// that's in './types'. Read './Result' and './Types' first.
+// then read this.
 export const composeComplex = (...objList) => {
   const obj = Object.assign({}, ...objList);
   // obj is stored in this scope to revent redundant operations
@@ -11,14 +16,19 @@ export const composeComplex = (...objList) => {
     if (ary.length < 2) {
       return new R(ary[0]);
     }
-    const comp2 = obj[ary.slice(0, 2).join('')];
-    if (comp2) {
-      const comp3 = ary.length > 2 && obj[ary.slice(0, 3).join('')];
-      if (comp3) {
-        return new R(comp3, ary.slice(3));
+    const d1 = obj[ary.slice(0, 2).join('')];
+    // this makes sense if you read * from './unicode/complex' (so read it)
+    // depth 1, two combined characters
+    if (d1) {
+      const d2 = ary.length > 2 && obj[ary.slice(0, 3).join('')];
+      if (d2) {
+        return new R(d2, ary.slice(3));
       }
-      return new R(comp2, ary.slice(2));
+      // depth 2 doesn't exist or was never specified
+      return new R(d1, ary.slice(2));
     }
+    // couldn't find any depth 1 objects for the
+    // first character within ary
     return new R(ary[0], ary.slice(1));
   });
 };
@@ -34,26 +44,42 @@ const composeComplexChoBase = composeComplex(complex.cho);
 export const composeAnyComplex = ary => deepFlatResMap(ary, composeAnyComplexBase);
 export const composeComplexCho = ary => deepFlatResMap(ary, composeComplexChoBase);
 export const composeSyllable = (ary) => {
+  // while this function is named "composeSyllable", it actually
+  // can be used to compose anything, really.
   if (ary.length < 2) {
     return new R(ary[0]);
+    // don't do extra computing for small operations
   }
   const choRes = composeAnyComplex(ary);
+  // ^^ that's a Result object
   const choChar = choRes.result;
+  // the result of the composition, should be a Character
   const cho = choNum[choChar];
+  // the number that the character is mapped to
   if (!Number.isInteger(cho)) {
-    return choRes;
+    // check if it's not an integer since 0 == false
+    return new R(choRes, choRes.remainder);
+    // if it's not an integer, then return the potential
+    // complex or Character that was made from composeAnyComplex
   }
   const jungRes = composeAnyComplex(choRes.remainder);
   const jungChar = jungRes.result;
   const jung = jungNum[jungChar];
   if (!Number.isInteger(jung)) {
     return new R(choChar, [jungChar, jungRes.remainder]);
+    // still only return choChar as a result since we want
+    // to try starting a syllable off with the jungChar next
+    // time this function is called
   }
   const jongRes = composeAnyComplex(jungRes.remainder);
   const jongChar = jongRes.result;
   const jong = jongNum[jongChar];
   if (!jong) {
+    // at this point, we've confirmed cho and jung characters
+    // so return just a syllable of those two combined.
     return new R(composeSyllableFn(cho, jung), [jongChar, ...jungRes.remainder]);
+    // the jongChar, and the jungRes.remainder can be saved for later.
   }
   return new R(composeSyllableFn(cho, jung, jong), jongRes.remainder);
+  // yay! complete syllable!
 };
