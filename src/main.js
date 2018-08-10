@@ -1,5 +1,10 @@
+import assemble from './assemble';
 import disassemble from './disassemble';
 
+export {
+  assemble,
+  assemble as a,
+};
 export {
   disassemble,
   disassemble as d,

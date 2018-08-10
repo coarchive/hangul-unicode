@@ -65,7 +65,10 @@ export const irregular = {
   ㅠㅣ: 'ㆌ',
   ㆍㅣ: 'ㆎ',
 };
-export const all = Object.assign({}, cho, jung, jong, irregular);
+export const normAll = Object.assign({}, cho, jung, jong);
+// it's all of the normal complex characters
+// yes, I'm bad at naming things but whatever
+export const all = Object.assign({}, normAll, irregular);
 // well, I guess the code lies since this export is not all
 // there's still the stuff below.
 export const pairs = {
