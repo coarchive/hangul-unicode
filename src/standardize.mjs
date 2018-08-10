@@ -10,10 +10,10 @@ const standardizeCharacterBase = compFn => (val) => {
     // returns an Array
   }
   return v;
-  // always return the same type
 };
 const standardizeCharacterNormal = standardizeCharacterBase(composeComplex);
 const standardizeCharacterDepth3 = standardizeCharacterBase(composeComplexDepth3);
 const selector = depth3 => (depth3 ? standardizeCharacterDepth3 : standardizeCharacterNormal);
 export const standardizeCharacter = (char, Depth3) => selector(Depth3)(char);
-export default ((group, grouped, depth3) => (grouped ? deepMap : deepFlatMap)(group, selector(depth3)));
+export default ((data, grouped, depth3) => (grouped ? deepMap : deepFlatMap)(data, selector(depth3)));
+//

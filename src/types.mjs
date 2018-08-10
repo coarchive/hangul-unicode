@@ -41,6 +41,9 @@ export const deepFlatMap = (data, func, resary = []) => {
   if (Array.isArray(data)) {
     const len = data.length;
     for (let i = 0; i < len; i++) {
+      // for is faster than forEach
+      // this function is used a lot so I'll
+      // take any optimization that I can get
       const val = data[i];
       if (isCharacterGroup(val)) {
         deepFlatMap(val, func, resary);

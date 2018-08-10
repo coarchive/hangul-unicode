@@ -65,12 +65,6 @@ export const irregular = {
   ㅠㅣ: 'ㆌ',
   ㆍㅣ: 'ㆎ',
 };
-export const normAll = Object.assign({}, cho, jung, jong);
-// it's all of the normal complex characters
-// yes, I'm bad at naming things but whatever
-export const all = Object.assign({}, normAll, irregular);
-// well, I guess the code lies since this export is not all
-// there's still the stuff below.
 export const pairs = {
   ㄲ: ['ㄱ', 'ㄱ'],
   ㄳ: ['ㄱ', 'ㅅ'],
@@ -130,6 +124,57 @@ export const pairs = {
   ㆌ: ['ㅠ', 'ㅣ'],
   ㆎ: ['ㆍ', 'ㅣ'],
 };
+// it's all of the normal complex characters
+// yes, I'm bad at naming things but whatever
+export const all = Object.assign({}, cho, jung, jong, irregular);
+export const complex = {
+  ㄲ: 1,
+  ㄳ: 1,
+  ㄵ: 1,
+  ㄶ: 1,
+  ㄸ: 1,
+  ㄺ: 1,
+  ㄻ: 1,
+  ㄼ: 1,
+  ㄽ: 1,
+  ㄾ: 1,
+  ㄿ: 1,
+  ㅀ: 1,
+  ㅃ: 1,
+  ㅄ: 1,
+  ㅆ: 1,
+  ㅉ: 1,
+  ㅘ: 1,
+  ㅙ: 1,
+  ㅚ: 1,
+  ㅝ: 1,
+  ㅞ: 1,
+  ㅟ: 1,
+  ㅢ: 1,
+};
+export const irregularComplex = {
+  ㅥ: 1,
+  ㅦ: 1,
+  ㅧ: 1,
+  ㅨ: 1,
+  ㅩ: 1,
+  ㅪ: 1,
+  ㅫ: 1,
+  ㅬ: 1,
+  ㅭ: 1,
+  ㅮ: 1,
+  ㅯ: 1,
+  ㅰ: 1,
+  ㅱ: 1,
+  ㅲ: 1,
+  ㅳ: 1,
+  ㅴ: 1,
+  ㅵ: 1,
+  ㅶ: 1,
+  ㅷ: 1,
+};
+export const complexList = Object.assign({}, complex, irregularComplex);
+// yes, I know that this is not a list.
 export const stronger = {
   ㄱ: 'ㄲ',
   ㅋ: 'ㄲ',
@@ -141,3 +186,5 @@ export const stronger = {
   ㅈ: 'ㅉ',
   ㅊ: 'ㅉ',
 };
+// I would add a weaker export
+// except that I can't reverse the outputs

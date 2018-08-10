@@ -3,4 +3,4 @@ import { deepFlatResMap } from './types';
 
 const composeAnythingDepth3 = composeAnything(composeComplexBaseDepth3);
 const composeAnythingNormal = composeAnything(composeComplexBase);
-export default ((ary, depth3) => deepFlatResMap(ary, (depth3 ? composeAnythingDepth3 : composeAnythingNormal)));
+export default ((data, depth3) => deepFlatResMap(data, (depth3 ? composeAnythingDepth3 : composeAnythingNormal)));

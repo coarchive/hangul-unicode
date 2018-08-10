@@ -72,12 +72,6 @@
     ㅠㅣ: 'ㆌ',
     ㆍㅣ: 'ㆎ',
   };
-  const normAll = Object.assign({}, cho, jung, jong);
-  // it's all of the normal complex characters
-  // yes, I'm bad at naming things but whatever
-  const all = Object.assign({}, normAll, irregular);
-  // well, I guess the code lies since this export is not all
-  // there's still the stuff below.
   const pairs = {
     ㄲ: ['ㄱ', 'ㄱ'],
     ㄳ: ['ㄱ', 'ㅅ'],
@@ -137,6 +131,57 @@
     ㆌ: ['ㅠ', 'ㅣ'],
     ㆎ: ['ㆍ', 'ㅣ'],
   };
+  // it's all of the normal complex characters
+  // yes, I'm bad at naming things but whatever
+  const all = Object.assign({}, cho, jung, jong, irregular);
+  const complex = {
+    ㄲ: 1,
+    ㄳ: 1,
+    ㄵ: 1,
+    ㄶ: 1,
+    ㄸ: 1,
+    ㄺ: 1,
+    ㄻ: 1,
+    ㄼ: 1,
+    ㄽ: 1,
+    ㄾ: 1,
+    ㄿ: 1,
+    ㅀ: 1,
+    ㅃ: 1,
+    ㅄ: 1,
+    ㅆ: 1,
+    ㅉ: 1,
+    ㅘ: 1,
+    ㅙ: 1,
+    ㅚ: 1,
+    ㅝ: 1,
+    ㅞ: 1,
+    ㅟ: 1,
+    ㅢ: 1,
+  };
+  const irregularComplex = {
+    ㅥ: 1,
+    ㅦ: 1,
+    ㅧ: 1,
+    ㅨ: 1,
+    ㅩ: 1,
+    ㅪ: 1,
+    ㅫ: 1,
+    ㅬ: 1,
+    ㅭ: 1,
+    ㅮ: 1,
+    ㅯ: 1,
+    ㅰ: 1,
+    ㅱ: 1,
+    ㅲ: 1,
+    ㅳ: 1,
+    ㅴ: 1,
+    ㅵ: 1,
+    ㅶ: 1,
+    ㅷ: 1,
+  };
+  const complexList = Object.assign({}, complex, irregularComplex);
+  // yes, I know that this is not a list.
   const stronger = {
     ㄱ: 'ㄲ',
     ㅋ: 'ㄲ',
@@ -148,6 +193,8 @@
     ㅈ: 'ㅉ',
     ㅊ: 'ㅉ',
   };
+  // I would add a weaker export
+  // except that I can't reverse the outputs
 
   const cho$1 = [
     'ㄱ', 'ㄲ', 'ㄴ', 'ㄷ', 'ㄸ', 'ㄹ', 'ㅁ',
@@ -268,11 +315,30 @@
     }
   }
 
+  const jamo = new UnicodeRange(0x1100, 0x11FF);
   const compatibilityJamo = new UnicodeRange(0x3130, 0x318F);
+  const jamoExtendedA = new UnicodeRange(0xA960, 0xA97F);
   const syllables = new UnicodeRange(0xAC00, 0xD7AF);
+  const jamoExtendedB = new UnicodeRange(0xD7B0, 0xD7FF);
+  const halfwidth = new UnicodeRange(0xFFA0, 0xFFDF);
+  const reserved = new CombinedRange([
+    new UnicodeRange(0xA97D, 0xA97F), // jamoExtendedA
+    new UnicodeRange(0xD7A4, 0xD7AF), // syllables
+    new UnicodeRange(0xD7C7, 0xD7CA), // jamoExtendedB
+    new UnicodeRange(0xD7FC, 0xD7FF), // jamoExtendedB
+  ], { 0x3130: 1, 0x318F: 1 });
   const standardHangul = new CombinedRange([compatibilityJamo, syllables]);
+  const hangul = new CombinedRange([
+    jamo,
+    compatibilityJamo,
+    jamoExtendedA,
+    syllables,
+    jamoExtendedB,
+    halfwidth,
+    reserved,
+  ]);
 
-  var composeSyllableFn = ((cho, jung, jong = 0) => (
+  var composeSyllable = ((cho, jung, jong = 0) => (
     String.fromCodePoint(cho * 588 + jung * 28 + jong + syllables.start)
     // this is the actual function that makes unicode syllable characters
     // where the characters are mapped to numbers. Take a look at
@@ -329,6 +395,9 @@
     if (Array.isArray(data)) {
       const len = data.length;
       for (let i = 0; i < len; i++) {
+        // for is faster than forEach
+        // this function is used a lot so I'll
+        // take any optimization that I can get
         const val = data[i];
         if (isCharacterGroup(val)) {
           deepFlatMap(val, func, resary);
@@ -476,19 +545,19 @@
       if (!jong$$1) {
         // at this point, we've confirmed cho and jung characters
         // so return just a syllable of those two combined.
-        return new Result(composeSyllableFn(cho$$1, jung$$1), [jongChar, ...jungRes.remainder]);
+        return new Result(composeSyllable(cho$$1, jung$$1), [jongChar, ...jungRes.remainder]);
         // the jongChar, and the jungRes.remainder can be saved for later.
       }
-      return new Result(composeSyllableFn(cho$$1, jung$$1, jong$$1), jongRes.remainder);
+      return new Result(composeSyllable(cho$$1, jung$$1, jong$$1), jongRes.remainder);
       // yay! complete syllable!
     }
-    return new Result(composeSyllableFn(cho$$1, jung$$1));
+    return new Result(composeSyllable(cho$$1, jung$$1));
     // The last argument is optional for the Result constructor
   });
 
   const composeAnythingDepth3 = composeAnything(composeComplexBaseDepth3);
   const composeAnythingNormal = composeAnything(composeComplexBase);
-  var assemble = ((ary, depth3) => deepFlatResMap(ary, (depth3 ? composeAnythingDepth3 : composeAnythingNormal)));
+  var assemble = ((data, depth3) => deepFlatResMap(data, (depth3 ? composeAnythingDepth3 : composeAnythingNormal)));
 
   // if you're gonna copy this part, at least give me credit.
   // I had to do all of this manually.
@@ -538,8 +607,8 @@
     ᄨ: ['ㅂ', 'ㅊ'],
     ᄩ: ['ㅂ', 'ㅌ'],
     ᄪ: ['ㅂ', 'ㅍ'],
-    ᄫ: 'ㅸ',
-    ᄬ: 'ㅹ',
+    ᄫ: ['ㅂ', 'ㅇ'],
+    ᄬ: ['ㅂ', 'ㅂ', 'ㅇ'],
     ᄭ: ['ㅅ', 'ㄱ'],
     ᄮ: ['ㅅ', 'ㄴ'],
     ᄯ: ['ㅅ', 'ㄷ'],
@@ -723,7 +792,7 @@
     ᇣ: ['ㅂ', 'ㄹ'],
     ᇤ: ['ㅂ', 'ㅍ'],
     ᇥ: ['ㅂ', 'ㅎ'],
-    ᇦ: 'ㅸ',
+    ᇦ: ['ㅂ', 'ㅇ'],
     ᇧ: ['ㅅ', 'ㄱ'],
     ᇨ: ['ㅅ', 'ㄷ'],
     ᇩ: ['ㅅ', 'ㄹ'],
@@ -917,6 +986,7 @@
     (standardHangul.contains(char) ? pairs : all$1)[char]
     || char
   );
+  const transformEveryCharacter = data => transformEverything(Character(data));
   // transform everything just means that it also transforms
   // standard hangul characters instead of ignoring them
 
@@ -961,6 +1031,8 @@
   var disassemble = ((data, grouped, disassembleDouble) => (grouped ? deepMap : deepFlatMap)(data, disassembleDouble ? disassembleEveryCharacter : disassembleCharacter));
   // I know this looks really bad since it's all on
   // one line but ESlint was being really finicky
+
+  var decomposeComplex = (val => toArray(transformEverything(Character(val))));
 
   // This file is only used in ../publicCompose
   // all is the only one of these that's actually used
@@ -1072,18 +1144,18 @@
       // returns an Array
     }
     return v;
-    // always return the same type
   };
   const standardizeCharacterNormal = standardizeCharacterBase(composeComplex);
   const standardizeCharacterDepth3 = standardizeCharacterBase(composeComplexDepth3);
   const selector = depth3 => (depth3 ? standardizeCharacterDepth3 : standardizeCharacterNormal);
   const standardizeCharacter = (char, Depth3) => selector(Depth3)(char);
-  var standardize = ((group, grouped, depth3) => (grouped ? deepMap : deepFlatMap)(group, selector(depth3)));
+  var standardize = ((data, grouped, depth3) => (grouped ? deepMap : deepFlatMap)(data, selector(depth3)));
+  //
 
   // since these functions are exposed, the characters must be
   // standardized so that the libaray can function properly
 
-  const complex = (first, second, third = '', hardFail) => {
+  const complex$1 = (first, second, third = '', hardFail) => {
     if (first === undefined || second === undefined) {
       throw Error('Cannot compose a complex with less than two values!');
     }
@@ -1154,32 +1226,129 @@
       }
       // getting here means that the cho and jung
       // characters were valid, so call composeSyllable
-      return `${composeSyllableFn(cho, jung)}${jongChar}`;
+      return `${composeSyllable(cho, jung)}${jongChar}`;
     }
-    return composeSyllableFn(cho, jung, jong);
+    return composeSyllable(cho, jung, jong);
   };
   // by nesting all if-statements under if (hardFail)
   // there might be a little better performance but I'm
   // sure that it's pretty trivial.
 
-  var stronger$1 = (group => standardize(group).map(char => stronger[char] || char));
+  var stronger$1 = (data => standardize(data, false, true).map(char => stronger[char] || char));
+  // standardize(data, grouped, depth3)
+  // allow depth3 so as not to tamper with archaic unicode
 
-  var decomposeComplex = (val => toArray(transformEverything(Character(val))));
+  const consonants = {
+    ㄱ: 1,
+    ㄴ: 1,
+    ㄷ: 1,
+    ㄹ: 1,
+    ㅁ: 1,
+    ㅂ: 1,
+    ㅅ: 1,
+    ㅇ: 1,
+    ㅈ: 1,
+    ㅊ: 1,
+    ㅋ: 1,
+    ㅌ: 1,
+    ㅍ: 1,
+    ㅎ: 1,
+    ㆁ: 1, // apparently this is now "ㅇ"
+    ㆄ: 1,
+    ㅱ: 1,
+    ㅿ: 1,
+  };
+  const vowels = {
+    ㅏ: 1,
+    ㅐ: 1,
+    ㅑ: 1,
+    ㅓ: 1,
+    ㅔ: 1,
+    ㅕ: 1,
+    ㅖ: 1,
+    ㅗ: 1,
+    ㅛ: 1,
+    ㅜ: 1,
+    ㅠ: 1,
+    ㅡ: 1,
+    ㅣ: 1,
+    ㆍ: 1,
+  };
+  // the reason the data is stored like this is because iterating
+  // through an array is slower than just getting a key from an object
+  // In this case though, it might be faster since arrays are allocated
+  // on the heap instead of the stack?
 
-  // ᆋ
+  // I realize that I can programmatically reverse the key-value pairs during
+  // runtime but since I can just do it now, it's just a little faster.
+
+  var testMulti = (aryFnName => isFn => data => deepFlatMap(data, transformEveryCharacter)[aryFnName](isFn));
+
+  var contains = (testMulti('some'));
+
+  var is = (isFn => data => toArray(transformEveryCharacter(data)).every(isFn));
+
+  var isAll = (testMulti('every'));
+
+  var name = ((obj) => {
+    Object.keys(obj).forEach((key) => {
+      obj[key].displayName = key;
+    });
+  });
+
+  const consonant = char => consonants[char];
+  const isConsonant = is(consonant);
+  const isConsonantAll = isAll(consonant);
+  const containsConsonant = contains(consonant);
+  name({
+    isConsonant,
+    isConsonantAll,
+    containsConsonant,
+  });
+
+  const vowel = char => vowels[char];
+  const isVowel = is(vowel);
+  const isVowelAll = isAll(vowel);
+  const containsVowel = contains(vowel);
+  name({
+    isVowel,
+    isVowelAll,
+    containsVowel,
+  });
+
+  // TODO: public unicode block testing
+  // TODO: toKeys fromKeys
 
   exports.assemble = assemble;
   exports.a = assemble;
   exports.disassemble = disassemble;
   exports.d = disassemble;
-  exports.deepFlatMap = deepFlatMap;
+  exports.decomposeComplex = decomposeComplex;
   exports.decomposeSyllable = decomposeSyllable;
-  exports.composeComplex = complex;
+  exports.composeComplex = complex$1;
   exports.composeSyllable = syllable;
   exports.toStandard = standardize;
   exports.toStandardCharacter = standardizeCharacter;
   exports.stronger = stronger$1;
-  exports.decomposeComplex = decomposeComplex;
+  exports.deepFlatMap = deepFlatMap;
+  exports.transformCharacter = transformCharacter;
+  exports.transformEverything = transformEverything;
+  exports.transformEveryCharacter = transformEveryCharacter;
+  exports.isConsonant = isConsonant;
+  exports.isConsonantAll = isConsonantAll;
+  exports.containsConsonant = containsConsonant;
+  exports.isVowel = isVowel;
+  exports.isVowelAll = isVowelAll;
+  exports.containsVowel = containsVowel;
+  exports.jamo = jamo;
+  exports.compatibilityJamo = compatibilityJamo;
+  exports.jamoExtendedA = jamoExtendedA;
+  exports.syllables = syllables;
+  exports.jamoExtendedB = jamoExtendedB;
+  exports.halfwidth = halfwidth;
+  exports.reserved = reserved;
+  exports.standardHangul = standardHangul;
+  exports.hangul = hangul;
 
   Object.defineProperty(exports, '__esModule', { value: true });
 

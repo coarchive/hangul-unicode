@@ -2,7 +2,7 @@
   "name": "hangul-unicode",
   "version": "0.0.1",
   "description": " A library to process and standardize hangul characters across unicode blocks",
-  "main": "dist/Hangul.js",
+  "main": "dist/Hangul.min.js",
   "scripts": {
     "test": "echo \"Haha! There's no tests because I'm bad!\" && exit 1",
     "start": "rollup -c -w",
