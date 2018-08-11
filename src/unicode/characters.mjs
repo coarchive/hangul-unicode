@@ -34,7 +34,7 @@ export const vowels = {
   ㅣ: 1,
   ㆍ: 1,
 };
-export const toKeys = {
+export const hangulToKey = {
   ㅂ: 'q',
   ㅃ: 'Q',
   ㅈ: 'w',
@@ -69,7 +69,7 @@ export const toKeys = {
   ㅜ: 'n',
   ㅡ: 'm',
 };
-export const fromKeys = {
+export const keyToHangul = {
   q: 'ㅂ',
   Q: 'ㅃ',
   w: 'ㅈ',

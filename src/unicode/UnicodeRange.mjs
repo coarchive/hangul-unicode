@@ -18,11 +18,15 @@ export class CombinedRange {
     this.codePoints = codePoints;
   }
 
-  contains(char) {
-    const num = char.codePointAt(0);
+  containsCodePoint(num) {
     return (
-      (this.codePoints && this.codePoints[char])
+      (this.codePoints && this.codePoints[num])
       || this.ranges.some(range => range.containsCodePoint(num))
     );
+  }
+
+  contains(char) {
+    const num = char.codePointAt(0);
+    return this.containsCodePoint(num);
   }
 }

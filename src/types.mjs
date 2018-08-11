@@ -69,6 +69,24 @@ export const deepFlatMap = (data, func, resary = []) => {
   }
   return resary;
 };
+export const flatten = (data) => {
+  if (Array.isArray(data)) {
+    const res = [];
+    const len = data.length;
+    for (let i = 0; i < len; i++) {
+      const val = data[i];
+      if (isCharacterGroup(val)) {
+        res.push(...flatten(val));
+      } else {
+        res.push(val);
+      }
+    }
+    return res;
+  } if (typeof data === 'string') {
+    return data.split('');
+  }
+  throw TypeError('The data must be an Array or a String!');
+};
 export const deepFlatResMap = (data, func) => {
   // this is different since it deals with functions that return Result objects.
   // consumeLeftovers

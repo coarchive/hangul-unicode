@@ -71,12 +71,6 @@
     ㅠㅣ: 'ㆌ',
     ㆍㅣ: 'ㆎ',
   };
-  const normAll = Object.assign({}, cho, jung, jong);
-  // it's all of the normal complex characters
-  // yes, I'm bad at naming things but whatever
-  const all = Object.assign({}, normAll, irregular);
-  // well, I guess the code lies since this export is not all
-  // there's still the stuff below.
   const pairs = {
     ㄲ: ['ㄱ', 'ㄱ'],
     ㄳ: ['ㄱ', 'ㅅ'],
@@ -136,6 +130,57 @@
     ㆌ: ['ㅠ', 'ㅣ'],
     ㆎ: ['ㆍ', 'ㅣ'],
   };
+  // it's all of the normal complex characters
+  // yes, I'm bad at naming things but whatever
+  const all = Object.assign({}, cho, jung, jong, irregular);
+  const complex = {
+    ㄲ: 1,
+    ㄳ: 1,
+    ㄵ: 1,
+    ㄶ: 1,
+    ㄸ: 1,
+    ㄺ: 1,
+    ㄻ: 1,
+    ㄼ: 1,
+    ㄽ: 1,
+    ㄾ: 1,
+    ㄿ: 1,
+    ㅀ: 1,
+    ㅃ: 1,
+    ㅄ: 1,
+    ㅆ: 1,
+    ㅉ: 1,
+    ㅘ: 1,
+    ㅙ: 1,
+    ㅚ: 1,
+    ㅝ: 1,
+    ㅞ: 1,
+    ㅟ: 1,
+    ㅢ: 1,
+  };
+  const irregularComplex = {
+    ㅥ: 1,
+    ㅦ: 1,
+    ㅧ: 1,
+    ㅨ: 1,
+    ㅩ: 1,
+    ㅪ: 1,
+    ㅫ: 1,
+    ㅬ: 1,
+    ㅭ: 1,
+    ㅮ: 1,
+    ㅯ: 1,
+    ㅰ: 1,
+    ㅱ: 1,
+    ㅲ: 1,
+    ㅳ: 1,
+    ㅴ: 1,
+    ㅵ: 1,
+    ㅶ: 1,
+    ㅷ: 1,
+  };
+  const complexList = Object.assign({}, complex, irregularComplex);
+  // yes, I know that this is not a list.
   const stronger = {
     ㄱ: 'ㄲ',
     ㅋ: 'ㄲ',
@@ -147,6 +192,8 @@
     ㅈ: 'ㅉ',
     ㅊ: 'ㅉ',
   };
+  // I would add a weaker export
+  // except that I can't reverse the outputs
 
   const cho$1 = [
     'ㄱ', 'ㄲ', 'ㄴ', 'ㄷ', 'ㄸ', 'ㄹ', 'ㅁ',
@@ -258,18 +305,41 @@
       this.codePoints = codePoints;
     }
 
-    contains(char) {
-      const num = char.codePointAt(0);
+    containsCodePoint(num) {
       return (
-        (this.codePoints && this.codePoints[char])
+        (this.codePoints && this.codePoints[num])
         || this.ranges.some(range => range.containsCodePoint(num))
       );
     }
+
+    contains(char) {
+      const num = char.codePointAt(0);
+      return this.containsCodePoint(num);
+    }
   }
 
+  const jamo = new UnicodeRange(0x1100, 0x11FF);
   const compatibilityJamo = new UnicodeRange(0x3130, 0x318F);
+  const jamoExtendedA = new UnicodeRange(0xA960, 0xA97F);
   const syllables = new UnicodeRange(0xAC00, 0xD7AF);
+  const jamoExtendedB = new UnicodeRange(0xD7B0, 0xD7FF);
+  const halfwidth = new UnicodeRange(0xFFA0, 0xFFDF);
+  const reserved = new CombinedRange([
+    new UnicodeRange(0xA97D, 0xA97F), // jamoExtendedA
+    new UnicodeRange(0xD7A4, 0xD7AF), // syllables
+    new UnicodeRange(0xD7C7, 0xD7CA), // jamoExtendedB
+    new UnicodeRange(0xD7FC, 0xD7FF), // jamoExtendedB
+  ], { 0x3130: 1, 0x318F: 1 });
   const standardHangul = new CombinedRange([compatibilityJamo, syllables]);
+  const hangul = new CombinedRange([
+    jamo,
+    compatibilityJamo,
+    jamoExtendedA,
+    syllables,
+    jamoExtendedB,
+    halfwidth,
+    reserved,
+  ]);
 
   var composeSyllableFn = ((cho, jung, jong = 0) => (
     String.fromCodePoint(cho * 588 + jung * 28 + jong + syllables.start)
@@ -328,6 +398,9 @@
     if (Array.isArray(data)) {
       const len = data.length;
       for (let i = 0; i < len; i++) {
+        // for is faster than forEach
+        // this function is used a lot so I'll
+        // take any optimization that I can get
         const val = data[i];
         if (isCharacterGroup(val)) {
           deepFlatMap(val, func, resary);
@@ -352,6 +425,24 @@
       }
     }
     return resary;
+  };
+  const flatten = (data) => {
+    if (Array.isArray(data)) {
+      const res = [];
+      const len = data.length;
+      for (let i = 0; i < len; i++) {
+        const val = data[i];
+        if (isCharacterGroup(val)) {
+          res.push(...flatten(val));
+        } else {
+          res.push(val);
+        }
+      }
+      return res;
+    } if (typeof data === 'string') {
+      return data.split('');
+    }
+    throw TypeError('The data must be an Array or a String!');
   };
   const deepFlatResMap = (data, func) => {
     // this is different since it deals with functions that return Result objects.
@@ -537,8 +628,8 @@
     ᄨ: ['ㅂ', 'ㅊ'],
     ᄩ: ['ㅂ', 'ㅌ'],
     ᄪ: ['ㅂ', 'ㅍ'],
-    ᄫ: 'ㅸ',
-    ᄬ: 'ㅹ',
+    ᄫ: ['ㅂ', 'ㅇ'],
+    ᄬ: ['ㅂ', 'ㅂ', 'ㅇ'],
     ᄭ: ['ㅅ', 'ㄱ'],
     ᄮ: ['ㅅ', 'ㄴ'],
     ᄯ: ['ㅅ', 'ㄷ'],
@@ -722,7 +813,7 @@
     ᇣ: ['ㅂ', 'ㄹ'],
     ᇤ: ['ㅂ', 'ㅍ'],
     ᇥ: ['ㅂ', 'ㅎ'],
-    ᇦ: 'ㅸ',
+    ᇦ: ['ㅂ', 'ㅇ'],
     ᇧ: ['ㅅ', 'ㄱ'],
     ᇨ: ['ㅅ', 'ㄷ'],
     ᇩ: ['ㅅ', 'ㄹ'],
@@ -916,6 +1007,7 @@
     (standardHangul.contains(char) ? pairs : all$1)[char]
     || char
   );
+  const transformEveryCharacter = data => transformEverything(Character(data));
   // transform everything just means that it also transforms
   // standard hangul characters instead of ignoring them
 
@@ -1084,7 +1176,7 @@
   // since these functions are exposed, the characters must be
   // standardized so that the libaray can function properly
 
-  const complex = (first, second, third = '', hardFail) => {
+  const complex$1 = (first, second, third = '', hardFail) => {
     if (first === undefined || second === undefined) {
       throw Error('Cannot compose a complex with less than two values!');
     }
@@ -1163,9 +1255,244 @@
   // there might be a little better performance but I'm
   // sure that it's pretty trivial.
 
-  var stronger$1 = (data => standardize(data).map(char => stronger[char] || char));
+  var stronger$1 = (data => standardize(data, false, true).map(char => stronger[char] || char));
+  // standardize(data, grouped, depth3)
+  // allow depth3 so as not to tamper with archaic unicode
 
-  // ᆋ
+  const consonants = {
+    ㄱ: 1,
+    ㄴ: 1,
+    ㄷ: 1,
+    ㄹ: 1,
+    ㅁ: 1,
+    ㅂ: 1,
+    ㅅ: 1,
+    ㅇ: 1,
+    ㅈ: 1,
+    ㅊ: 1,
+    ㅋ: 1,
+    ㅌ: 1,
+    ㅍ: 1,
+    ㅎ: 1,
+    ㆁ: 1, // apparently this is now "ㅇ"
+    ㆄ: 1,
+    ㅱ: 1,
+    ㅿ: 1,
+  };
+  const vowels = {
+    ㅏ: 1,
+    ㅐ: 1,
+    ㅑ: 1,
+    ㅓ: 1,
+    ㅔ: 1,
+    ㅕ: 1,
+    ㅖ: 1,
+    ㅗ: 1,
+    ㅛ: 1,
+    ㅜ: 1,
+    ㅠ: 1,
+    ㅡ: 1,
+    ㅣ: 1,
+    ㆍ: 1,
+  };
+  const hangulToKey = {
+    ㅂ: 'q',
+    ㅃ: 'Q',
+    ㅈ: 'w',
+    ㅉ: 'W',
+    ㄷ: 'e',
+    ㄸ: 'E',
+    ㄱ: 'r',
+    ㄲ: 'R',
+    ㅅ: 't',
+    ㅆ: 'T',
+    ㅛ: 'y',
+    ㅕ: 'u',
+    ㅑ: 'i',
+    ㅐ: 'o',
+    ㅒ: 'O',
+    ㅔ: 'p',
+    ㅖ: 'P',
+    ㅁ: 'a',
+    ㄴ: 's',
+    ㅇ: 'd',
+    ㄹ: 'f',
+    ㅎ: 'g',
+    ㅗ: 'h',
+    ㅓ: 'j',
+    ㅏ: 'k',
+    ㅣ: 'l',
+    ㅋ: 'z',
+    ㅌ: 'x',
+    ㅊ: 'c',
+    ㅍ: 'v',
+    ㅠ: 'b',
+    ㅜ: 'n',
+    ㅡ: 'm',
+  };
+  // the reason the data is stored like this is because iterating
+  // through an array is slower than just getting a key from an object
+  // In this case though, it might be faster since arrays are allocated
+  // on the heap instead of the stack?
+
+  // I realize that I can programmatically reverse the key-value pairs during
+  // runtime but since I can just do it now, it's just a little faster.
+
+  const hangulToKeyFn = char => hangulToKey[char] || char;
+  const toKeys = (data, grouped) => (grouped ? deepMap : deepFlatMap)(disassemble(flatten(data), grouped), hangulToKeyFn);
+
+  var testMulti = (aryFnName => isFn => data => deepFlatMap(data, transformEveryCharacter)[aryFnName](isFn));
+
+  var contains = (testMulti('some'));
+
+  var is = (isFn => data => toArray(transformEveryCharacter(data)).every(isFn));
+
+  var isAll = (testMulti('every'));
+
+  var name = ((obj) => {
+    Object.keys(obj).forEach((key) => {
+      obj[key].displayName = key;
+    });
+  });
+
+  const consonant = char => consonants[char];
+  const isConsonant = is(consonant);
+  const isConsonantAll = isAll(consonant);
+  const containsConsonant = contains(consonant);
+  name({
+    isConsonant,
+    isConsonantAll,
+    containsConsonant,
+  });
+
+  const vowel = char => vowels[char];
+  const isVowel = is(vowel);
+  const isVowelAll = isAll(vowel);
+  const containsVowel = contains(vowel);
+  name({
+    isVowel,
+    isVowelAll,
+    containsVowel,
+  });
+
+  const isAll$1 = testFn => (data) => {
+    const len = data.length;
+    if (Array.isArray(data)) {
+      for (let i = 0; i < len; i++) {
+        const val = data[i];
+        if (isCharacterGroup(val) ? isAll$1(testFn)(val) : testFn(val)) {
+          continue;
+        }
+        // the loop will get here if it doesn't satisfy the testing function
+        return false;
+      }
+      return true;
+    } if (typeof data === 'string') {
+      for (let i = 0; i < len; i++) {
+        const val = data[i];
+        if (testFn(val)) {
+          continue;
+        }
+        return false;
+      }
+      return true;
+    }
+    throw TypeError('The data must be an Array or a String!');
+  };
+  const contains$1 = testFn => (data) => {
+    const len = data.length;
+    if (Array.isArray(data)) {
+      for (let i = 0; i < len; i++) {
+        const val = data[i];
+        if (isCharacterGroup(val) ? isAll$1(testFn)(val) : testFn(val)) {
+          return true;
+          // this allows the function to short circut
+        }
+      }
+      return false;
+    } if (typeof data === 'string') {
+      for (let i = 0; i < len; i++) {
+        const val = data[i];
+        if (testFn(val)) {
+          return true;
+        }
+      }
+      return false;
+    }
+    throw TypeError('The data must be an Array or a String!');
+  };
+
+  const isJamo = char => jamo.contains(char);
+  const isCompatibilityJamo = char => compatibilityJamo.contains(char);
+  const isJamoExtendedA = char => jamoExtendedA.char(char);
+  const isSyllable = char => syllables.contains(char);
+  const isJamoExtendedB = char => jamoExtendedB.contains(char);
+  const isHalfwidth = char => halfwidth.contains(char);
+  const isReserved = char => reserved.contains(char);
+  const isStandardHangul = char => standardHangul.contains(char);
+  const isHangul = char => hangul.contains(char);
+
+  const isAllJamo = isAll$1(isJamo);
+  const containsJamo = contains$1(isJamo);
+
+  const isAllCompatibilityJamo = isAll$1(isCompatibilityJamo);
+  const containsCompatibilityJamo = contains$1(isCompatibilityJamo);
+
+  const isAllJamoExtendedA = isAll$1(isJamoExtendedA);
+  const containsJamoExtendedA = contains$1(isJamoExtendedA);
+
+  const isAllSyllable = isAll$1(isSyllable);
+  const containsSyllable = contains$1(isSyllable);
+
+  const isAllJamoExtendedB = isAll$1(isJamoExtendedB);
+  const containsJamoExtendedB = contains$1(isJamoExtendedB);
+
+  const isAllHalfwidth = isAll$1(isHalfwidth);
+  const containsHalfwidth = contains$1(isHalfwidth);
+
+  const isAllReserved = isAll$1(isReserved);
+  const containsReserved = contains$1(isReserved);
+
+  const isAllStandardHangul = isAll$1(isStandardHangul);
+  const containsStandardHangul = contains$1(isStandardHangul);
+
+  const isAllHangul = isAll$1(isHangul);
+  const containsHangul = contains$1(isHangul);
+  name({
+    isJamo,
+    isAllJamo,
+    containsJamo,
+
+    isCompatibilityJamo,
+    isAllCompatibilityJamo,
+    containsCompatibilityJamo,
+
+    isJamoExtendedA,
+    isAllJamoExtendedA,
+    containsJamoExtendedA,
+
+    isSyllable,
+    isAllSyllable,
+    containsSyllable,
+
+    isJamoExtendedB,
+    isAllJamoExtendedB,
+    containsJamoExtendedB,
+
+    isHalfwidth,
+    isAllHalfwidth,
+    containsHalfwidth,
+
+    isStandardHangul,
+    isAllStandardHangul,
+    containsStandardHangul,
+
+    isHangul,
+    isAllHangul,
+    containsHangul,
+  });
+
+  // TODO: toKeys fromKeys
 
   exports.assemble = assemble;
   exports.a = assemble;
@@ -1173,11 +1500,48 @@
   exports.d = disassemble;
   exports.decomposeComplex = decomposeComplex;
   exports.decomposeSyllable = decomposeSyllable;
-  exports.composeComplex = complex;
+  exports.composeComplex = complex$1;
   exports.composeSyllable = syllable;
-  exports.toStandard = standardize;
-  exports.toStandardCharacter = standardizeCharacter;
+  exports.standardizeAll = standardize;
+  exports.standardizeCharacter = standardizeCharacter;
   exports.stronger = stronger$1;
+  exports.flatten = flatten;
+  exports.toKeys = toKeys;
+  exports.transformCharacter = transformCharacter;
+  exports.transformEverything = transformEverything;
+  exports.transformEveryCharacter = transformEveryCharacter;
+  exports.isConsonant = isConsonant;
+  exports.isConsonantAll = isConsonantAll;
+  exports.containsConsonant = containsConsonant;
+  exports.isVowel = isVowel;
+  exports.isVowelAll = isVowelAll;
+  exports.containsVowel = containsVowel;
+  exports.isJamo = isJamo;
+  exports.isCompatibilityJamo = isCompatibilityJamo;
+  exports.isJamoExtendedA = isJamoExtendedA;
+  exports.isSyllable = isSyllable;
+  exports.isJamoExtendedB = isJamoExtendedB;
+  exports.isHalfwidth = isHalfwidth;
+  exports.isReserved = isReserved;
+  exports.isStandardHangul = isStandardHangul;
+  exports.isHangul = isHangul;
+  exports.containsJamo = containsJamo;
+  exports.isAllCompatibilityJamo = isAllCompatibilityJamo;
+  exports.containsCompatibilityJamo = containsCompatibilityJamo;
+  exports.isAllJamoExtendedA = isAllJamoExtendedA;
+  exports.containsJamoExtendedA = containsJamoExtendedA;
+  exports.isAllSyllable = isAllSyllable;
+  exports.containsSyllable = containsSyllable;
+  exports.isAllJamoExtendedB = isAllJamoExtendedB;
+  exports.containsJamoExtendedB = containsJamoExtendedB;
+  exports.isAllHalfwidth = isAllHalfwidth;
+  exports.containsHalfwidth = containsHalfwidth;
+  exports.isAllReserved = isAllReserved;
+  exports.containsReserved = containsReserved;
+  exports.isAllStandardHangul = isAllStandardHangul;
+  exports.containsStandardHangul = containsStandardHangul;
+  exports.isAllHangul = isAllHangul;
+  exports.containsHangul = containsHangul;
 
   Object.defineProperty(exports, '__esModule', { value: true });
 

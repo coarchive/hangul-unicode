@@ -1,48 +1,73 @@
 import * as blocks from './unicode/blocks';
-import contains from './contains';
-import is from './is';
-import isAll from './isAll';
+import { isAll, contains } from './simpleDeepTest';
 import name from './name';
 
-const jamo = char => blocks.jamo.contains(char);
-const compatibilityJamo = char => blocks.compatibilityJamo.contains(char);
-const jamoExtendedA = char => blocks.jamoExtendedA.char(char);
-const syllable = char => blocks.syllables.contains(char);
-const jamoExtendedB = char => blocks.jamoExtendedB.contains(char);
-const halfwidth = char => blocks.halfwidth.contains(char);
-const reserved = char => blocks.reserved.contains(char);
-const standardHangul = char => blocks.standardHangul.contains(char);
-const hangul = char => blocks.hangul.contains(char);
+export const isJamo = char => blocks.jamo.contains(char);
+export const isCompatibilityJamo = char => blocks.compatibilityJamo.contains(char);
+export const isJamoExtendedA = char => blocks.jamoExtendedA.char(char);
+export const isSyllable = char => blocks.syllables.contains(char);
+export const isJamoExtendedB = char => blocks.jamoExtendedB.contains(char);
+export const isHalfwidth = char => blocks.halfwidth.contains(char);
+export const isReserved = char => blocks.reserved.contains(char);
+export const isStandardHangul = char => blocks.standardHangul.contains(char);
+export const isHangul = char => blocks.hangul.contains(char);
 
-export const isJamo = is(jamo);
-export const isJamoAll = isAll(syllable);
-export const containsJamo = contains(syllable);
-export const isCompatibilityJamo = is(compatibilityJamo);
-export const isCompatibilityJamoAll = isAll(compatibilityJamo);
-export const containsCompatibilityJamo = contains(compatibilityJamo);
-export const isJamoExtendedA = is(jamoExtendedA);
-export const isJamoExtendedAAll = isAll(jamoExtendedA);
-export const containsJamoExtendedA = contains(jamoExtendedA);
-export const isSyllable = is(syllable);
-export const isSyllableAll = isAll(syllable);
-export const containsSyllable = contains(syllable);
-export const isJamoExtendedB = is(jamoExtendedB);
-export const isJamoExtendedBAll = isAll(jamoExtendedB);
-export const containsJamoExtendedB = contains(jamoExtendedB);
-export const isHalfwidth = is(halfwidth);
-export const isHalfwidthAll = isAll(halfwidth);
-export const containsHalfwidth = contains(halfwidth);
-export const isReserved = is(reserved);
-export const isReservedAll = isAll(reserved);
-export const containsReserved = contains(reserved);
-export const isStandardHangul = is(standardHangul);
-export const isStandardHangulAll = isAll(standardHangul);
-export const containsStandardHangul = contains(standardHangul);
-export const isHangul = is(hangul);
-export const isHangulAll = isAll(hangul);
-export const containsHangul = contains(hangul);
+const isAllJamo = isAll(isJamo);
+export const containsJamo = contains(isJamo);
+
+export const isAllCompatibilityJamo = isAll(isCompatibilityJamo);
+export const containsCompatibilityJamo = contains(isCompatibilityJamo);
+
+export const isAllJamoExtendedA = isAll(isJamoExtendedA);
+export const containsJamoExtendedA = contains(isJamoExtendedA);
+
+export const isAllSyllable = isAll(isSyllable);
+export const containsSyllable = contains(isSyllable);
+
+export const isAllJamoExtendedB = isAll(isJamoExtendedB);
+export const containsJamoExtendedB = contains(isJamoExtendedB);
+
+export const isAllHalfwidth = isAll(isHalfwidth);
+export const containsHalfwidth = contains(isHalfwidth);
+
+export const isAllReserved = isAll(isReserved);
+export const containsReserved = contains(isReserved);
+
+export const isAllStandardHangul = isAll(isStandardHangul);
+export const containsStandardHangul = contains(isStandardHangul);
+
+export const isAllHangul = isAll(isHangul);
+export const containsHangul = contains(isHangul);
 name({
+  isJamo,
+  isAllJamo,
+  containsJamo,
+
+  isCompatibilityJamo,
+  isAllCompatibilityJamo,
+  containsCompatibilityJamo,
+
+  isJamoExtendedA,
+  isAllJamoExtendedA,
+  containsJamoExtendedA,
+
   isSyllable,
-  isSyllableAll,
+  isAllSyllable,
   containsSyllable,
+
+  isJamoExtendedB,
+  isAllJamoExtendedB,
+  containsJamoExtendedB,
+
+  isHalfwidth,
+  isAllHalfwidth,
+  containsHalfwidth,
+
+  isStandardHangul,
+  isAllStandardHangul,
+  containsStandardHangul,
+
+  isHangul,
+  isAllHangul,
+  containsHangul,
 });

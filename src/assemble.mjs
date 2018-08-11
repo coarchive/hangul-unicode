@@ -1,6 +1,6 @@
 import composeAnything, { composeComplexBase, composeComplexBaseDepth3 } from './compose';
 import { deepFlatResMap } from './types';
 
-const composeAnythingDepth3 = composeAnything(composeComplexBaseDepth3);
+export const composeAnythingDepth3 = composeAnything(composeComplexBaseDepth3);
 const composeAnythingNormal = composeAnything(composeComplexBase);
 export default ((data, depth3) => deepFlatResMap(data, (depth3 ? composeAnythingDepth3 : composeAnythingNormal)));
