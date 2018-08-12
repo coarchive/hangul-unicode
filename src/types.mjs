@@ -8,6 +8,7 @@ export const Character = (val) => {
 };
 // this function turns values into characters if it can
 // otherwise it just fails
+const ENOARYLIKE = () => { throw TypeError('The data must be an Array or a String!') };
 export const toArray = aryOrStr => (Array.isArray(aryOrStr) ? aryOrStr : aryOrStr.split(''));
 // as a general note, calling .split like that instead of .split`` is faster
 export const isCharacterGroup = (val) => {
@@ -33,11 +34,11 @@ export const deepMap = (data, func) => {
     // the string won't contain any character groups
     return data.split('').map(char => toArray(func(char)));
   }
-  throw TypeError('The data must be an Array or a String!');
+  ENOARYLIKE();
 };
 const identity = i => i;
-export const deepFlatMap = (data, func, resary = []) => {
-  // resary === resulting array
+export const deepFlatMap = (data, func) => {
+  let res = '';
   if (Array.isArray(data)) {
     const len = data.length;
     for (let i = 0; i < len; i++) {
@@ -46,28 +47,30 @@ export const deepFlatMap = (data, func, resary = []) => {
       // take any optimization that I can get
       const val = data[i];
       if (isCharacterGroup(val)) {
-        deepFlatMap(val, func, resary);
+        res += deepFlatMap(val, func);
       } else {
-        const res = func(val);
-        if (isCharacterGroup(res)) {
-          deepFlatMap(res, identity, resary);
+        const recurseRes = func(val);
+        if (isCharacterGroup(recurseRes)) {
+          res += deepFlatMap(recurseRes, identity);
         } else {
-          resary.push(res);
+          res += recurseRes;
         }
       }
     }
   } else if (typeof data === 'string') {
     const len = data.length;
     for (let i = 0; i < len; i++) {
-      const res = func(data[i]);
-      if (isCharacterGroup(res)) {
-        deepFlatMap(res, identity, resary);
+      const recurseRes = func(data[i]);
+      if (isCharacterGroup(recurseRes)) {
+        res += deepFlatMap(recurseRes, identity);
       } else {
-        resary.push(res);
+        res += recurseRes;
       }
     }
+  } else {
+    ENOARYLIKE();
   }
-  return resary;
+  return res;
 };
 export const flatten = (data) => {
   if (Array.isArray(data)) {
@@ -85,7 +88,7 @@ export const flatten = (data) => {
   } if (typeof data === 'string') {
     return data.split('');
   }
-  throw TypeError('The data must be an Array or a String!');
+  ENOARYLIKE();
 };
 export const deepFlatResMap = (data, func) => {
   // this is different since it deals with functions that return Result objects.
@@ -113,7 +116,7 @@ export const deepFlatResMap = (data, func) => {
     // the type of this, there's no need to
   } else {
     // it's not an Array or a String
-    throw TypeError('The data must be an Array or a String!');
+    ENOARYLIKE();
   }
   while (rem.length) {
     const comp = func(rem);

@@ -1,26 +1,23 @@
 import { syllables } from './unicode/blocks';
-import { transformCharacter, transformEverything } from './transform';
-import decomposeSyllable from './decomposeSyllable';
-import { deepMap, deepFlatMap } from './types';
+import { transformEverything } from './transform';
+import { transformExceptDoubles } from './decomposeComplex';
+import { trustMe } from './decomposeSyllable';
+import { Character, deepMap, deepFlatMap } from './types';
 
-function disassembleEveryCharacter(char) {
+const disassembleFactory = transformer => (val) => {
+  const char = Character(val);
   if (syllables.contains(char)) {
-    return decomposeSyllable(char).map(transformEverything);
+    return trustMe(char).map(transformer);
     // that .map(transformEverything) catches the complex
     // characters that decomposeSyllable returns
   }
   // otherwise try breaking complex characters apart
-  return transformEverything(char);
-}
-function disassembleCharacter(char) {
-  if (syllables.contains(char)) {
-    return decomposeSyllable(char).map(transformCharacter);
-    // that .map(transformEverything) catches the complex
-    // characters that decomposeSyllable returns
-  }
-  // otherwise try breaking complex characters apart
-  return transformCharacter(char);
-}
-export default ((data, grouped, disassembleDouble) => (grouped ? deepMap : deepFlatMap)(data, disassembleDouble ? disassembleEveryCharacter : disassembleCharacter));
+  return transformer(char);
+};
+const disassembleAll = disassembleFactory(transformEverything);
+const disassemble = disassembleFactory(transformExceptDoubles);
+// not to be confused with Hangul.disassemble
+// this disassemble takes Characters as inputs, not CharacterGroups
+export default ((data, grouped, decomposeDoubles) => (grouped ? deepMap : deepFlatMap)(data, decomposeDoubles ? disassembleAll : disassemble));
 // I know this looks really bad since it's all on
 // one line but ESlint was being really finicky

@@ -1,18 +1,19 @@
 import * as blocks from './unicode/blocks';
 import { isAll, contains } from './simpleDeepTest';
 import name from './name';
+import { Character } from './types';
 
-export const isJamo = char => blocks.jamo.contains(char);
-export const isCompatibilityJamo = char => blocks.compatibilityJamo.contains(char);
-export const isJamoExtendedA = char => blocks.jamoExtendedA.char(char);
-export const isSyllable = char => blocks.syllables.contains(char);
-export const isJamoExtendedB = char => blocks.jamoExtendedB.contains(char);
-export const isHalfwidth = char => blocks.halfwidth.contains(char);
-export const isReserved = char => blocks.reserved.contains(char);
-export const isStandardHangul = char => blocks.standardHangul.contains(char);
-export const isHangul = char => blocks.hangul.contains(char);
+export const isJamo = data => blocks.jamo.contains(Character(data));
+export const isCompatibilityJamo = data => blocks.compatibilityJamo.contains(Character(data));
+export const isJamoExtendedA = data => blocks.jamoExtendedA.char(Character(data));
+export const isSyllable = data => blocks.syllables.contains(Character(data));
+export const isJamoExtendedB = data => blocks.jamoExtendedB.contains(Character(data));
+export const isHalfwidth = data => blocks.halfwidth.contains(Character(data));
+export const isReserved = data => blocks.reserved.contains(Character(data));
+export const isStandardHangul = data => blocks.standardHangul.contains(Character(data));
+export const isHangul = data => blocks.hangul.contains(Character(data));
 
-const isAllJamo = isAll(isJamo);
+export const isAllJamo = isAll(isJamo);
 export const containsJamo = contains(isJamo);
 
 export const isAllCompatibilityJamo = isAll(isCompatibilityJamo);

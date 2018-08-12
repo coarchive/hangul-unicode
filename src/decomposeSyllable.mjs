@@ -2,7 +2,15 @@ import { Character } from './types';
 import { syllables } from './unicode/blocks';
 import { cho, jung, jong } from './unicode/syllable';
 
-
+export const trustMe = (char) => {
+  const code = char.codePointAt(0) - syllables.start;
+  const jongNum = code % 28;
+  const q = (code - jongNum) / 28;
+  const jungNum = q % 21;
+  const choNum = 0 | q / 21; // basically Math.floor(q / 21)
+  return [cho[choNum], jung[jungNum], jong[jongNum]].filter(v => v);
+  // the .filter(v => v) removes blank space in the array
+}
 export default ((val, hardFail) => {
   const char = Character(val);
   if (!syllables.contains(char)) {
@@ -14,11 +22,5 @@ export default ((val, hardFail) => {
     // still return the same type as it would have
     // if it didn't fail
   }
-  const code = char.codePointAt(0) - syllables.start;
-  const jongNum = code % 28;
-  const q = (code - jongNum) / 28;
-  const jungNum = q % 21;
-  const choNum = 0 | q / 21; // basically Math.floor(q / 21)
-  return [cho[choNum], jung[jungNum], jong[jongNum]].filter(v => v);
-  // the .filter(v => v) removes blank space in the array
+  return trustMe(char);
 });

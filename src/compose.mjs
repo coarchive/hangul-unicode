@@ -2,37 +2,43 @@ import * as complex from './unicode/complex';
 import { choNum, jungNum, jongNum } from './unicode/syllable';
 import composeSyllableFn from './composeSyllable';
 import R from './Result';
-import { deepFlatResMap } from './types';
+import { Character, deepFlatResMap } from './types';
 
 // important note!
 // these functions aren't going to really make any sense until
 // you understand how they work in conjunction with the stuff
-// that's in './types'. Read './Result' and './Types' first.
+// that's in './types'. Read './Result' and './types' first.
 // then read this.
 const composeComplexFactory = (...objList) => {
   const obj = Object.assign({}, ...objList);
   // obj is stored in this scope to revent redundant operations
   return ((ary) => {
-    if (ary.length < 2) {
-      return new R(ary[0]);
+    const len = ary.length;
+    const char1 = Character(ary[0]);
+    if (len < 2) {
+      return new R(char1);
     }
-    const d1 = obj[ary.slice(0, 2).join('')];
-    // this makes sense if you read * from './unicode/complex' (so read it)
-    // depth 1, two combined characters
-    if (d1) {
-      const d2 = ary.length > 2 && obj[ary.slice(0, 3).join('')];
-      if (d2) {
-        return new R(d2, ary.slice(3));
+    const char2 = Character(ary[1]);
+    const comp2 = obj[char1 + char2];
+    // comp2 = composition of 2 characters
+    if (comp2) {
+      if (len > 2) {
+        // if there's more data, try to compose a tripple
+        const char3 = Character(ary[2]);
+        const comp3 = obj[char1 + char2 + char3];
+        if (comp3) {
+          return new R(comp3, ary.slice(3));
+        }
       }
-      // depth 2 doesn't exist or was never specified
-      return new R(d1, ary.slice(2));
+      // there's no more data or couldn't find a comp3
+      return new R(comp2, ary.slice(2));
     }
-    // couldn't find any depth 1 objects for the
-    // first character within ary
-    return new R(ary[0], ary.slice(1));
+    // couldn't find a comp2
+    return new R(char1, ary.slice(1));
   });
 };
 // a factory for composeComplexBases
+const composeComplexChoBase = composeComplexFactory(complex.cho);
 export const composeComplexBase = composeComplexFactory(
   complex.cho,
   complex.jung,
@@ -46,6 +52,7 @@ export const composeComplexBaseDepth3 = composeComplexFactory(
 );
 // both of these base functions return Results so that's why
 // they need deepFlatResMap instead of deepFlatMap
+export const composeComplexCho = ary => deepFlatResMap(ary, composeComplexChoBase);
 export const composeComplex = ary => deepFlatResMap(ary, composeComplexBase);
 export const composeComplexDepth3 = ary => deepFlatResMap(ary, composeComplexBaseDepth3);
 export default (compFn => (ary) => {
