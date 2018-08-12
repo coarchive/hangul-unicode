@@ -1,4 +1,8 @@
 import { transformEveryCharacter } from './transform';
-import { toArray } from './types';
 
-export default (isFn => data => toArray(transformEveryCharacter(data)).every(isFn));
+export default (isFn => (data) => {
+  const res = transformEveryCharacter(data);
+  // it's okay that we don't check if data is
+  // a Character since transformEveryCharacter does.
+  return Array.isArray(res) ? res.every(isFn) : isFn(res);
+});

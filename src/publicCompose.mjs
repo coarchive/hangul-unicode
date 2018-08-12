@@ -1,10 +1,10 @@
 import { all } from './unicode/complexTree';
 import { choNum, jungNum, jongNum } from './unicode/syllable';
 import composeSyllable from './composeSyllable';
-import { standardizeCharacter } from './standardize';
+import { standardizeCharacterBase } from './standardize';
 // since these functions are exposed, the characters must be
 // standardized so that the libaray can function properly
-
+const standardizeCharacter = standardizeCharacterBase(0b011);
 export const complex = (first, second, third = '', hardFail) => {
   if (first === undefined || second === undefined) {
     throw Error('Cannot compose a complex with less than two values!');

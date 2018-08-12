@@ -4,7 +4,7 @@ import { transformExceptDoubles } from './decomposeComplex';
 import { trustMe } from './decomposeSyllable';
 import { Character, deepMap, deepFlatMap } from './types';
 
-const disassembleFactory = transformer => (val) => {
+export const disassembleFactory = transformer => (val) => {
   const char = Character(val);
   if (syllables.contains(char)) {
     return trustMe(char).map(transformer);

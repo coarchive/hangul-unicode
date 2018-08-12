@@ -1,9 +1,6 @@
 (function(l, i, v, e) { v = l.createElement(i); v.async = 1; v.src = '//' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1'; e = l.getElementsByTagName(i)[0]; e.parentNode.insertBefore(v, e)})(document, 'script');
-(function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
-  typeof define === 'function' && define.amd ? define(['exports'], factory) :
-  (factory((global.Hangul = {})));
-}(this, (function (exports) { 'use strict';
+var Hangul = (function (exports) {
+  'use strict';
 
   const cho = {
     ㄱㄱ: 'ㄲ',
@@ -36,7 +33,7 @@
     ㅂㅅ: 'ㅄ',
     ㅅㅅ: 'ㅆ',
   };
-  const irregular = {
+  const archaic = {
     ㄴㄴ: 'ㅥ',
     ㄴㄷ: 'ㅦ',
     ㄴㅅ: 'ㅧ',
@@ -131,9 +128,6 @@
     ㆌ: ['ㅠ', 'ㅣ'],
     ㆎ: ['ㆍ', 'ㅣ'],
   };
-  // it's all of the normal complex characters
-  // yes, I'm bad at naming things but whatever
-  const all = Object.assign({}, cho, jung, jong, irregular);
   const complex = {
     ㄲ: 1,
     ㄳ: 1,
@@ -491,60 +485,53 @@
   // you understand how they work in conjunction with the stuff
   // that's in './types'. Read './Result' and './types' first.
   // then read this.
-  const composeComplexFactory = (...objList) => {
-    const obj = Object.assign({}, ...objList);
-    // obj is stored in this scope to revent redundant operations
-    return ((ary) => {
-      const len = ary.length;
-      const char1 = Character(ary[0]);
-      if (len < 2) {
-        return new Result(char1);
-      }
-      const char2 = Character(ary[1]);
-      const comp2 = obj[char1 + char2];
-      // comp2 = composition of 2 characters
-      if (comp2) {
-        if (len > 2) {
-          // if there's more data, try to compose a tripple
-          const char3 = Character(ary[2]);
-          const comp3 = obj[char1 + char2 + char3];
-          if (comp3) {
-            return new Result(comp3, ary.slice(3));
-          }
+  const modern = Object.assign({}, cho, jung, jong);
+  const archaic$1 = Object.assign({}, modern, archaic);
+  const useComp3 = 0b001;
+  const useArchaic = 0b010;
+  const useChoOnly = 0b100;
+  const composeComplexBase = (ary, mode) => {
+    if (mode < 0 || mode > 4) {
+      throw Error('The mode cannot be less than zero or greater than four!');
+    }
+    const obj = mode === useChoOnly ? cho : mode & useArchaic ? archaic$1 : modern;
+    // 0 === modern && comp2
+    // 1 === modern && comp3
+    // 2 === archaic && comp2
+    // 3 === archaic && comp3
+    // 4 === choOnly && comp2
+    const len = ary.length;
+    const char1 = Character(ary[0]);
+    if (len < 2) {
+      return new Result(char1);
+    }
+    const char2 = Character(ary[1]);
+    const comp2 = obj[char1 + char2];
+    // comp2 = composition of 2 characters
+    if (comp2) {
+      if (mode & useComp3 && len > 2) {
+        // if there's more data, try to compose a tripple
+        const char3 = Character(ary[2]);
+        const comp3 = obj[char1 + char2 + char3];
+        if (comp3) {
+          return new Result(comp3, ary.slice(3));
         }
-        // there's no more data or couldn't find a comp3
-        return new Result(comp2, ary.slice(2));
       }
-      // couldn't find a comp2
-      return new Result(char1, ary.slice(1));
-    });
+      // there's no more data or couldn't find a comp3
+      return new Result(comp2, ary.slice(2));
+    }
+    // couldn't find a comp2
+    return new Result(char1, ary.slice(1));
   };
-  // a factory for composeComplexBases
-  const composeComplexChoBase = composeComplexFactory(cho);
-  const composeComplexBase = composeComplexFactory(
-    cho,
-    jung,
-    jong,
-  );
-  const composeComplexBaseDepth3 = composeComplexFactory(
-    cho,
-    jung,
-    jong,
-    irregular,
-  );
-  // both of these base functions return Results so that's why
-  // they need deepFlatResMap instead of deepFlatMap
-  const composeComplexCho = ary => deepFlatResMap(ary, composeComplexChoBase);
   const composeComplex = ary => deepFlatResMap(ary, composeComplexBase);
-  const composeComplexDepth3 = ary => deepFlatResMap(ary, composeComplexBaseDepth3);
-  var composeAnything = (compFn => (ary) => {
+  var composeAnything = (mode => (ary) => {
     // while this function is named "composeSyllable", it actually
     // can be used to compose anything, really.
     if (ary.length < 2) {
       return new Result(ary[0]);
       // don't do extra computing for small operations
     }
-    const choRes = compFn(ary);
+    const choRes = composeComplex(ary, mode);
     // ^^ that's a Result object
     const choChar = choRes.result;
     // the result of the composition, should be a Character
@@ -558,7 +545,7 @@
       return choRes;
       // choRes is already a Result so no need to make another
     }
-    const jungRes = compFn(choRes.remainder);
+    const jungRes = composeComplex(choRes.remainder, mode);
     const jungChar = jungRes.result;
     const jung$$1 = jungNum[jungChar];
     if (!Number.isInteger(jung$$1)) {
@@ -571,7 +558,7 @@
       // time this function is called
     }
     if (jungRes.remainder.length > 0) {
-      const jongRes = compFn(jungRes.remainder);
+      const jongRes = composeComplex(jungRes.remainder, mode);
       const jongChar = jongRes.result;
       const jong$$1 = jongNum[jongChar];
       if (!jong$$1) {
@@ -587,10 +574,8 @@
     // The last argument is optional for the Result constructor
   });
 
-  // TODO: feel lots of pain (standardize inputs)
-  const composeAnythingDepth3 = composeAnything(composeComplexBaseDepth3);
-  const composeAnythingNormal = composeAnything(composeComplexBase);
-  var assemble = ((data, depth3) => deepFlatResMap(data, (depth3 ? composeAnythingDepth3 : composeAnythingNormal)));
+  var assemble = ((data, mode) => deepFlatResMap(data, composeAnything(mode)));
+  // composeFn => (data, mode);
 
   // if you're gonna copy this part, at least give me credit.
   // I had to do all of this manually.
@@ -1010,13 +995,13 @@
     ￛ: ['ㅡ', 'ㅣ'],
     ￜ: 'ㅣ',
   };
-  const all$1 = Object.assign({}, jamo$1, jamoExtendedA$1, jamoExtendedB$1, halfwidth$1);
+  const all = Object.assign({}, jamo$1, jamoExtendedA$1, jamoExtendedB$1, halfwidth$1);
 
   // tries to transform everything into disassembled standard hangul
 
-  const transformCharacter = char => (!standardHangul.contains(char) && all$1[char]) || char;
+  const transformCharacter = char => (!standardHangul.contains(char) && all[char]) || char;
   const transformEverything = char => (
-    (standardHangul.contains(char) ? pairs : all$1)[char]
+    (standardHangul.contains(char) ? pairs : all)[char]
     || char
   );
   const transformEveryCharacter = data => transformEverything(Character(data));
@@ -1026,7 +1011,7 @@
   const transformExceptDoubles = (char) => {
     const res = transformEverything(char);
     if (Array.isArray(res)) {
-      return composeComplexCho(res);
+      return composeComplex(res, 4);
     }
     return res;
   };
@@ -1076,7 +1061,7 @@
 
   // This file is only used in ../publicCompose
   // all is the only one of these that's actually used
-  const all$2 = {
+  const all$1 = {
     ㄱ: {
       ㄱ: 'ㄲ',
       ㅅ: 'ㄳ',
@@ -1176,7 +1161,7 @@
     },
   };
 
-  const standardizeCharacterBase = compFn => (val) => {
+  const standardizeCharacterBase = mode => (val) => {
     const res = transformCharacter(Character(val));
     if (Array.isArray(res)) {
       // atempt compose only if the value is an array
@@ -1184,25 +1169,21 @@
       // since it's basically accessed publicly
       // we know that v will always have good types
       // but compFn will still check for Characters
-      return compFn(res);
+      return composeComplex(val, mode);
       // returns an Array
     }
     return res;
   };
-  const standardizeCharacterNormal = standardizeCharacterBase(composeComplex);
-  const standardizeCharacterDepth3 = standardizeCharacterBase(composeComplexDepth3);
-  const selector = depth3 => (depth3 ? standardizeCharacterDepth3 : standardizeCharacterNormal);
-  const standardizeCharacter = (char, Depth3) => selector(Depth3)(char);
-  var standardize = ((data, grouped, depth3) => (grouped ? deepMap : deepFlatMap)(data, selector(depth3)));
+  var standardize = ((data, grouped, mode) => (grouped ? deepMap : deepFlatMap)(data, standardizeCharacterBase(mode)));
 
   // since these functions are exposed, the characters must be
   // standardized so that the libaray can function properly
-
+  const standardizeCharacter = standardizeCharacterBase(0b011);
   const complex$1 = (first, second, third = '', hardFail) => {
     if (first === undefined || second === undefined) {
       throw Error('Cannot compose a complex with less than two values!');
     }
-    const d1 = all$2[standardizeCharacter(first)];
+    const d1 = all$1[standardizeCharacter(first)];
     // depth 1
     if (!d1) {
       if (hardFail) {
@@ -1361,14 +1342,24 @@
   // runtime but since I can just do it now, it's just a little faster.
 
   const hangulToKeyFn = char => hangulToKey[char] || char;
+  const transformToKeys = (char) => {
+    const res = transformExceptDoubles(char);
+    return Array.isArray(res) ? res.map(hangulToKeyFn) : hangulToKeyFn(res);
+  };
+  const disassembleToKeys = disassembleFactory(transformToKeys);
   // TODO: toKeys(data, true) outputs wrong stuff on depth 2
-  const toKeys = (data, grouped) => (grouped ? deepMap : deepFlatMap)(disassemble$1(flatten(data), grouped), hangulToKeyFn);
+  const toKeys = (data, grouped) => (grouped ? deepMap : deepFlatMap)(data, disassembleToKeys);
 
   var testMulti = (aryFnName => isFn => data => deepFlatMap(data, transformEveryCharacter)[aryFnName](isFn));
 
   var contains = (testMulti('some'));
 
-  var is = (isFn => data => toArray(transformEveryCharacter(data)).every(isFn));
+  var is = (isFn => (data) => {
+    const res = transformEveryCharacter(data);
+    // it's okay that we don't check if data is
+    // a Character since transformEveryCharacter does.
+    return Array.isArray(res) ? res.every(isFn) : isFn(res);
+  });
 
   var isAll = (testMulti('every'));
 
@@ -1515,12 +1506,13 @@
     containsHangul,
   });
 
+  // TODO: Fix Everything
   // TODO: toKeys fromKeys
   // TODO: public character checking is not working!
   // TODO: toKeys(data, true) is outputting wrong things!
-  // TODO: babel to es5
   // TODO: write jest tests
   // TODO: why is to keys still not working what the fucASKLJDlkdaSlksaJDlkasd;aKJSDHSH ♋
+  // TODO: is irregular complex
 
   exports.assemble = assemble;
   exports.a = assemble;
@@ -1531,7 +1523,7 @@
   exports.composeComplex = complex$1;
   exports.composeSyllable = syllable;
   exports.standardize = standardize;
-  exports.standardizeCharacter = standardizeCharacter;
+  exports.standardizeCharacterBase = standardizeCharacterBase;
   exports.stronger = stronger$1;
   exports.flatten = flatten;
   exports.toKeys = toKeys;
@@ -1572,7 +1564,7 @@
   exports.isAllHangul = isAllHangul;
   exports.containsHangul = containsHangul;
 
-  Object.defineProperty(exports, '__esModule', { value: true });
+  return exports;
 
-})));
+}({}));
 //# sourceMappingURL=bundle.js.map

@@ -29,7 +29,7 @@ export const jong = {
   ㅂㅅ: 'ㅄ',
   ㅅㅅ: 'ㅆ',
 };
-export const irregular = {
+export const archaic = {
   ㄴㄴ: 'ㅥ',
   ㄴㄷ: 'ㅦ',
   ㄴㅅ: 'ㅧ',
@@ -124,9 +124,6 @@ export const pairs = {
   ㆌ: ['ㅠ', 'ㅣ'],
   ㆎ: ['ㆍ', 'ㅣ'],
 };
-// it's all of the normal complex characters
-// yes, I'm bad at naming things but whatever
-export const all = Object.assign({}, cho, jung, jong, irregular);
 export const complex = {
   ㄲ: 1,
   ㄳ: 1,
