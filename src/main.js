@@ -22,9 +22,5 @@ export * from './transform';
 export * from './testConsonant';
 export * from './testVowel';
 export * from './testUnicode';
-// TODO: toKeys fromKeys
-// TODO: public character checking is not working!
-// TODO: toKeys(data, true) is outputting wrong things!
 // TODO: write jest tests
-// TODO: why is to keys still not working what the fucASKLJDlkdaSlksaJDlkasd;aKJSDHSH ♋
 // TODO: is irregular complex

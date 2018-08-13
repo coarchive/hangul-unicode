@@ -9,33 +9,45 @@ import { deepFlatResMap } from './types';
 // you understand how they work in conjunction with the stuff
 // that's in './types'. Read './Result' and './types' first.
 // then read this.
-const modern = Object.assign({}, complex.cho, complex.jung, complex.jong);
-const archaic = Object.assign({}, modern, complex.archaic);
-const useComp3 = 0b001;
-const useArchaic = 0b010;
-const useChoOnly = 0b100;
+const objCache = [];
+export const useComp3 = 0b001;
+export const useArchaic = 0b010;
+export const noUseJungJong = 0b100;
+export const noCompDouble = 0b1000;
 const composeComplexBase = mode => (chars) => {
   // mode is being used as a bitfield
-  const usingChoOnly = mode === useChoOnly;
-  const usingArchaic = !usingChoOnly && mode & useArchaic;
-  // archaic can't be used if cho is the only one being used
-  const usingComp3 = usingArchaic && mode & useComp3;
-  // there are no comp3 values in non archaic complex objects
-  if (mode < 0 || mode > 4) {
-    throw Error('The mode cannot be less than zero or greater than four!');
+  if (mode < 0 || mode > 8) {
+    throw Error('The mode cannot be less than zero or greater than eight!');
   }
-  const obj = usingChoOnly ? complex.cho : usingArchaic ? archaic : modern;
-  // 0 === modern && comp2
-  // 1 === modern && comp3
-  // 2 === archaic && comp2
-  // 3 === archaic && comp3
-  // 4 === choOnly && comp2
+  const usingArchaic = mode & useArchaic;
+  const usingComp3 = usingArchaic && mode & useComp3;
+  const usingNoCompDouble = mode & noCompDouble;
+  let obj = objCache[mode];
+  if (!obj) {
+    const objs = [complex.cho];
+    // there are no comp3 values in non archaic complex objects
+    if (!(mode & noUseJungJong)) {
+      // if you're usingJungJong
+      objs.push(complex.jung, complex.jong);
+    } if (useArchaic) {
+      objs.push(complex.archaic);
+    }
+    obj = Object.assign({}, ...objs);
+    objCache[mode] = obj;
+    // eslint got mad at me for chaining assignments
+  }
   const len = chars.length;
+  if (len < 1) {
+    throw Error('Cannot compose array of zero characters!');
+  }
   const char1 = chars[0];
-  const char2 = chars[1];
-  // yes, I know the naming is weird
   if (len < 2) {
+    // if there aren't even two Characters to use
     return new R(char1);
+  }
+  const char2 = chars[1];
+  if (usingNoCompDouble && char1 === char2) {
+    return new R(char1, chars.slice(1));
   }
   const comp2 = obj[char1 + char2];
   // comp2 = composition of 2 characters
@@ -47,6 +59,7 @@ const composeComplexBase = mode => (chars) => {
         return new R(comp3, chars.slice(3));
       }
     }
+    console.log({ char1, char2, comp2 });
     // there's no more data or couldn't find a comp3
     return new R(comp2, chars.slice(2));
   }

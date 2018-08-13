@@ -92,7 +92,6 @@ export const flatten = (data) => {
   ENOARYLIKE();
 };
 export const deepFlatResMap = (data, func) => {
-  console.log({ data, func });
   // this is different since it deals with functions that return Result objects.
   // consumeLeftovers
   let rem;
@@ -121,7 +120,6 @@ export const deepFlatResMap = (data, func) => {
     ENOARYLIKE();
   }
   while (rem.length) {
-    debugger;
     const comp = func(rem);
     // func needs to return a Result like interface for this to work
     // otherwise we'll get a really nasty to debug error

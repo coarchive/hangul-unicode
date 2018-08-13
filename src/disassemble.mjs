@@ -1,6 +1,6 @@
 import { syllables } from './unicode/blocks';
 import { transformEveryChar } from './transform';
-import { transformExceptDoubles } from './decomposeComplex';
+import { transformExceptCho } from './decomposeComplex';
 import { trustMe } from './decomposeSyllable';
 import {
   Character, deepMap, deepFlatMap, flatten,
@@ -17,7 +17,7 @@ export const disassembleFactory = transformer => (datum) => {
   return transformer(char);
 };
 const disassembleAll = disassembleFactory(transformEveryChar);
-const disassemble = disassembleFactory(transformExceptDoubles);
+const disassemble = disassembleFactory(transformExceptCho);
 // not to be confused with Hangul.disassemble
 // this disassemble takes Characters as inputs, not CharacterGroups
 export const disassembleChar = (datum, grouped, decomposeDoubles) => {

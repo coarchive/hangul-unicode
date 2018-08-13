@@ -1,9 +1,7 @@
-(function(l, i, v, e) { v = l.createElement(i); v.async = 1; v.src = '//' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1'; e = l.getElementsByTagName(i)[0]; e.parentNode.insertBefore(v, e)})(document, 'script');
 var Hangul = (function (exports) {
   'use strict';
 
   const cho = {
-    '#####': 'cho',
     ㄱㄱ: 'ㄲ',
     ㄷㄷ: 'ㄸ',
     ㅅㅅ: 'ㅆ',
@@ -337,7 +335,7 @@ var Hangul = (function (exports) {
     reserved,
   ]);
 
-  var composeSyllableFn = ((cho, jung, jong = 0) => (
+  var composeSyllable = ((cho, jung, jong = 0) => (
     String.fromCodePoint(cho * 588 + jung * 28 + jong + syllables.start)
     // this is the actual function that makes unicode syllable characters
     // where the characters are mapped to numbers. Take a look at
@@ -587,13 +585,13 @@ var Hangul = (function (exports) {
       if (!jong$$1) {
         // at this point, we've confirmed cho and jung characters
         // so return just a syllable of those two combined.
-        return new Result(composeSyllableFn(cho$$1, jung$$1), [jongChar, ...jongRes.remainder]);
+        return new Result(composeSyllable(cho$$1, jung$$1), [jongChar, ...jongRes.remainder]);
         // the jongChar, and the jungRes.remainder can be saved for later.
       }
-      return new Result(composeSyllableFn(cho$$1, jung$$1, jong$$1), jongRes.remainder);
+      return new Result(composeSyllable(cho$$1, jung$$1, jong$$1), jongRes.remainder);
       // yay! complete syllable!
     }
-    return new Result(composeSyllableFn(cho$$1, jung$$1));
+    return new Result(composeSyllable(cho$$1, jung$$1));
     // The last argument is optional for the Result constructor
   });
 
@@ -1298,9 +1296,9 @@ var Hangul = (function (exports) {
       }
       // getting here means that the cho and jung
       // characters were valid, so call composeSyllable
-      return `${composeSyllableFn(cho, jung)}${jongChar}`;
+      return `${composeSyllable(cho, jung)}${jongChar}`;
     }
-    return composeSyllableFn(cho, jung, jong);
+    return composeSyllable(cho, jung, jong);
   };
   // by nesting all if-statements under if (hardFail)
   // there might be a little better performance but I'm
@@ -1670,4 +1668,3 @@ var Hangul = (function (exports) {
   return exports;
 
 }({}));
-//# sourceMappingURL=bundle.js.map
