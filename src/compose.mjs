@@ -29,7 +29,7 @@ const composeComplexBase = mode => (chars) => {
     if (!(mode & noUseJungJong)) {
       // if you're usingJungJong
       objs.push(complex.jung, complex.jong);
-    } if (useArchaic) {
+    } if (usingArchaic) {
       objs.push(complex.archaic);
     }
     obj = Object.assign({}, ...objs);
@@ -59,7 +59,6 @@ const composeComplexBase = mode => (chars) => {
         return new R(comp3, chars.slice(3));
       }
     }
-    console.log({ char1, char2, comp2 });
     // there's no more data or couldn't find a comp3
     return new R(comp2, chars.slice(2));
   }

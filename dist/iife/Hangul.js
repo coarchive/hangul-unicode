@@ -426,19 +426,19 @@ var Hangul = (function (exports) {
   };
   const flatten = (data) => {
     if (Array.isArray(data)) {
-      const res = [];
+      let res = '';
       const len = data.length;
       for (let i = 0; i < len; i++) {
         const val = data[i];
         if (isCharacterGroup(val)) {
-          res.push(...flatten(val));
+          res += flatten(val);
         } else {
-          res.push(val);
+          res += val;
         }
       }
       return res;
     } if (typeof data === 'string') {
-      return data.split('');
+      return data;
     }
     ENOARYLIKE();
   };
@@ -447,7 +447,7 @@ var Hangul = (function (exports) {
     // consumeLeftovers
     let rem;
     // remaining
-    const res = [];
+    let res = '';
     // result
     if (Array.isArray(data)) {
       rem = [];
@@ -474,7 +474,7 @@ var Hangul = (function (exports) {
       const comp = func(rem);
       // func needs to return a Result like interface for this to work
       // otherwise we'll get a really nasty to debug error
-      res.push(comp.result);
+      res += comp.result;
       rem = comp.remainder;
     }
     return res;
@@ -505,7 +505,7 @@ var Hangul = (function (exports) {
       if (!(mode & noUseJungJong)) {
         // if you're usingJungJong
         objs.push(jung, jong);
-      } {
+      } if (usingArchaic) {
         objs.push(archaic);
       }
       obj = Object.assign({}, ...objs);
@@ -535,7 +535,6 @@ var Hangul = (function (exports) {
           return new Result(comp3, chars.slice(3));
         }
       }
-      console.log({ char1, char2, comp2 });
       // there's no more data or couldn't find a comp3
       return new Result(comp2, chars.slice(2));
     }
@@ -1478,16 +1477,6 @@ var Hangul = (function (exports) {
     containsConsonant,
   });
 
-  const vowel = char => vowels[char];
-  const isVowel = is(vowel);
-  const isVowelAll = isAll(vowel);
-  const containsVowel = contains(vowel);
-  name({
-    isVowel,
-    isVowelAll,
-    containsVowel,
-  });
-
   const isAll$1 = testFn => (data) => {
     const len = data.length;
     if (Array.isArray(data)) {
@@ -1605,9 +1594,17 @@ var Hangul = (function (exports) {
     containsHangul,
   });
 
-  // TODO: toKeys(data, true) is outputting wrong things!
-  // TODO: write jest tests
-  // TODO: why is to keys still not working what the fucASKLJDlkdaSlksaJDlkasd;aKJSDHSH ♋
+  const vowel = char => vowels[char];
+  const isVowel = is(vowel);
+  const isVowelAll = isAll(vowel);
+  const containsVowel = contains(vowel);
+  name({
+    isVowel,
+    isVowelAll,
+    containsVowel,
+  });
+
+  // TODO: write tests
   // TODO: is irregular complex
 
   exports.assemble = assemble;
@@ -1627,16 +1624,9 @@ var Hangul = (function (exports) {
   exports.deepMap = deepMap;
   exports.toKeys = toKeys;
   exports.fromKeys = fromKeys;
-  exports.transformChar = transformChar;
-  exports.transformDatum = transformDatum;
-  exports.transformEveryChar = transformEveryChar;
-  exports.transformEveryDatum = transformEveryDatum;
   exports.isConsonant = isConsonant;
   exports.isConsonantAll = isConsonantAll;
   exports.containsConsonant = containsConsonant;
-  exports.isVowel = isVowel;
-  exports.isVowelAll = isVowelAll;
-  exports.containsVowel = containsVowel;
   exports.isJamo = isJamo;
   exports.isCompatibilityJamo = isCompatibilityJamo;
   exports.isJamoExtendedA = isJamoExtendedA;
@@ -1664,6 +1654,9 @@ var Hangul = (function (exports) {
   exports.containsStandardHangul = containsStandardHangul;
   exports.isAllHangul = isAllHangul;
   exports.containsHangul = containsHangul;
+  exports.isVowel = isVowel;
+  exports.isVowelAll = isVowelAll;
+  exports.containsVowel = containsVowel;
 
   return exports;
 

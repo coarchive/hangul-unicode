@@ -75,19 +75,19 @@ export const deepFlatMap = (data, func) => {
 };
 export const flatten = (data) => {
   if (Array.isArray(data)) {
-    const res = [];
+    let res = '';
     const len = data.length;
     for (let i = 0; i < len; i++) {
       const val = data[i];
       if (isCharacterGroup(val)) {
-        res.push(...flatten(val));
+        res += flatten(val);
       } else {
-        res.push(val);
+        res += val;
       }
     }
     return res;
   } if (typeof data === 'string') {
-    return data.split('');
+    return data;
   }
   ENOARYLIKE();
 };
@@ -96,7 +96,7 @@ export const deepFlatResMap = (data, func) => {
   // consumeLeftovers
   let rem;
   // remaining
-  const res = [];
+  let res = '';
   // result
   if (Array.isArray(data)) {
     rem = [];
@@ -123,7 +123,7 @@ export const deepFlatResMap = (data, func) => {
     const comp = func(rem);
     // func needs to return a Result like interface for this to work
     // otherwise we'll get a really nasty to debug error
-    res.push(comp.result);
+    res += comp.result;
     rem = comp.remainder;
   }
   return res;

@@ -1,9 +1,9 @@
 import { hangulToKey, keyToHangul } from './unicode/characters';
+import { assembleFactory } from './assemble';
+import { noCompDouble } from './compose';
 import { transformExceptCho } from './decomposeComplex';
 import { disassembleFactory } from './disassemble';
 import { Character, deepMap, deepFlatMap } from './types';
-import { assembleFactory } from './assemble';
-import { noCompDouble } from './compose';
 
 const hangulToKeyFn = char => hangulToKey[char] || char;
 const keyToHangulFn = char => keyToHangul[char];

@@ -3,7 +3,6 @@ var Hangul = (function (exports) {
   'use strict';
 
   const cho = {
-    '#####': 'cho',
     ㄱㄱ: 'ㄲ',
     ㄷㄷ: 'ㄸ',
     ㅅㅅ: 'ㅆ',
@@ -337,7 +336,7 @@ var Hangul = (function (exports) {
     reserved,
   ]);
 
-  var composeSyllableFn = ((cho, jung, jong = 0) => (
+  var composeSyllable = ((cho, jung, jong = 0) => (
     String.fromCodePoint(cho * 588 + jung * 28 + jong + syllables.start)
     // this is the actual function that makes unicode syllable characters
     // where the characters are mapped to numbers. Take a look at
@@ -428,19 +427,19 @@ var Hangul = (function (exports) {
   };
   const flatten = (data) => {
     if (Array.isArray(data)) {
-      const res = [];
+      let res = '';
       const len = data.length;
       for (let i = 0; i < len; i++) {
         const val = data[i];
         if (isCharacterGroup(val)) {
-          res.push(...flatten(val));
+          res += flatten(val);
         } else {
-          res.push(val);
+          res += val;
         }
       }
       return res;
     } if (typeof data === 'string') {
-      return data.split('');
+      return data;
     }
     ENOARYLIKE();
   };
@@ -449,7 +448,7 @@ var Hangul = (function (exports) {
     // consumeLeftovers
     let rem;
     // remaining
-    const res = [];
+    let res = '';
     // result
     if (Array.isArray(data)) {
       rem = [];
@@ -476,7 +475,7 @@ var Hangul = (function (exports) {
       const comp = func(rem);
       // func needs to return a Result like interface for this to work
       // otherwise we'll get a really nasty to debug error
-      res.push(comp.result);
+      res += comp.result;
       rem = comp.remainder;
     }
     return res;
@@ -507,7 +506,7 @@ var Hangul = (function (exports) {
       if (!(mode & noUseJungJong)) {
         // if you're usingJungJong
         objs.push(jung, jong);
-      } {
+      } if (usingArchaic) {
         objs.push(archaic);
       }
       obj = Object.assign({}, ...objs);
@@ -537,7 +536,6 @@ var Hangul = (function (exports) {
           return new Result(comp3, chars.slice(3));
         }
       }
-      console.log({ char1, char2, comp2 });
       // there's no more data or couldn't find a comp3
       return new Result(comp2, chars.slice(2));
     }
@@ -587,13 +585,13 @@ var Hangul = (function (exports) {
       if (!jong$$1) {
         // at this point, we've confirmed cho and jung characters
         // so return just a syllable of those two combined.
-        return new Result(composeSyllableFn(cho$$1, jung$$1), [jongChar, ...jongRes.remainder]);
+        return new Result(composeSyllable(cho$$1, jung$$1), [jongChar, ...jongRes.remainder]);
         // the jongChar, and the jungRes.remainder can be saved for later.
       }
-      return new Result(composeSyllableFn(cho$$1, jung$$1, jong$$1), jongRes.remainder);
+      return new Result(composeSyllable(cho$$1, jung$$1, jong$$1), jongRes.remainder);
       // yay! complete syllable!
     }
-    return new Result(composeSyllableFn(cho$$1, jung$$1));
+    return new Result(composeSyllable(cho$$1, jung$$1));
     // The last argument is optional for the Result constructor
   });
 
@@ -1298,9 +1296,9 @@ var Hangul = (function (exports) {
       }
       // getting here means that the cho and jung
       // characters were valid, so call composeSyllable
-      return `${composeSyllableFn(cho, jung)}${jongChar}`;
+      return `${composeSyllable(cho, jung)}${jongChar}`;
     }
-    return composeSyllableFn(cho, jung, jong);
+    return composeSyllable(cho, jung, jong);
   };
   // by nesting all if-statements under if (hardFail)
   // there might be a little better performance but I'm
@@ -1607,9 +1605,7 @@ var Hangul = (function (exports) {
     containsHangul,
   });
 
-  // TODO: toKeys(data, true) is outputting wrong things!
   // TODO: write jest tests
-  // TODO: why is to keys still not working what the fucASKLJDlkdaSlksaJDlkasd;aKJSDHSH ♋
   // TODO: is irregular complex
 
   exports.assemble = assemble;

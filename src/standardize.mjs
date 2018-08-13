@@ -1,6 +1,6 @@
-import { transformDatum } from './transform';
 import { composeComplex } from './compose';
-import { Character, deepMap, deepFlatMap } from './types';
+import { transformDatum } from './transform';
+import { deepMap, deepFlatMap } from './types';
 
 export const standardizeCharacterBase = mode => (datum) => {
   const res = transformDatum(datum);

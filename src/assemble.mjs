@@ -1,6 +1,6 @@
 import composeAnything from './compose';
-import { deepMap, deepFlatResMap } from './types';
 import { transformEveryDatum } from './transform';
+import { deepMap, deepFlatResMap } from './types';
 // this way, we can trust the inputs to composeAnything
 export const assembleFactory = transformer => (data, mode) => deepFlatResMap(transformer(data), composeAnything(mode));
 // the transformer should verify that each datum is a Character!

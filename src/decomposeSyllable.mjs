@@ -1,6 +1,6 @@
-import { Character } from './types';
 import { syllables } from './unicode/blocks';
 import { cho, jung, jong } from './unicode/syllable';
+import { Character } from './types';
 
 export const trustMe = (char) => {
   const code = char.codePointAt(0) - syllables.start;

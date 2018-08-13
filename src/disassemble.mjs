@@ -1,7 +1,7 @@
 import { syllables } from './unicode/blocks';
-import { transformEveryChar } from './transform';
 import { transformExceptCho } from './decomposeComplex';
 import { trustMe } from './decomposeSyllable';
+import { transformEveryChar } from './transform';
 import {
   Character, deepMap, deepFlatMap, flatten,
 } from './types';

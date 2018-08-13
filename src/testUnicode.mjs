@@ -1,6 +1,6 @@
 import * as blocks from './unicode/blocks';
-import { isAll, contains } from './simpleDeepTest';
 import name from './name';
+import { isAll, contains } from './simpleDeepTest';
 import { Character } from './types';
 
 export const isJamo = data => blocks.jamo.contains(Character(data));
