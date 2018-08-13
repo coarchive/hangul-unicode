@@ -1,6 +1,7 @@
 import { stronger } from './unicode/complex';
-import standardize from './standardize';
+import { useComp3, useArchaic } from './compose';
+import { standardizeFactory } from './standardize';
 
-export default (data => standardize(data, false, true).map(char => stronger[char] || char));
-// standardize(data, grouped, depth3)
-// allow depth3 so as not to tamper with archaic unicode
+const standardizeComp3Archaic = standardizeFactory(useComp3 | useArchaic);
+// support all types of complex
+export default (data => standardizeComp3Archaic(data).map(char => stronger[char] || char));

@@ -2,13 +2,13 @@ import { composeComplex, noUseJungJong } from './compose';
 import { transformEveryChar } from './transform';
 import { Character, toArray } from './types';
 
+const composeComplexCho = composeComplex(noUseJungJong);
 export const transformExceptCho = (char) => {
   const res = transformEveryChar(char);
   if (Array.isArray(res)) {
-    const comp = composeComplex(res, noUseJungJong);
+    const comp = composeComplexCho(res);
     // the default composeComplex only composes cho
     // HACK: this bug might be an issue with composeComplex
-    // it also might be present in './standardize' line 13
     if (Array.isArray(comp) && comp.length === 1) {
       // if the composition actually ends up composing
       // something and it's only one Character, just

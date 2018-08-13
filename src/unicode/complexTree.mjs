@@ -154,6 +154,7 @@ export const irregular = {
   },
 };
 // all is the only one of these that's actually used
+// I can't Object.assign them all together unfortunately
 export const all = {
   ㄱ: {
     ㄱ: 'ㄲ',
