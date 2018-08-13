@@ -1,5 +1,5 @@
 import assemble from './assemble';
-import disassemble, {disassembleChar} from './disassemble';
+import disassemble, { disassembleChar } from './disassemble';
 
 export {
   assemble,
@@ -17,7 +17,7 @@ export { complex as composeComplex, syllable as composeSyllable } from './public
 export { default as standardize, standardizeCharacterBase } from './standardize';
 export { default as stronger } from './stronger';
 export { flatten, deepMap } from './types';
-export { toKeys } from './keys';
+export * from './keys';
 export * from './transform';
 export * from './testConsonant';
 export * from './testVowel';

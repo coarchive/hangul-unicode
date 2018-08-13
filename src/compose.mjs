@@ -96,7 +96,7 @@ export default (mode => (ary) => {
     if (!jong) {
       // at this point, we've confirmed cho and jung characters
       // so return just a syllable of those two combined.
-      return new R(composeSyllableFn(cho, jung), [jongChar, ...jungRes.remainder]);
+      return new R(composeSyllableFn(cho, jung), [jongChar, ...jongRes.remainder]);
       // the jongChar, and the jungRes.remainder can be saved for later.
     }
     return new R(composeSyllableFn(cho, jung, jong), jongRes.remainder);

@@ -336,7 +336,7 @@ var Hangul = (function (exports) {
     reserved,
   ]);
 
-  var composeSyllable = ((cho, jung, jong = 0) => (
+  var composeSyllableFn = ((cho, jung, jong = 0) => (
     String.fromCodePoint(cho * 588 + jung * 28 + jong + syllables.start)
     // this is the actual function that makes unicode syllable characters
     // where the characters are mapped to numbers. Take a look at
@@ -444,6 +444,7 @@ var Hangul = (function (exports) {
     ENOARYLIKE();
   };
   const deepFlatResMap = (data, func) => {
+    console.log({ data, func });
     // this is different since it deals with functions that return Result objects.
     // consumeLeftovers
     let rem;
@@ -472,6 +473,7 @@ var Hangul = (function (exports) {
       ENOARYLIKE();
     }
     while (rem.length) {
+      debugger;
       const comp = func(rem);
       // func needs to return a Result like interface for this to work
       // otherwise we'll get a really nasty to debug error
@@ -573,13 +575,13 @@ var Hangul = (function (exports) {
       if (!jong$$1) {
         // at this point, we've confirmed cho and jung characters
         // so return just a syllable of those two combined.
-        return new Result(composeSyllable(cho$$1, jung$$1), [jongChar, ...jungRes.remainder]);
+        return new Result(composeSyllableFn(cho$$1, jung$$1), [jongChar, ...jongRes.remainder]);
         // the jongChar, and the jungRes.remainder can be saved for later.
       }
-      return new Result(composeSyllable(cho$$1, jung$$1, jong$$1), jongRes.remainder);
+      return new Result(composeSyllableFn(cho$$1, jung$$1, jong$$1), jongRes.remainder);
       // yay! complete syllable!
     }
-    return new Result(composeSyllable(cho$$1, jung$$1));
+    return new Result(composeSyllableFn(cho$$1, jung$$1));
     // The last argument is optional for the Result constructor
   });
 
@@ -1016,8 +1018,14 @@ var Hangul = (function (exports) {
   // standard hangul characters instead of ignoring them
 
   // this way, we can trust the inputs to composeAnything
-
-  var assemble = ((data, mode) => deepFlatResMap(deepMap(data, transformEveryDatum), composeAnything(mode)));
+  const assembleFactory = transformer => (data, mode) => deepFlatResMap(transformer(data), composeAnything(mode));
+  // the transformer should verify that each datum is a Character!
+  const assembleTransformer = data => deepMap(data, transformEveryDatum);
+  // this takes a CharacterGroup and transforms characters and
+  // complex characters, effectively leaving behind only the
+  // base Characters
+  // it doesn't decomposeSyllables though
+  var assemble = (assembleFactory(assembleTransformer));
 
   const transformExceptDoubles = (char) => {
     const res = transformEveryChar(char);
@@ -1275,9 +1283,9 @@ var Hangul = (function (exports) {
       }
       // getting here means that the cho and jung
       // characters were valid, so call composeSyllable
-      return `${composeSyllable(cho, jung)}${jongChar}`;
+      return `${composeSyllableFn(cho, jung)}${jongChar}`;
     }
-    return composeSyllable(cho, jung, jong);
+    return composeSyllableFn(cho, jung, jong);
   };
   // by nesting all if-statements under if (hardFail)
   // there might be a little better performance but I'm
@@ -1358,6 +1366,41 @@ var Hangul = (function (exports) {
     ㅜ: 'n',
     ㅡ: 'm',
   };
+  const keyToHangul = {
+    q: 'ㅂ',
+    Q: 'ㅃ',
+    w: 'ㅈ',
+    W: 'ㅉ',
+    e: 'ㄷ',
+    E: 'ㄸ',
+    r: 'ㄱ',
+    R: 'ㄲ',
+    t: 'ㅅ',
+    T: 'ㅆ',
+    y: 'ㅛ',
+    u: 'ㅕ',
+    i: 'ㅑ',
+    o: 'ㅐ',
+    O: 'ㅒ',
+    p: 'ㅔ',
+    P: 'ㅖ',
+    a: 'ㅁ',
+    s: 'ㄴ',
+    d: 'ㅇ',
+    f: 'ㄹ',
+    g: 'ㅎ',
+    h: 'ㅗ',
+    j: 'ㅓ',
+    k: 'ㅏ',
+    l: 'ㅣ',
+    z: 'ㅋ',
+    x: 'ㅌ',
+    c: 'ㅊ',
+    v: 'ㅍ',
+    b: 'ㅠ',
+    n: 'ㅜ',
+    m: 'ㅡ',
+  };
   // the reason the data is stored like this is because iterating
   // through an array is slower than just getting a key from an object
   // In this case though, it might be faster since arrays are allocated
@@ -1366,14 +1409,35 @@ var Hangul = (function (exports) {
   // I realize that I can programmatically reverse the key-value pairs during
   // runtime but since I can just do it now, it's just a little faster.
 
-  const hangulToKeyFn = char => hangulToKey[char] || char;
-  const transformToKeys = (char) => {
-    const res = transformExceptDoubles(char);
+  const hangulToKeyFn = char => hangulToKey[char];
+  const keyToHangulFn = char => keyToHangul[char] || char;
+  const transformToKeys = (hangulChar) => {
+    const res = transformExceptDoubles(hangulChar);
     return Array.isArray(res) ? res.map(hangulToKeyFn) : hangulToKeyFn(res);
   };
   const disassembleToKeys = disassembleFactory(transformToKeys);
-  // TODO: toKeys(data, true) outputs wrong stuff on depth 2
   const toKeys = (data, grouped) => (grouped ? deepMap : deepFlatMap)(data, disassembleToKeys);
+  const transformCharToHangul = (latinDatum) => {
+    console.error('ASKDLJASKJDhADSILhZDS');
+    const latinChar = Character(latinDatum);
+    const res = keyToHangulFn(latinChar);
+    if (!res) {
+      // couldn't find a key for that characters
+      const lowerCaseRes = hangulToKeyFn(latinChar.toLowerCase());
+      if (!lowerCaseRes) {
+        console.log({ latinChar });
+        return latinChar;
+      }
+      console.log({ lowerCaseRes });
+      return lowerCaseRes;
+    }
+    console.log({ res });
+    return res;
+  };
+  // it's okay that we're not standarizing because the data
+  // in hangulToKey is already standard :)
+  const transformToHangul = data => deepMap(data, transformCharToHangul);
+  const fromKeys = assembleFactory(transformToHangul);
 
   var testMulti = (aryFnName => isFn => data => deepFlatMap(data, transformEveryDatum)[aryFnName](isFn));
 
@@ -1554,6 +1618,7 @@ var Hangul = (function (exports) {
   exports.flatten = flatten;
   exports.deepMap = deepMap;
   exports.toKeys = toKeys;
+  exports.fromKeys = fromKeys;
   exports.transformChar = transformChar;
   exports.transformDatum = transformDatum;
   exports.transformEveryChar = transformEveryChar;
