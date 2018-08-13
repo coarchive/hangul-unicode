@@ -11,13 +11,13 @@ export const trustMe = (char) => {
   return [cho[choNum], jung[jungNum], jong[jongNum]].filter(v => v);
   // the .filter(v => v) removes blank space in the array
 }
-export default ((val, hardFail) => {
-  const char = Character(val);
+export default ((datum, hardFail) => {
+  const char = Character(datum);
   if (!syllables.contains(char)) {
     if (hardFail) {
       throw Error('Decomposing a syllable requires a syllable to decompose!');
     }
-    return [val];
+    return [datum];
     // if there's no hardFail, the function must
     // still return the same type as it would have
     // if it didn't fail

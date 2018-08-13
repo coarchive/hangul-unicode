@@ -360,7 +360,7 @@ var Hangul = (function (exports) {
   };
   // this function turns values into characters if it can
   // otherwise it just fails
-  const ENOARYLIKE = () => { throw TypeError('The data must be an Array or a String!') };
+  const ENOARYLIKE = () => { throw TypeError('The data must be an Array or a String!'); };
   const toArray = aryOrStr => (Array.isArray(aryOrStr) ? aryOrStr : aryOrStr.split(''));
   // as a general note, calling .split like that instead of .split`` is faster
   const isCharacterGroup = (val) => {
@@ -378,17 +378,18 @@ var Hangul = (function (exports) {
   };
   // while Characters can be a CharacterGroup,
   // this function ignores characters
-  const deepMap = (data, func) => {
+  const identity = i => i;
+  const deepMap = (data, func, useToArray) => {
+    const modifier = useToArray ? toArray : identity;
     if (Array.isArray(data)) {
-      return data.map(val => (isCharacterGroup(val) ? deepMap(val, func) : toArray(func(val))));
+      return data.map(val => (isCharacterGroup(val) ? deepMap(val, func, useToArray) : modifier(func(val))));
     } if (typeof data === 'string') {
       // since the data was a string, the array created from
       // the string won't contain any character groups
-      return data.split('').map(char => toArray(func(char)));
+      return data.split('').map(char => modifier(func(char)));
     }
     ENOARYLIKE();
   };
-  const identity = i => i;
   const deepFlatMap = (data, func) => {
     let res = '';
     if (Array.isArray(data)) {
@@ -490,40 +491,46 @@ var Hangul = (function (exports) {
   const useComp3 = 0b001;
   const useArchaic = 0b010;
   const useChoOnly = 0b100;
-  const composeComplexBase = (ary, mode) => {
+  const composeComplexBase = mode => (chars) => {
+    // mode is being used as a bitfield
+    const usingChoOnly = mode === useChoOnly;
+    const usingArchaic = !usingChoOnly && mode & useArchaic;
+    // archaic can't be used if cho is the only one being used
+    const usingComp3 = usingArchaic && mode & useComp3;
+    // there are no comp3 values in non archaic complex objects
     if (mode < 0 || mode > 4) {
       throw Error('The mode cannot be less than zero or greater than four!');
     }
-    const obj = mode === useChoOnly ? cho : mode & useArchaic ? archaic$1 : modern;
+    const obj = usingChoOnly ? cho : usingArchaic ? archaic$1 : modern;
     // 0 === modern && comp2
     // 1 === modern && comp3
     // 2 === archaic && comp2
     // 3 === archaic && comp3
     // 4 === choOnly && comp2
-    const len = ary.length;
-    const char1 = Character(ary[0]);
+    const len = chars.length;
+    const char1 = chars[0];
+    const char2 = chars[1];
+    // yes, I know the naming is weird
     if (len < 2) {
       return new Result(char1);
     }
-    const char2 = Character(ary[1]);
     const comp2 = obj[char1 + char2];
     // comp2 = composition of 2 characters
     if (comp2) {
-      if (mode & useComp3 && len > 2) {
+      if (usingComp3 && len > 2) {
         // if there's more data, try to compose a tripple
-        const char3 = Character(ary[2]);
-        const comp3 = obj[char1 + char2 + char3];
+        const comp3 = obj[char1 + char2 + chars[2]];
         if (comp3) {
-          return new Result(comp3, ary.slice(3));
+          return new Result(comp3, chars.slice(3));
         }
       }
       // there's no more data or couldn't find a comp3
-      return new Result(comp2, ary.slice(2));
+      return new Result(comp2, chars.slice(2));
     }
     // couldn't find a comp2
-    return new Result(char1, ary.slice(1));
+    return new Result(char1, chars.slice(1));
   };
-  const composeComplex = ary => deepFlatResMap(ary, composeComplexBase);
+  const composeComplex = (ary, mode) => deepFlatResMap(ary, composeComplexBase(mode));
   var composeAnything = (mode => (ary) => {
     // while this function is named "composeSyllable", it actually
     // can be used to compose anything, really.
@@ -531,7 +538,9 @@ var Hangul = (function (exports) {
       return new Result(ary[0]);
       // don't do extra computing for small operations
     }
-    const choRes = composeComplex(ary, mode);
+    const cc = composeComplexBase(mode);
+    // the composeComplex function with the mode that is specified
+    const choRes = cc(ary);
     // ^^ that's a Result object
     const choChar = choRes.result;
     // the result of the composition, should be a Character
@@ -545,7 +554,7 @@ var Hangul = (function (exports) {
       return choRes;
       // choRes is already a Result so no need to make another
     }
-    const jungRes = composeComplex(choRes.remainder, mode);
+    const jungRes = cc(choRes.remainder);
     const jungChar = jungRes.result;
     const jung$$1 = jungNum[jungChar];
     if (!Number.isInteger(jung$$1)) {
@@ -558,7 +567,7 @@ var Hangul = (function (exports) {
       // time this function is called
     }
     if (jungRes.remainder.length > 0) {
-      const jongRes = composeComplex(jungRes.remainder, mode);
+      const jongRes = cc(jungRes.remainder);
       const jongChar = jongRes.result;
       const jong$$1 = jongNum[jongChar];
       if (!jong$$1) {
@@ -573,9 +582,6 @@ var Hangul = (function (exports) {
     return new Result(composeSyllable(cho$$1, jung$$1));
     // The last argument is optional for the Result constructor
   });
-
-  var assemble = ((data, mode) => deepFlatResMap(data, composeAnything(mode)));
-  // composeFn => (data, mode);
 
   // if you're gonna copy this part, at least give me credit.
   // I had to do all of this manually.
@@ -999,24 +1005,36 @@ var Hangul = (function (exports) {
 
   // tries to transform everything into disassembled standard hangul
 
-  const transformCharacter = char => (!standardHangul.contains(char) && all[char]) || char;
-  const transformEverything = char => (
+  const transformChar = char => (!standardHangul.contains(char) && all[char]) || char;
+  const transformDatum = datum => transformChar(Character(datum));
+  const transformEveryChar = char => (
     (standardHangul.contains(char) ? pairs : all)[char]
     || char
   );
-  const transformEveryCharacter = data => transformEverything(Character(data));
+  const transformEveryDatum = datum => transformEveryChar(Character(datum));
   // transform everything just means that it also transforms
   // standard hangul characters instead of ignoring them
 
+  // this way, we can trust the inputs to composeAnything
+
+  var assemble = ((data, mode) => deepFlatResMap(deepMap(data, transformEveryDatum), composeAnything(mode)));
+
   const transformExceptDoubles = (char) => {
-    const res = transformEverything(char);
+    const res = transformEveryChar(char);
     if (Array.isArray(res)) {
-      return composeComplex(res, 4);
+      const comp = composeComplex(res, 4);
+      if (Array.isArray(comp) && comp.length === 1) {
+        // if the composition actually ends up composing
+        // something and it's only one Character, just
+        // return the Character instead of an Array
+        return Character(comp);
+      }
+      return comp;
     }
     return res;
   };
-  // I couldn't think of what else to call it.
-  var decomposeComplex = ((val, decomposeDoubles) => toArray((decomposeDoubles ? transformEverything : transformExceptDoubles)(Character(val))));
+  // this function is needed by disassemble so it's trusting
+  var decomposeComplex = ((datum, decomposeDoubles) => toArray((decomposeDoubles ? transformEveryChar : transformExceptDoubles)(Character(datum))));
 
   const trustMe = (char) => {
     const code = char.codePointAt(0) - syllables.start;
@@ -1027,13 +1045,13 @@ var Hangul = (function (exports) {
     return [cho$1[choNum$$1], jung$1[jungNum$$1], jong$1[jongNum$$1]].filter(v => v);
     // the .filter(v => v) removes blank space in the array
   };
-  var decomposeSyllable = ((val, hardFail) => {
-    const char = Character(val);
+  var decomposeSyllable = ((datum, hardFail) => {
+    const char = Character(datum);
     if (!syllables.contains(char)) {
       if (hardFail) {
         throw Error('Decomposing a syllable requires a syllable to decompose!');
       }
-      return [val];
+      return [datum];
       // if there's no hardFail, the function must
       // still return the same type as it would have
       // if it didn't fail
@@ -1041,8 +1059,8 @@ var Hangul = (function (exports) {
     return trustMe(char);
   });
 
-  const disassembleFactory = transformer => (val) => {
-    const char = Character(val);
+  const disassembleFactory = transformer => (datum) => {
+    const char = Character(datum);
     if (syllables.contains(char)) {
       return trustMe(char).map(transformer);
       // that .map(transformEverything) catches the complex
@@ -1051,11 +1069,18 @@ var Hangul = (function (exports) {
     // otherwise try breaking complex characters apart
     return transformer(char);
   };
-  const disassembleAll = disassembleFactory(transformEverything);
+  const disassembleAll = disassembleFactory(transformEveryChar);
   const disassemble = disassembleFactory(transformExceptDoubles);
   // not to be confused with Hangul.disassemble
   // this disassemble takes Characters as inputs, not CharacterGroups
-  var disassemble$1 = ((data, grouped, decomposeDoubles) => (grouped ? deepMap : deepFlatMap)(data, decomposeDoubles ? disassembleAll : disassemble));
+  const disassembleChar = (datum, grouped, decomposeDoubles) => {
+    const res = (decomposeDoubles ? disassembleAll : disassemble)(datum);
+    if (!grouped) {
+      return flatten(res);
+    }
+    return res;
+  };
+  var disassemble$1 = ((data, grouped, decomposeDoubles) => (grouped ? deepMap : deepFlatMap)(data, decomposeDoubles ? disassembleAll : disassemble, true));
   // I know this looks really bad since it's all on
   // one line but ESlint was being really finicky
 
@@ -1161,15 +1186,15 @@ var Hangul = (function (exports) {
     },
   };
 
-  const standardizeCharacterBase = mode => (val) => {
-    const res = transformCharacter(Character(val));
+  const standardizeCharacterBase = mode => (datum) => {
+    const res = transformDatum(datum);
     if (Array.isArray(res)) {
       // atempt compose only if the value is an array
       // it's unfortunate, but any compFn is untrusting
       // since it's basically accessed publicly
       // we know that v will always have good types
       // but compFn will still check for Characters
-      return composeComplex(val, mode);
+      return composeComplex(datum, mode);
       // returns an Array
     }
     return res;
@@ -1350,12 +1375,12 @@ var Hangul = (function (exports) {
   // TODO: toKeys(data, true) outputs wrong stuff on depth 2
   const toKeys = (data, grouped) => (grouped ? deepMap : deepFlatMap)(data, disassembleToKeys);
 
-  var testMulti = (aryFnName => isFn => data => deepFlatMap(data, transformEveryCharacter)[aryFnName](isFn));
+  var testMulti = (aryFnName => isFn => data => deepFlatMap(data, transformEveryDatum)[aryFnName](isFn));
 
   var contains = (testMulti('some'));
 
-  var is = (isFn => (data) => {
-    const res = transformEveryCharacter(data);
+  var is = (isFn => (datum) => {
+    const res = transformEveryDatum(datum);
     // it's okay that we don't check if data is
     // a Character since transformEveryCharacter does.
     return Array.isArray(res) ? res.every(isFn) : isFn(res);
@@ -1506,7 +1531,6 @@ var Hangul = (function (exports) {
     containsHangul,
   });
 
-  // TODO: Fix Everything
   // TODO: toKeys fromKeys
   // TODO: public character checking is not working!
   // TODO: toKeys(data, true) is outputting wrong things!
@@ -1518,6 +1542,8 @@ var Hangul = (function (exports) {
   exports.a = assemble;
   exports.disassemble = disassemble$1;
   exports.d = disassemble$1;
+  exports.disassembleCharacter = disassembleChar;
+  exports.composeAnything = composeAnything;
   exports.decomposeComplex = decomposeComplex;
   exports.decomposeSyllable = decomposeSyllable;
   exports.composeComplex = complex$1;
@@ -1526,10 +1552,12 @@ var Hangul = (function (exports) {
   exports.standardizeCharacterBase = standardizeCharacterBase;
   exports.stronger = stronger$1;
   exports.flatten = flatten;
+  exports.deepMap = deepMap;
   exports.toKeys = toKeys;
-  exports.transformCharacter = transformCharacter;
-  exports.transformEverything = transformEverything;
-  exports.transformEveryCharacter = transformEveryCharacter;
+  exports.transformChar = transformChar;
+  exports.transformDatum = transformDatum;
+  exports.transformEveryChar = transformEveryChar;
+  exports.transformEveryDatum = transformEveryDatum;
   exports.isConsonant = isConsonant;
   exports.isConsonantAll = isConsonantAll;
   exports.containsConsonant = containsConsonant;
