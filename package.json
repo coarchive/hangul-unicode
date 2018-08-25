@@ -4,7 +4,6 @@
   "description": " A library to process and standardize hangul characters across unicode blocks",
   "main": "dist/Hangul.min.js",
   "scripts": {
-    "test": "jest",
     "start": "rollup -c -w",
     "build": "rollup -c"
   },
