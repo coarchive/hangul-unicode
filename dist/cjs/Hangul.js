@@ -2,6 +2,120 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
+const consonants = {
+  ㄱ: 1,
+  ㄴ: 1,
+  ㄷ: 1,
+  ㄹ: 1,
+  ㅁ: 1,
+  ㅂ: 1,
+  ㅅ: 1,
+  ㅇ: 1,
+  ㅈ: 1,
+  ㅊ: 1,
+  ㅋ: 1,
+  ㅌ: 1,
+  ㅍ: 1,
+  ㅎ: 1,
+  ㆁ: 1, // apparently this is now "ㅇ"
+  ㆄ: 1,
+  ㅱ: 1,
+  ㅿ: 1,
+};
+const vowels = {
+  ㅏ: 1,
+  ㅐ: 1,
+  ㅑ: 1,
+  ㅓ: 1,
+  ㅔ: 1,
+  ㅕ: 1,
+  ㅖ: 1,
+  ㅗ: 1,
+  ㅛ: 1,
+  ㅜ: 1,
+  ㅠ: 1,
+  ㅡ: 1,
+  ㅣ: 1,
+  ㆍ: 1,
+};
+const hangulToKey = {
+  ㅂ: 'q',
+  ㅃ: 'Q',
+  ㅈ: 'w',
+  ㅉ: 'W',
+  ㄷ: 'e',
+  ㄸ: 'E',
+  ㄱ: 'r',
+  ㄲ: 'R',
+  ㅅ: 't',
+  ㅆ: 'T',
+  ㅛ: 'y',
+  ㅕ: 'u',
+  ㅑ: 'i',
+  ㅐ: 'o',
+  ㅒ: 'O',
+  ㅔ: 'p',
+  ㅖ: 'P',
+  ㅁ: 'a',
+  ㄴ: 's',
+  ㅇ: 'd',
+  ㄹ: 'f',
+  ㅎ: 'g',
+  ㅗ: 'h',
+  ㅓ: 'j',
+  ㅏ: 'k',
+  ㅣ: 'l',
+  ㅋ: 'z',
+  ㅌ: 'x',
+  ㅊ: 'c',
+  ㅍ: 'v',
+  ㅠ: 'b',
+  ㅜ: 'n',
+  ㅡ: 'm',
+};
+const keyToHangul = {
+  q: 'ㅂ',
+  Q: 'ㅃ',
+  w: 'ㅈ',
+  W: 'ㅉ',
+  e: 'ㄷ',
+  E: 'ㄸ',
+  r: 'ㄱ',
+  R: 'ㄲ',
+  t: 'ㅅ',
+  T: 'ㅆ',
+  y: 'ㅛ',
+  u: 'ㅕ',
+  i: 'ㅑ',
+  o: 'ㅐ',
+  O: 'ㅒ',
+  p: 'ㅔ',
+  P: 'ㅖ',
+  a: 'ㅁ',
+  s: 'ㄴ',
+  d: 'ㅇ',
+  f: 'ㄹ',
+  g: 'ㅎ',
+  h: 'ㅗ',
+  j: 'ㅓ',
+  k: 'ㅏ',
+  l: 'ㅣ',
+  z: 'ㅋ',
+  x: 'ㅌ',
+  c: 'ㅊ',
+  v: 'ㅍ',
+  b: 'ㅠ',
+  n: 'ㅜ',
+  m: 'ㅡ',
+};
+// the reason the data is stored like this is because iterating
+// through an array is slower than just getting a key from an object
+// In this case though, it might be faster since arrays are allocated
+// on the heap instead of the stack?
+
+// I realize that I can programmatically reverse the key-value pairs during
+// runtime but since I can just do it now, it's just a little faster.
+
 const cho = {
   ㄱㄱ: 'ㄲ',
   ㄷㄷ: 'ㄸ',
@@ -491,7 +605,7 @@ const useComp3 = 0b001;
 const useArchaic = 0b010;
 const noUseJungJong = 0b100;
 const noCompDouble = 0b1000;
-const composeComplexBase = mode => (chars) => {
+const composeComplexBase = (mode) => {
   // mode is being used as a bitfield
   if (mode < 0 || mode > 8) {
     throw Error('The mode cannot be less than zero or greater than eight!');
@@ -513,86 +627,105 @@ const composeComplexBase = mode => (chars) => {
     objCache[mode] = obj;
     // eslint got mad at me for chaining assignments
   }
-  const len = chars.length;
-  if (len < 1) {
-    throw Error('Cannot compose array of zero characters!');
-  }
-  const char1 = chars[0];
-  if (len < 2) {
-    // if there aren't even two Characters to use
-    return new Result(char1);
-  }
-  const char2 = chars[1];
-  if (usingNoCompDouble && char1 === char2) {
-    return new Result(char1, chars.slice(1));
-  }
-  const comp2 = obj[char1 + char2];
-  // comp2 = composition of 2 characters
-  if (comp2) {
-    if (usingComp3 && len > 2) {
-      // if there's more data, try to compose a tripple
-      const comp3 = obj[char1 + char2 + chars[2]];
-      if (comp3) {
-        return new Result(comp3, chars.slice(3));
-      }
+  return (chars) => {
+    const len = chars.length;
+    if (len < 1) {
+      throw Error('Cannot compose array of zero characters!');
     }
-    // there's no more data or couldn't find a comp3
-    return new Result(comp2, chars.slice(2));
-  }
-  // couldn't find a comp2
-  return new Result(char1, chars.slice(1));
+    const char1 = chars[0];
+    if (len < 2) {
+    // if there aren't even two Characters to use
+      return new Result(char1);
+    }
+    const char2 = chars[1];
+    if (usingNoCompDouble && char1 === char2) {
+      return new Result(char1, chars.slice(1));
+    }
+    const comp2 = obj[char1 + char2];
+    // comp2 = composition of 2 characters
+    if (comp2) {
+      if (usingComp3 && len > 2) {
+      // if there's more data, try to compose a tripple
+        const comp3 = obj[char1 + char2 + chars[2]];
+        if (comp3) {
+          return new Result(comp3, chars.slice(3));
+        }
+      }
+      // there's no more data or couldn't find a comp3
+      return new Result(comp2, chars.slice(2));
+    }
+    // couldn't find a comp2
+    return new Result(char1, chars.slice(1));
+  };
 };
-const composeComplex = (ary, mode) => deepFlatResMap(ary, composeComplexBase(mode));
-var composeAnything = (mode => (ary) => {
+const composeComplex = (mode) => {
+  const cc = composeComplexBase(mode);
+  return ary => deepFlatResMap(ary, cc);
+};
+const isVowel = char => char && char !== 'ㆍ' && vowels[char];
+var composeAnything = ((mode) => {
+  const cc = composeComplexBase(mode);
+  return (ary) => {
   // while this function is named "composeSyllable", it actually
   // can be used to compose anything, really.
-  if (ary.length < 2) {
-    return new Result(ary[0]);
+    if (ary.length < 2) {
+      return new Result(ary[0]);
     // don't do extra computing for small operations
-  }
-  const cc = composeComplexBase(mode);
-  // the composeComplex function with the mode that is specified
-  const choRes = cc(ary);
-  // ^^ that's a Result object
-  const choChar = choRes.result;
-  // the result of the composition, should be a Character
-  const cho$$1 = choNum[choChar];
-  // the number that the character is mapped to
-  if (choRes.remainder.length < 1 || !Number.isInteger(cho$$1)) {
+    }
+    // the composeComplex function with the mode that is specified
+    const choRes = cc(ary);
+    // ^^ that's a Result object
+    const choChar = choRes.result;
+    // the result of the composition, should be a Character
+    const choRem = choRes.remainder;
+    // the remainder of the composition
+    const cho$$1 = choNum[choChar];
+    // the number that the character is mapped to
+    if (choRem.length < 1 || !Number.isInteger(cho$$1)) {
     // check if there's any more characters remaining
     // also check if it's not an integer since 0 == false
     // if it's not an integer, then return the potential
     // complex or Character that was made from composeAnyComplex
-    return choRes;
+      return choRes;
     // choRes is already a Result so no need to make another
-  }
-  const jungRes = cc(choRes.remainder);
-  const jungChar = jungRes.result;
-  const jung$$1 = jungNum[jungChar];
-  if (!Number.isInteger(jung$$1)) {
+    }
+    const jungRes = cc(choRem);
+
+    const jungChar = jungRes.result;
+    const jungRem = jungRes.remainder;
+    const jung$$1 = jungNum[jungChar];
+    if (!Number.isInteger(jung$$1)) {
     // there's no need to check to see if there's any more
     // remaining since cho and jung are all that's needed
     // to compose a syllable
-    return new Result(choChar, [jungChar, ...jungRes.remainder]);
+      return new Result(choChar, [jungChar, ...jungRem]);
     // still only return choChar as a result since we want
     // to try starting a syllable off with the jungChar next
     // time this function is called
-  }
-  if (jungRes.remainder.length > 0) {
-    const jongRes = cc(jungRes.remainder);
-    const jongChar = jongRes.result;
-    const jong$$1 = jongNum[jongChar];
-    if (!jong$$1) {
-      // at this point, we've confirmed cho and jung characters
-      // so return just a syllable of those two combined.
-      return new Result(composeSyllableFn(cho$$1, jung$$1), [jongChar, ...jongRes.remainder]);
-      // the jongChar, and the jungRes.remainder can be saved for later.
+    } if (jungRem.length) {
+      // there's no point in trying to add anything on to the complex
+      // if there aren't any characters left
+      if (!isVowel(jungRem[1])) {
+        // we need this part so that
+        // ㅁㅣㅇㅏ => 미아
+        const jongRes = cc(jungRem);
+
+        const jongChar = jongRes.result;
+        const jongRem = jongRes.remainder;
+        const jong$$1 = jongNum[jongChar];
+        if (jong$$1) {
+          // if the character after the syllable is not a vowel
+          // and the jong character is valid
+          return new Result(composeSyllableFn(cho$$1, jung$$1, jong$$1), jongRem);
+        }
+      }
     }
-    return new Result(composeSyllableFn(cho$$1, jung$$1, jong$$1), jongRes.remainder);
-    // yay! complete syllable!
-  }
-  return new Result(composeSyllableFn(cho$$1, jung$$1));
+    // there aren't any characters left
+    // or the character after the syllable is a vowel
+    // or the jong character isn't valid
+    return new Result(composeSyllableFn(cho$$1, jung$$1), jungRem);
   // The last argument is optional for the Result constructor
+  };
 });
 
 // if you're gonna copy this part, at least give me credit.
@@ -644,7 +777,7 @@ const jamo$1 = {
   ᄩ: ['ㅂ', 'ㅌ'],
   ᄪ: ['ㅂ', 'ㅍ'],
   ᄫ: ['ㅂ', 'ㅇ'],
-  ᄬ: ['ㅂ', 'ㅂ', 'ㅇ'],
+  ᄬ: [['ㅂ', 'ㅂ'], 'ㅇ'],
   ᄭ: ['ㅅ', 'ㄱ'],
   ᄮ: ['ㅅ', 'ㄴ'],
   ᄯ: ['ㅅ', 'ㄷ'],
@@ -686,7 +819,7 @@ const jamo$1 = {
   ᅓ: ['ㅊ', 'ㅎ'],
   ᅔ: null,
   ᅕ: null,
-  ᅖ: ['ㅂ', 'ㅂ'],
+  ᅖ: ['ㅍ', 'ㅂ'],
   ᅗ: 'ㆄ',
   ᅘ: ['ㅎ', 'ㅎ'],
   ᅙ: 'ㆆ',
@@ -1037,13 +1170,13 @@ const assembleTransformer = data => deepMap(data, transformEveryDatum);
 // it doesn't decomposeSyllables though
 var assemble = (assembleFactory(assembleTransformer));
 
+const composeComplexCho = composeComplex(noUseJungJong);
 const transformExceptCho = (char) => {
   const res = transformEveryChar(char);
   if (Array.isArray(res)) {
-    const comp = composeComplex(res, noUseJungJong);
+    const comp = composeComplexCho(res);
     // the default composeComplex only composes cho
     // HACK: this bug might be an issue with composeComplex
-    // it also might be present in './standardize' line 13
     if (Array.isArray(comp) && comp.length === 1) {
       // if the composition actually ends up composing
       // something and it's only one Character, just
@@ -1105,8 +1238,15 @@ var disassemble$1 = ((data, grouped, decomposeDoubles) => (grouped ? deepMap : d
 // I know this looks really bad since it's all on
 // one line but ESlint was being really finicky
 
+var name = ((obj) => {
+  Object.keys(obj).forEach((key) => {
+    obj[key].displayName = key;
+  });
+});
+
 // This file is only used in ../publicCompose
 // all is the only one of these that's actually used
+// I can't Object.assign them all together unfortunately
 const all$1 = {
   ㄱ: {
     ㄱ: 'ㄲ',
@@ -1207,24 +1347,31 @@ const all$1 = {
   },
 };
 
-const standardizeCharacterBase = mode => (datum) => {
-  const res = transformDatum(datum);
-  if (Array.isArray(res)) {
-    // atempt compose only if the value is an array
-    // it's unfortunate, but any compFn is untrusting
-    // since it's basically accessed publicly
-    // we know that v will always have good types
-    // but compFn will still check for Characters
-    return composeComplex(datum, mode);
-    // returns an Array
-  }
-  return res;
+const standardizeCharacterBase = (mode) => {
+  const cc = composeComplex(mode);
+  return (datum) => {
+    const res = transformDatum(datum);
+    if (Array.isArray(res)) {
+      // atempt compose only if the value is an array
+      // it's unfortunate, but any compFn is untrusting
+      // since it's basically accessed publicly
+      // we know that v will always have good types
+      // but compFn will still check for Characters
+      return cc(res);
+      // returns an Array
+    }
+    return res;
+  };
 };
-var standardize = ((data, grouped, mode) => (grouped ? deepMap : deepFlatMap)(data, standardizeCharacterBase(mode)));
+const standardizeFactory = ((mode) => {
+  const currentStandardize = standardizeCharacterBase(mode);
+  return (data, grouped) => (grouped ? deepMap : deepFlatMap)(data, currentStandardize);
+});
+var standardize = ((data, grouped, mode) => standardizeFactory(mode)(data, grouped));
 
 // since these functions are exposed, the characters must be
 // standardized so that the libaray can function properly
-const standardizeCharacter = standardizeCharacterBase(0b011);
+const standardizeCharacter = standardizeCharacterBase(useComp3 | useArchaic);
 const complex$1 = (first, second, third = '', hardFail) => {
   if (first === undefined || second === undefined) {
     throw Error('Cannot compose a complex with less than two values!');
@@ -1264,7 +1411,7 @@ const complex$1 = (first, second, third = '', hardFail) => {
     }
     return d3; // this should always be a string
   }
-  // the third character was falsey so just return the composition
+  // the third character was falsy so just return the composition
   return d2val;
 };
 // this function will always return a String or it'll error (hardFail)
@@ -1304,123 +1451,9 @@ const syllable = (choChar, jungChar = '', jongChar = '', hardFail) => {
 // there might be a little better performance but I'm
 // sure that it's pretty trivial.
 
-var stronger$1 = (data => standardize(data, false, true).map(char => stronger[char] || char));
-// standardize(data, grouped, depth3)
-// allow depth3 so as not to tamper with archaic unicode
-
-const consonants = {
-  ㄱ: 1,
-  ㄴ: 1,
-  ㄷ: 1,
-  ㄹ: 1,
-  ㅁ: 1,
-  ㅂ: 1,
-  ㅅ: 1,
-  ㅇ: 1,
-  ㅈ: 1,
-  ㅊ: 1,
-  ㅋ: 1,
-  ㅌ: 1,
-  ㅍ: 1,
-  ㅎ: 1,
-  ㆁ: 1, // apparently this is now "ㅇ"
-  ㆄ: 1,
-  ㅱ: 1,
-  ㅿ: 1,
-};
-const vowels = {
-  ㅏ: 1,
-  ㅐ: 1,
-  ㅑ: 1,
-  ㅓ: 1,
-  ㅔ: 1,
-  ㅕ: 1,
-  ㅖ: 1,
-  ㅗ: 1,
-  ㅛ: 1,
-  ㅜ: 1,
-  ㅠ: 1,
-  ㅡ: 1,
-  ㅣ: 1,
-  ㆍ: 1,
-};
-const hangulToKey = {
-  ㅂ: 'q',
-  ㅃ: 'Q',
-  ㅈ: 'w',
-  ㅉ: 'W',
-  ㄷ: 'e',
-  ㄸ: 'E',
-  ㄱ: 'r',
-  ㄲ: 'R',
-  ㅅ: 't',
-  ㅆ: 'T',
-  ㅛ: 'y',
-  ㅕ: 'u',
-  ㅑ: 'i',
-  ㅐ: 'o',
-  ㅒ: 'O',
-  ㅔ: 'p',
-  ㅖ: 'P',
-  ㅁ: 'a',
-  ㄴ: 's',
-  ㅇ: 'd',
-  ㄹ: 'f',
-  ㅎ: 'g',
-  ㅗ: 'h',
-  ㅓ: 'j',
-  ㅏ: 'k',
-  ㅣ: 'l',
-  ㅋ: 'z',
-  ㅌ: 'x',
-  ㅊ: 'c',
-  ㅍ: 'v',
-  ㅠ: 'b',
-  ㅜ: 'n',
-  ㅡ: 'm',
-};
-const keyToHangul = {
-  q: 'ㅂ',
-  Q: 'ㅃ',
-  w: 'ㅈ',
-  W: 'ㅉ',
-  e: 'ㄷ',
-  E: 'ㄸ',
-  r: 'ㄱ',
-  R: 'ㄲ',
-  t: 'ㅅ',
-  T: 'ㅆ',
-  y: 'ㅛ',
-  u: 'ㅕ',
-  i: 'ㅑ',
-  o: 'ㅐ',
-  O: 'ㅒ',
-  p: 'ㅔ',
-  P: 'ㅖ',
-  a: 'ㅁ',
-  s: 'ㄴ',
-  d: 'ㅇ',
-  f: 'ㄹ',
-  g: 'ㅎ',
-  h: 'ㅗ',
-  j: 'ㅓ',
-  k: 'ㅏ',
-  l: 'ㅣ',
-  z: 'ㅋ',
-  x: 'ㅌ',
-  c: 'ㅊ',
-  v: 'ㅍ',
-  b: 'ㅠ',
-  n: 'ㅜ',
-  m: 'ㅡ',
-};
-// the reason the data is stored like this is because iterating
-// through an array is slower than just getting a key from an object
-// In this case though, it might be faster since arrays are allocated
-// on the heap instead of the stack?
-
-// I realize that I can programmatically reverse the key-value pairs during
-// runtime but since I can just do it now, it's just a little faster.
+const standardizeComp3Archaic = standardizeFactory(useComp3 | useArchaic);
+// support all types of complex
+var stronger$1 = (data => standardizeComp3Archaic(data).map(char => stronger[char] || char));
 
 const hangulToKeyFn = char => hangulToKey[char] || char;
 const keyToHangulFn = char => keyToHangul[char];
@@ -1461,12 +1494,6 @@ var is = (isFn => (datum) => {
 });
 
 var isAll = (testMulti('every'));
-
-var name = ((obj) => {
-  Object.keys(obj).forEach((key) => {
-    obj[key].displayName = key;
-  });
-});
 
 const consonant = char => consonants[char];
 const isConsonant = is(consonant);
@@ -1525,15 +1552,15 @@ const contains$1 = testFn => (data) => {
   throw TypeError('The data must be an Array or a String!');
 };
 
-const isJamo = data => jamo.contains(Character(data));
-const isCompatibilityJamo = data => compatibilityJamo.contains(Character(data));
-const isJamoExtendedA = data => jamoExtendedA.char(Character(data));
-const isSyllable = data => syllables.contains(Character(data));
-const isJamoExtendedB = data => jamoExtendedB.contains(Character(data));
-const isHalfwidth = data => halfwidth.contains(Character(data));
-const isReserved = data => reserved.contains(Character(data));
-const isStandardHangul = data => standardHangul.contains(Character(data));
-const isHangul = data => hangul.contains(Character(data));
+const isJamo = datum => jamo.contains(Character(datum));
+const isCompatibilityJamo = datum => compatibilityJamo.contains(Character(datum));
+const isJamoExtendedA = datum => jamoExtendedA.char(Character(datum));
+const isSyllable = datum => syllables.contains(Character(datum));
+const isJamoExtendedB = datum => jamoExtendedB.contains(Character(datum));
+const isHalfwidth = datum => halfwidth.contains(Character(datum));
+const isReserved = datum => reserved.contains(Character(datum));
+const isStandardHangul = datum => standardHangul.contains(Character(datum));
+const isHangul = datum => hangul.contains(Character(datum));
 
 const isAllJamo = isAll$1(isJamo);
 const containsJamo = contains$1(isJamo);
@@ -1586,6 +1613,10 @@ name({
   isAllHalfwidth,
   containsHalfwidth,
 
+  isReserved,
+  isAllReserved,
+  containsReserved,
+
   isStandardHangul,
   isAllStandardHangul,
   containsStandardHangul,
@@ -1596,31 +1627,42 @@ name({
 });
 
 const vowel = char => vowels[char];
-const isVowel = is(vowel);
+const isVowel$1 = is(vowel);
 const isVowelAll = isAll(vowel);
 const containsVowel = contains(vowel);
 name({
-  isVowel,
+  isVowel: isVowel$1,
   isVowelAll,
   containsVowel,
 });
 
-// TODO: write tests
-// TODO: is irregular complex
+name({
+  assemble,
+
+  disassemble: disassemble$1,
+  disassembleCharacter: disassembleChar,
+
+  composeComplex: complex$1,
+  composeSyllable: syllable,
+
+  stronger: stronger$1,
+});
 
 exports.assemble = assemble;
 exports.a = assemble;
 exports.disassemble = disassemble$1;
 exports.d = disassemble$1;
 exports.disassembleCharacter = disassembleChar;
-exports.composeAnything = composeAnything;
-exports.decomposeComplex = decomposeComplex;
-exports.decomposeSyllable = decomposeSyllable;
 exports.composeComplex = complex$1;
 exports.composeSyllable = syllable;
-exports.standardize = standardize;
-exports.standardizeCharacterBase = standardizeCharacterBase;
 exports.stronger = stronger$1;
+exports.useComp3 = useComp3;
+exports.useArchaic = useArchaic;
+exports.noUseJungJong = noUseJungJong;
+exports.noCompDouble = noCompDouble;
+exports.decomposeComplex = decomposeComplex;
+exports.decomposeSyllable = decomposeSyllable;
+exports.standardize = standardize;
 exports.flatten = flatten;
 exports.deepMap = deepMap;
 exports.toKeys = toKeys;
@@ -1655,6 +1697,6 @@ exports.isAllStandardHangul = isAllStandardHangul;
 exports.containsStandardHangul = containsStandardHangul;
 exports.isAllHangul = isAllHangul;
 exports.containsHangul = containsHangul;
-exports.isVowel = isVowel;
+exports.isVowel = isVowel$1;
 exports.isVowelAll = isVowelAll;
 exports.containsVowel = containsVowel;

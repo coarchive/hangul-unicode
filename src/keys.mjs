@@ -3,16 +3,24 @@ import { assembleFactory } from './assemble';
 import { noCompDouble } from './compose';
 import { transformExceptCho } from './decomposeComplex';
 import { disassembleFactory } from './disassemble';
-import { Character, deepMap, deepFlatMap } from './types';
+import {
+  Character,
+  deepMap,
+  deepFlatMap,
+  isCharacterGroup,
+} from './types';
 
+// hangul to keystrokes
 const hangulToKeyFn = char => hangulToKey[char] || char;
-const keyToHangulFn = char => keyToHangul[char];
 const transformToKeys = (hangulChar) => {
   const res = transformExceptCho(hangulChar);
-  return Array.isArray(res) ? res.map(hangulToKeyFn) : hangulToKeyFn(res);
+  return isCharacterGroup(res) ? res.split('').map(hangulToKeyFn) : hangulToKeyFn(res);
 };
 const disassembleToKeys = disassembleFactory(transformToKeys);
-export const toKeys = (data, grouped) => (grouped ? deepMap : deepFlatMap)(data, disassembleToKeys);
+export const hangulToKeys = (data, grouped) => (grouped ? deepMap : deepFlatMap)(data, disassembleToKeys);
+
+// keystrokes to hangul
+const keyToHangulFn = char => keyToHangul[char];
 const transformCharToHangul = (latinDatum) => {
   const latinChar = Character(latinDatum);
   const res = keyToHangulFn(latinChar);
@@ -26,8 +34,8 @@ const transformCharToHangul = (latinDatum) => {
   }
   return res;
 };
-// it's okay that we're not standarizing because the data
-// in hangulToKey is already standard :)
 const transformToHangul = data => deepMap(data, transformCharToHangul);
 const assembleFromKeys = assembleFactory(transformToHangul);
-export const fromKeys = data => assembleFromKeys(data, noCompDouble);
+export const keysToHangul = data => assembleFromKeys(data, noCompDouble);
+// it's okay that we're not standarizing because the data
+// in hangulToKey is already standard :)

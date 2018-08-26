@@ -1455,14 +1455,17 @@ var Hangul = (function (exports) {
   // support all types of complex
   var stronger$1 = (data => standardizeComp3Archaic(data).map(char => stronger[char] || char));
 
+  // hangul to keystrokes
   const hangulToKeyFn = char => hangulToKey[char] || char;
-  const keyToHangulFn = char => keyToHangul[char];
   const transformToKeys = (hangulChar) => {
     const res = transformExceptCho(hangulChar);
-    return Array.isArray(res) ? res.map(hangulToKeyFn) : hangulToKeyFn(res);
+    return isCharacterGroup(res) ? res.split('').map(hangulToKeyFn) : hangulToKeyFn(res);
   };
   const disassembleToKeys = disassembleFactory(transformToKeys);
-  const toKeys = (data, grouped) => (grouped ? deepMap : deepFlatMap)(data, disassembleToKeys);
+  const hangulToKeys = (data, grouped) => (grouped ? deepMap : deepFlatMap)(data, disassembleToKeys);
+
+  // keystrokes to hangul
+  const keyToHangulFn = char => keyToHangul[char];
   const transformCharToHangul = (latinDatum) => {
     const latinChar = Character(latinDatum);
     const res = keyToHangulFn(latinChar);
@@ -1476,11 +1479,11 @@ var Hangul = (function (exports) {
     }
     return res;
   };
-  // it's okay that we're not standarizing because the data
-  // in hangulToKey is already standard :)
   const transformToHangul = data => deepMap(data, transformCharToHangul);
   const assembleFromKeys = assembleFactory(transformToHangul);
-  const fromKeys = data => assembleFromKeys(data, noCompDouble);
+  const keysToHangul = data => assembleFromKeys(data, noCompDouble);
+  // it's okay that we're not standarizing because the data
+  // in hangulToKey is already standard :)
 
   var testMulti = (aryFnName => isFn => data => deepFlatMap(data, transformEveryDatum)[aryFnName](isFn));
 
@@ -1665,8 +1668,8 @@ var Hangul = (function (exports) {
   exports.standardize = standardize;
   exports.flatten = flatten;
   exports.deepMap = deepMap;
-  exports.toKeys = toKeys;
-  exports.fromKeys = fromKeys;
+  exports.hangulToKeys = hangulToKeys;
+  exports.keysToHangul = keysToHangul;
   exports.isConsonant = isConsonant;
   exports.isConsonantAll = isConsonantAll;
   exports.containsConsonant = containsConsonant;
