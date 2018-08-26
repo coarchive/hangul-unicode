@@ -1,3 +1,4 @@
+import { vowels } from './unicode/characters';
 import * as complex from './unicode/complex';
 import { choNum, jungNum, jongNum } from './unicode/syllable';
 import composeSyllableFn from './composeSyllable';
@@ -71,6 +72,7 @@ export const composeComplex = (mode) => {
   const cc = composeComplexBase(mode);
   return ary => deepFlatResMap(ary, cc);
 };
+const isVowel = char => char && char !== 'ㆍ' && vowels[char];
 export default ((mode) => {
   const cc = composeComplexBase(mode);
   return (ary) => {
@@ -85,9 +87,11 @@ export default ((mode) => {
     // ^^ that's a Result object
     const choChar = choRes.result;
     // the result of the composition, should be a Character
+    const choRem = choRes.remainder;
+    // the remainder of the composition
     const cho = choNum[choChar];
     // the number that the character is mapped to
-    if (choRes.remainder.length < 1 || !Number.isInteger(cho)) {
+    if (choRem.length < 1 || !Number.isInteger(cho)) {
     // check if there's any more characters remaining
     // also check if it's not an integer since 0 == false
     // if it's not an integer, then return the potential
@@ -95,32 +99,41 @@ export default ((mode) => {
       return choRes;
     // choRes is already a Result so no need to make another
     }
-    const jungRes = cc(choRes.remainder);
+    const jungRes = cc(choRem);
+
     const jungChar = jungRes.result;
+    const jungRem = jungRes.remainder;
     const jung = jungNum[jungChar];
     if (!Number.isInteger(jung)) {
     // there's no need to check to see if there's any more
     // remaining since cho and jung are all that's needed
     // to compose a syllable
-      return new R(choChar, [jungChar, ...jungRes.remainder]);
+      return new R(choChar, [jungChar, ...jungRem]);
     // still only return choChar as a result since we want
     // to try starting a syllable off with the jungChar next
     // time this function is called
-    }
-    if (jungRes.remainder.length > 0) {
-      const jongRes = cc(jungRes.remainder);
-      const jongChar = jongRes.result;
-      const jong = jongNum[jongChar];
-      if (!jong) {
-      // at this point, we've confirmed cho and jung characters
-      // so return just a syllable of those two combined.
-        return new R(composeSyllableFn(cho, jung), [jongChar, ...jongRes.remainder]);
-      // the jongChar, and the jungRes.remainder can be saved for later.
+    } if (jungRem.length) {
+      // there's no point in trying to add anything on to the complex
+      // if there aren't any characters left
+      if (!isVowel(jungRem[1])) {
+        // we need this part so that
+        // ㅁㅣㅇㅏ => 미아
+        const jongRes = cc(jungRem);
+
+        const jongChar = jongRes.result;
+        const jongRem = jongRes.remainder;
+        const jong = jongNum[jongChar];
+        if (jong) {
+          // if the character after the syllable is not a vowel
+          // and the jong character is valid
+          return new R(composeSyllableFn(cho, jung, jong), jongRem);
+        }
       }
-      return new R(composeSyllableFn(cho, jung, jong), jongRes.remainder);
-    // yay! complete syllable!
     }
-    return new R(composeSyllableFn(cho, jung));
+    // there aren't any characters left
+    // or the character after the syllable is a vowel
+    // or the jong character isn't valid
+    return new R(composeSyllableFn(cho, jung), jungRem);
   // The last argument is optional for the Result constructor
   };
 });

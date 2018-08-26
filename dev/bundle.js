@@ -2,6 +2,120 @@
 var Hangul = (function (exports) {
   'use strict';
 
+  const consonants = {
+    ㄱ: 1,
+    ㄴ: 1,
+    ㄷ: 1,
+    ㄹ: 1,
+    ㅁ: 1,
+    ㅂ: 1,
+    ㅅ: 1,
+    ㅇ: 1,
+    ㅈ: 1,
+    ㅊ: 1,
+    ㅋ: 1,
+    ㅌ: 1,
+    ㅍ: 1,
+    ㅎ: 1,
+    ㆁ: 1, // apparently this is now "ㅇ"
+    ㆄ: 1,
+    ㅱ: 1,
+    ㅿ: 1,
+  };
+  const vowels = {
+    ㅏ: 1,
+    ㅐ: 1,
+    ㅑ: 1,
+    ㅓ: 1,
+    ㅔ: 1,
+    ㅕ: 1,
+    ㅖ: 1,
+    ㅗ: 1,
+    ㅛ: 1,
+    ㅜ: 1,
+    ㅠ: 1,
+    ㅡ: 1,
+    ㅣ: 1,
+    ㆍ: 1,
+  };
+  const hangulToKey = {
+    ㅂ: 'q',
+    ㅃ: 'Q',
+    ㅈ: 'w',
+    ㅉ: 'W',
+    ㄷ: 'e',
+    ㄸ: 'E',
+    ㄱ: 'r',
+    ㄲ: 'R',
+    ㅅ: 't',
+    ㅆ: 'T',
+    ㅛ: 'y',
+    ㅕ: 'u',
+    ㅑ: 'i',
+    ㅐ: 'o',
+    ㅒ: 'O',
+    ㅔ: 'p',
+    ㅖ: 'P',
+    ㅁ: 'a',
+    ㄴ: 's',
+    ㅇ: 'd',
+    ㄹ: 'f',
+    ㅎ: 'g',
+    ㅗ: 'h',
+    ㅓ: 'j',
+    ㅏ: 'k',
+    ㅣ: 'l',
+    ㅋ: 'z',
+    ㅌ: 'x',
+    ㅊ: 'c',
+    ㅍ: 'v',
+    ㅠ: 'b',
+    ㅜ: 'n',
+    ㅡ: 'm',
+  };
+  const keyToHangul = {
+    q: 'ㅂ',
+    Q: 'ㅃ',
+    w: 'ㅈ',
+    W: 'ㅉ',
+    e: 'ㄷ',
+    E: 'ㄸ',
+    r: 'ㄱ',
+    R: 'ㄲ',
+    t: 'ㅅ',
+    T: 'ㅆ',
+    y: 'ㅛ',
+    u: 'ㅕ',
+    i: 'ㅑ',
+    o: 'ㅐ',
+    O: 'ㅒ',
+    p: 'ㅔ',
+    P: 'ㅖ',
+    a: 'ㅁ',
+    s: 'ㄴ',
+    d: 'ㅇ',
+    f: 'ㄹ',
+    g: 'ㅎ',
+    h: 'ㅗ',
+    j: 'ㅓ',
+    k: 'ㅏ',
+    l: 'ㅣ',
+    z: 'ㅋ',
+    x: 'ㅌ',
+    c: 'ㅊ',
+    v: 'ㅍ',
+    b: 'ㅠ',
+    n: 'ㅜ',
+    m: 'ㅡ',
+  };
+  // the reason the data is stored like this is because iterating
+  // through an array is slower than just getting a key from an object
+  // In this case though, it might be faster since arrays are allocated
+  // on the heap instead of the stack?
+
+  // I realize that I can programmatically reverse the key-value pairs during
+  // runtime but since I can just do it now, it's just a little faster.
+
   const cho = {
     ㄱㄱ: 'ㄲ',
     ㄷㄷ: 'ㄸ',
@@ -336,7 +450,7 @@ var Hangul = (function (exports) {
     reserved,
   ]);
 
-  var composeSyllable = ((cho, jung, jong = 0) => (
+  var composeSyllableFn = ((cho, jung, jong = 0) => (
     String.fromCodePoint(cho * 588 + jung * 28 + jong + syllables.start)
     // this is the actual function that makes unicode syllable characters
     // where the characters are mapped to numbers. Take a look at
@@ -548,6 +662,7 @@ var Hangul = (function (exports) {
     const cc = composeComplexBase(mode);
     return ary => deepFlatResMap(ary, cc);
   };
+  const isVowel = char => char && char !== 'ㆍ' && vowels[char];
   var composeAnything = ((mode) => {
     const cc = composeComplexBase(mode);
     return (ary) => {
@@ -562,9 +677,11 @@ var Hangul = (function (exports) {
       // ^^ that's a Result object
       const choChar = choRes.result;
       // the result of the composition, should be a Character
+      const choRem = choRes.remainder;
+      // the remainder of the composition
       const cho$$1 = choNum[choChar];
       // the number that the character is mapped to
-      if (choRes.remainder.length < 1 || !Number.isInteger(cho$$1)) {
+      if (choRem.length < 1 || !Number.isInteger(cho$$1)) {
       // check if there's any more characters remaining
       // also check if it's not an integer since 0 == false
       // if it's not an integer, then return the potential
@@ -572,32 +689,41 @@ var Hangul = (function (exports) {
         return choRes;
       // choRes is already a Result so no need to make another
       }
-      const jungRes = cc(choRes.remainder);
+      const jungRes = cc(choRem);
+
       const jungChar = jungRes.result;
+      const jungRem = jungRes.remainder;
       const jung$$1 = jungNum[jungChar];
       if (!Number.isInteger(jung$$1)) {
       // there's no need to check to see if there's any more
       // remaining since cho and jung are all that's needed
       // to compose a syllable
-        return new Result(choChar, [jungChar, ...jungRes.remainder]);
+        return new Result(choChar, [jungChar, ...jungRem]);
       // still only return choChar as a result since we want
       // to try starting a syllable off with the jungChar next
       // time this function is called
-      }
-      if (jungRes.remainder.length > 0) {
-        const jongRes = cc(jungRes.remainder);
-        const jongChar = jongRes.result;
-        const jong$$1 = jongNum[jongChar];
-        if (!jong$$1) {
-        // at this point, we've confirmed cho and jung characters
-        // so return just a syllable of those two combined.
-          return new Result(composeSyllable(cho$$1, jung$$1), [jongChar, ...jongRes.remainder]);
-        // the jongChar, and the jungRes.remainder can be saved for later.
+      } if (jungRem.length) {
+        // there's no point in trying to add anything on to the complex
+        // if there aren't any characters left
+        if (!isVowel(jungRem[1])) {
+          // we need this part so that
+          // ㅁㅣㅇㅏ => 미아
+          const jongRes = cc(jungRem);
+
+          const jongChar = jongRes.result;
+          const jongRem = jongRes.remainder;
+          const jong$$1 = jongNum[jongChar];
+          if (jong$$1) {
+            // if the character after the syllable is not a vowel
+            // and the jong character is valid
+            return new Result(composeSyllableFn(cho$$1, jung$$1, jong$$1), jongRem);
+          }
         }
-        return new Result(composeSyllable(cho$$1, jung$$1, jong$$1), jongRes.remainder);
-      // yay! complete syllable!
       }
-      return new Result(composeSyllable(cho$$1, jung$$1));
+      // there aren't any characters left
+      // or the character after the syllable is a vowel
+      // or the jong character isn't valid
+      return new Result(composeSyllableFn(cho$$1, jung$$1), jungRem);
     // The last argument is optional for the Result constructor
     };
   });
@@ -1112,6 +1238,12 @@ var Hangul = (function (exports) {
   // I know this looks really bad since it's all on
   // one line but ESlint was being really finicky
 
+  var name = ((obj) => {
+    Object.keys(obj).forEach((key) => {
+      obj[key].displayName = key;
+    });
+  });
+
   // This file is only used in ../publicCompose
   // all is the only one of these that's actually used
   // I can't Object.assign them all together unfortunately
@@ -1311,9 +1443,9 @@ var Hangul = (function (exports) {
       }
       // getting here means that the cho and jung
       // characters were valid, so call composeSyllable
-      return `${composeSyllable(cho, jung)}${jongChar}`;
+      return `${composeSyllableFn(cho, jung)}${jongChar}`;
     }
-    return composeSyllable(cho, jung, jong);
+    return composeSyllableFn(cho, jung, jong);
   };
   // by nesting all if-statements under if (hardFail)
   // there might be a little better performance but I'm
@@ -1322,120 +1454,6 @@ var Hangul = (function (exports) {
   const standardizeComp3Archaic = standardizeFactory(useComp3 | useArchaic);
   // support all types of complex
   var stronger$1 = (data => standardizeComp3Archaic(data).map(char => stronger[char] || char));
-
-  const consonants = {
-    ㄱ: 1,
-    ㄴ: 1,
-    ㄷ: 1,
-    ㄹ: 1,
-    ㅁ: 1,
-    ㅂ: 1,
-    ㅅ: 1,
-    ㅇ: 1,
-    ㅈ: 1,
-    ㅊ: 1,
-    ㅋ: 1,
-    ㅌ: 1,
-    ㅍ: 1,
-    ㅎ: 1,
-    ㆁ: 1, // apparently this is now "ㅇ"
-    ㆄ: 1,
-    ㅱ: 1,
-    ㅿ: 1,
-  };
-  const vowels = {
-    ㅏ: 1,
-    ㅐ: 1,
-    ㅑ: 1,
-    ㅓ: 1,
-    ㅔ: 1,
-    ㅕ: 1,
-    ㅖ: 1,
-    ㅗ: 1,
-    ㅛ: 1,
-    ㅜ: 1,
-    ㅠ: 1,
-    ㅡ: 1,
-    ㅣ: 1,
-    ㆍ: 1,
-  };
-  const hangulToKey = {
-    ㅂ: 'q',
-    ㅃ: 'Q',
-    ㅈ: 'w',
-    ㅉ: 'W',
-    ㄷ: 'e',
-    ㄸ: 'E',
-    ㄱ: 'r',
-    ㄲ: 'R',
-    ㅅ: 't',
-    ㅆ: 'T',
-    ㅛ: 'y',
-    ㅕ: 'u',
-    ㅑ: 'i',
-    ㅐ: 'o',
-    ㅒ: 'O',
-    ㅔ: 'p',
-    ㅖ: 'P',
-    ㅁ: 'a',
-    ㄴ: 's',
-    ㅇ: 'd',
-    ㄹ: 'f',
-    ㅎ: 'g',
-    ㅗ: 'h',
-    ㅓ: 'j',
-    ㅏ: 'k',
-    ㅣ: 'l',
-    ㅋ: 'z',
-    ㅌ: 'x',
-    ㅊ: 'c',
-    ㅍ: 'v',
-    ㅠ: 'b',
-    ㅜ: 'n',
-    ㅡ: 'm',
-  };
-  const keyToHangul = {
-    q: 'ㅂ',
-    Q: 'ㅃ',
-    w: 'ㅈ',
-    W: 'ㅉ',
-    e: 'ㄷ',
-    E: 'ㄸ',
-    r: 'ㄱ',
-    R: 'ㄲ',
-    t: 'ㅅ',
-    T: 'ㅆ',
-    y: 'ㅛ',
-    u: 'ㅕ',
-    i: 'ㅑ',
-    o: 'ㅐ',
-    O: 'ㅒ',
-    p: 'ㅔ',
-    P: 'ㅖ',
-    a: 'ㅁ',
-    s: 'ㄴ',
-    d: 'ㅇ',
-    f: 'ㄹ',
-    g: 'ㅎ',
-    h: 'ㅗ',
-    j: 'ㅓ',
-    k: 'ㅏ',
-    l: 'ㅣ',
-    z: 'ㅋ',
-    x: 'ㅌ',
-    c: 'ㅊ',
-    v: 'ㅍ',
-    b: 'ㅠ',
-    n: 'ㅜ',
-    m: 'ㅡ',
-  };
-  // the reason the data is stored like this is because iterating
-  // through an array is slower than just getting a key from an object
-  // In this case though, it might be faster since arrays are allocated
-  // on the heap instead of the stack?
-
-  // I realize that I can programmatically reverse the key-value pairs during
-  // runtime but since I can just do it now, it's just a little faster.
 
   const hangulToKeyFn = char => hangulToKey[char] || char;
   const keyToHangulFn = char => keyToHangul[char];
@@ -1476,12 +1494,6 @@ var Hangul = (function (exports) {
   });
 
   var isAll = (testMulti('every'));
-
-  var name = ((obj) => {
-    Object.keys(obj).forEach((key) => {
-      obj[key].displayName = key;
-    });
-  });
 
   const consonant = char => consonants[char];
   const isConsonant = is(consonant);
@@ -1615,30 +1627,42 @@ var Hangul = (function (exports) {
   });
 
   const vowel = char => vowels[char];
-  const isVowel = is(vowel);
+  const isVowel$1 = is(vowel);
   const isVowelAll = isAll(vowel);
   const containsVowel = contains(vowel);
   name({
-    isVowel,
+    isVowel: isVowel$1,
     isVowelAll,
     containsVowel,
   });
 
-  // TODO: write tests
-  // TODO: is irregular complex
+  name({
+    assemble,
+
+    disassemble: disassemble$1,
+    disassembleCharacter: disassembleChar,
+
+    composeComplex: complex$1,
+    composeSyllable: syllable,
+
+    stronger: stronger$1,
+  });
 
   exports.assemble = assemble;
   exports.a = assemble;
   exports.disassemble = disassemble$1;
   exports.d = disassemble$1;
   exports.disassembleCharacter = disassembleChar;
-  exports.composeAnything = composeAnything;
-  exports.decomposeComplex = decomposeComplex;
-  exports.decomposeSyllable = decomposeSyllable;
   exports.composeComplex = complex$1;
   exports.composeSyllable = syllable;
-  exports.standardize = standardize;
   exports.stronger = stronger$1;
+  exports.useComp3 = useComp3;
+  exports.useArchaic = useArchaic;
+  exports.noUseJungJong = noUseJungJong;
+  exports.noCompDouble = noCompDouble;
+  exports.decomposeComplex = decomposeComplex;
+  exports.decomposeSyllable = decomposeSyllable;
+  exports.standardize = standardize;
   exports.flatten = flatten;
   exports.deepMap = deepMap;
   exports.toKeys = toKeys;
@@ -1673,7 +1697,7 @@ var Hangul = (function (exports) {
   exports.containsStandardHangul = containsStandardHangul;
   exports.isAllHangul = isAllHangul;
   exports.containsHangul = containsHangul;
-  exports.isVowel = isVowel;
+  exports.isVowel = isVowel$1;
   exports.isVowelAll = isVowelAll;
   exports.containsVowel = containsVowel;
 
