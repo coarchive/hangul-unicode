@@ -21,12 +21,9 @@ export default (function iife() {
   if (production) {
     const terse = [terser()];
     return [
-      makeOutput('iife', 'dist/iife/Hangul.js'),
-      makeOutput('iife', 'dist/iife/Hangul.min.js', terse),
-      makeOutput('cjs', 'dist/cjs/Hangul.js'),
-      makeOutput('cjs', 'dist/cjs/Hangul.min.js', terse),
-      makeOutput('umd', 'dist/umd/Hangul.js'),
-      makeOutput('umd', 'dist/umd/Hangul.min.js', terse),
+      makeOutput('iife', 'dist/Hangul.iife.min.js', terse),
+      makeOutput('cjs', 'dist/Hangul.cjs.min.js', terse),
+      makeOutput('umd', 'dist/Hangul.umd.min.js', terse),
     ];
   }
   const o = makeOutput('iife', 'dev/bundle.js', [
