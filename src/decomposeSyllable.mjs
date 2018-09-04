@@ -10,7 +10,7 @@ export const trustMe = (char) => {
   const choNum = 0 | q / 21; // basically Math.floor(q / 21)
   return [cho[choNum], jung[jungNum], jong[jongNum]].filter(v => v);
   // the .filter(v => v) removes blank space in the array
-}
+};
 export default ((datum, hardFail) => {
   const char = Character(datum);
   if (!syllables.contains(char)) {
