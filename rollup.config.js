@@ -1,9 +1,9 @@
 import livereload from 'rollup-plugin-livereload';
 import resolve from 'rollup-plugin-node-resolve';
 import serve from 'rollup-plugin-serve';
-import { terser } from 'rollup-plugin-terser';
+import babel from 'rollup-plugin-babel';
 
-function makeOutput(format, outfile, plugins = []) {
+function makeOutput(format, outfile, plugins) {
   return ({
     input: 'src/main.js',
     moduleName: 'Hangul',
@@ -13,17 +13,16 @@ function makeOutput(format, outfile, plugins = []) {
       name: 'Hangul',
       strict: true,
     },
-    plugins: [resolve(), ...plugins],
+    plugins: [resolve(), babel(), ...plugins],
   });
 }
 const production = !process.env.ROLLUP_WATCH;
-export default (function iife() {
+export default ((() => {
   if (production) {
-    const terse = [terser()];
     return [
-      makeOutput('iife', 'dist/Hangul.iife.min.js', terse),
-      makeOutput('cjs', 'dist/Hangul.cjs.min.js', terse),
-      makeOutput('umd', 'dist/Hangul.umd.min.js', terse),
+      makeOutput('iife', 'dist/Hangul.iife.min.js'),
+      makeOutput('cjs', 'dist/Hangul.cjs.min.js'),
+      makeOutput('umd', 'dist/Hangul.umd.min.js'),
     ];
   }
   const o = makeOutput('iife', 'dev/bundle.js', [
@@ -38,4 +37,4 @@ export default (function iife() {
     include: 'src/**',
   };
   return o;
-}());
+})());

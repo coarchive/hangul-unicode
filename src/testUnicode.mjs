@@ -1,78 +1,38 @@
 import * as blocks from './unicode/blocks';
-import name from './name';
-import { isAll, contains } from './simpleDeepTest';
+import * as test from './simpleDeepTest';
 import { Character } from './types';
 
-export const isJamo = datum => blocks.jamo.contains(Character(datum));
-export const isCompatibilityJamo = datum => blocks.compatibilityJamo.contains(Character(datum));
-export const isJamoExtendedA = datum => blocks.jamoExtendedA.char(Character(datum));
-export const isSyllable = datum => blocks.syllables.contains(Character(datum));
-export const isJamoExtendedB = datum => blocks.jamoExtendedB.contains(Character(datum));
-export const isHalfwidth = datum => blocks.halfwidth.contains(Character(datum));
-export const isReserved = datum => blocks.reserved.contains(Character(datum));
-export const isStandardHangul = datum => blocks.standardHangul.contains(Character(datum));
-export const isHangul = datum => blocks.hangul.contains(Character(datum));
-
-export const isAllJamo = isAll(isJamo);
-export const containsJamo = contains(isJamo);
-
-export const isAllCompatibilityJamo = isAll(isCompatibilityJamo);
-export const containsCompatibilityJamo = contains(isCompatibilityJamo);
-
-export const isAllJamoExtendedA = isAll(isJamoExtendedA);
-export const containsJamoExtendedA = contains(isJamoExtendedA);
-
-export const isAllSyllable = isAll(isSyllable);
-export const containsSyllable = contains(isSyllable);
-
-export const isAllJamoExtendedB = isAll(isJamoExtendedB);
-export const containsJamoExtendedB = contains(isJamoExtendedB);
-
-export const isAllHalfwidth = isAll(isHalfwidth);
-export const containsHalfwidth = contains(isHalfwidth);
-
-export const isAllReserved = isAll(isReserved);
-export const containsReserved = contains(isReserved);
-
-export const isAllStandardHangul = isAll(isStandardHangul);
-export const containsStandardHangul = contains(isStandardHangul);
-
-export const isAllHangul = isAll(isHangul);
-export const containsHangul = contains(isHangul);
-name({
-  isJamo,
-  isAllJamo,
-  containsJamo,
-
-  isCompatibilityJamo,
-  isAllCompatibilityJamo,
-  containsCompatibilityJamo,
-
-  isJamoExtendedA,
-  isAllJamoExtendedA,
-  containsJamoExtendedA,
-
-  isSyllable,
-  isAllSyllable,
-  containsSyllable,
-
-  isJamoExtendedB,
-  isAllJamoExtendedB,
-  containsJamoExtendedB,
-
-  isHalfwidth,
-  isAllHalfwidth,
-  containsHalfwidth,
-
-  isReserved,
-  isAllReserved,
-  containsReserved,
-
-  isStandardHangul,
-  isAllStandardHangul,
-  containsStandardHangul,
-
-  isHangul,
-  isAllHangul,
-  containsHangul,
-});
+const isFactory = blockName => datum => blocks[blockName].conains(Character(datum));
+export const is = {
+  jamo: isFactory('jamo'),
+  compatibilityJamo: isFactory('compatibilityJamo'),
+  jamoExtendedA: isFactory('jamoExtendedA'),
+  syllable: isFactory('syllable'),
+  jamoExtendedB: isFactory('jamoExtendedB'),
+  halfwidth: isFactory('halfwidth'),
+  reserved: isFactory('reserved'),
+  standardHangul: isFactory('standardHangul'),
+  hangul: isFactory('hangul'),
+};
+export const isAll = {
+  jamo: test.isAll(is.jamo),
+  compatibilityJamo: test.isAll(is.compatibilityJamo),
+  jamoExtendedA: test.isAll(is.jamoExtendedA),
+  syllable: test.isAll(is.syllable),
+  jamoExtendedB: test.isAll(is.jamoExtendedB),
+  halfwidth: test.isAll(is.halfwidth),
+  reserved: test.isAll(is.reserved),
+  standardHangul: test.isAll(is.standardHangul),
+  hangul: test.isAll(is.hangul),
+};
+export const contains = {
+  jamo: test.contains(is.jamo),
+  compatibilityJamo: test.contains(is.compatibilityJamo),
+  jamoExtendedA: test.contains(is.jamoExtendedA),
+  syllable: test.contains(is.syllable),
+  jamoExtendedB: test.contains(is.jamoExtendedB),
+  halfwidth: test.contains(is.halfwidth),
+  reserved: test.contains(is.reserved),
+  standardHangul: test.contains(is.standardHangul),
+  hangul: test.contains(is.hangul),
+};

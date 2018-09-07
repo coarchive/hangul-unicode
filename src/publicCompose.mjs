@@ -1,6 +1,6 @@
 import { all } from './unicode/complexTree';
 import { choNum, jungNum, jongNum } from './unicode/syllable';
-import { useComp3, useArchaic } from './compose';
+import { useComp3, useArchaic } from './mode';
 import composeSyllable from './composeSyllable';
 import { standardizeCharacterBase } from './standardize';
 // since these functions are exposed, the characters must be
@@ -34,7 +34,7 @@ export const complex = (first, second, third = '', hardFail) => {
     if (!d3) {
       // if depth 3 doesn't exist
       if (hardFail) {
-        throw Error(`Found ${d2val} but cannot combine ${first}, ${second}, and ${third}`);
+        throw Error(`Found "${d2val}" but cannot combine "${first}" and "${second}" with "${third}"`);
         // the reason for this ^^^ is because sometimes
         // d2 is a string rather than an object
       }

@@ -4,30 +4,33 @@ import { choNum, jungNum, jongNum } from './unicode/syllable';
 import composeSyllableFn from './composeSyllable';
 import R from './Result';
 import { deepFlatResMap } from './types';
-
+import {
+  hardFail,
+  useArchaic,
+  useComp3,
+  noJungJong,
+  noDouble,
+} from './mode';
 // important note!
 // these functions aren't going to really make any sense until
 // you understand how they work in conjunction with the stuff
 // that's in './types'. Read './Result' and './types' first.
 // then read this.
 const objCache = [];
-export const useComp3 = 0b001;
-export const useArchaic = 0b010;
-export const noUseJungJong = 0b100;
-export const noCompDouble = 0b1000;
+
 const composeComplexBase = (mode) => {
   // mode is being used as a bitfield
-  if (mode < 0 || mode > 8) {
-    throw Error('The mode cannot be less than zero or greater than eight!');
+  if (hardFail && (mode < 0 || mode > 31)) {
+    throw Error('The mode cannot be less than zero or greater than 31 (0b11111)!');
   }
   const usingArchaic = mode & useArchaic;
   const usingComp3 = usingArchaic && mode & useComp3;
-  const usingNoCompDouble = mode & noCompDouble;
+  const usingnoDouble = mode & noDouble;
   let obj = objCache[mode];
   if (!obj) {
     const objs = [complex.cho];
     // there are no comp3 values in non archaic complex objects
-    if (!(mode & noUseJungJong)) {
+    if (!(mode & noJungJong)) {
       // if you're usingJungJong
       objs.push(complex.jung, complex.jong);
     } if (usingArchaic) {
@@ -48,7 +51,7 @@ const composeComplexBase = (mode) => {
       return new R(char1);
     }
     const char2 = chars[1];
-    if (usingNoCompDouble && char1 === char2) {
+    if (usingnoDouble && char1 === char2) {
       return new R(char1, chars.slice(1));
     }
     const comp2 = obj[char1 + char2];

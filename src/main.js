@@ -18,17 +18,15 @@ name({
 export {
   useComp3,
   useArchaic,
-  noUseJungJong,
-  noCompDouble,
-} from './compose';
+  noJungJong,
+  noDouble,
+} from './mode';
 export { default as decomposeComplex } from './decomposeComplex';
 export { default as decomposeSyllable } from './decomposeSyllable';
 export { default as standardize } from './standardize';
 export { flatten, deepMap } from './types';
 export * from './keys';
-export * from './testConsonant';
-export * from './testUnicode';
-export * from './testVowel';
+export * from './test';
 export {
   assemble,
   assemble as a,

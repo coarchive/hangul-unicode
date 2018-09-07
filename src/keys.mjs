@@ -1,6 +1,6 @@
 import { hangulToKey, keyToHangul } from './unicode/characters';
 import { assembleFactory } from './assemble';
-import { noCompDouble } from './compose';
+import { noDouble } from './mode';
 import { transformExceptCho } from './decomposeComplex';
 import { disassembleFactory } from './disassemble';
 import {
@@ -36,6 +36,6 @@ const transformCharToHangul = (latinDatum) => {
 };
 const transformToHangul = data => deepMap(data, transformCharToHangul);
 const assembleFromKeys = assembleFactory(transformToHangul);
-export const keysToHangul = data => assembleFromKeys(data, noCompDouble);
+export const keysToHangul = data => assembleFromKeys(data, noDouble);
 // it's okay that we're not standarizing because the data
 // in hangulToKey is already standard :)

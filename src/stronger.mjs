@@ -1,5 +1,5 @@
 import { stronger } from './unicode/complex';
-import { useComp3, useArchaic } from './compose';
+import { useComp3, useArchaic } from './mode';
 import { standardizeFactory } from './standardize';
 
 const standardizeComp3Archaic = standardizeFactory(useComp3 | useArchaic);

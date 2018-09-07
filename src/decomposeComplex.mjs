@@ -1,8 +1,9 @@
-import { composeComplex, noUseJungJong } from './compose';
+import { composeComplex } from './compose';
+import { noJungJong } from './mode';
 import { transformEveryChar } from './transform';
 import { Character, toArray } from './types';
 
-const composeComplexCho = composeComplex(noUseJungJong);
+const composeComplexCho = composeComplex(noJungJong);
 export const transformExceptCho = (char) => {
   const res = transformEveryChar(char);
   if (Array.isArray(res)) {
