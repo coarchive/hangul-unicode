@@ -1,12 +1,27 @@
-# Hangul
+# hangul-unicode
 Full disclosure: I cannot speak Korean and I can't write hangul.
+If I've accidentally written something offensive, sorry.
+I tried to use Google Translate for the docs to prevent that.
 This library takes a lot of inspiration from hangul-js by Jaemin Jo.
+If you've got any suggestions or there's a bug in the code that I wrote,
+please submit an issue on the issue tracker! Better yet,
+submit a pull request! :)
 
 ## Usage
-You can't download the minified library
+You can download the minified library from the [dist](dist) directory.
+Choose whatever flavor of module you like.
+
+You can also compile it from the source if you want.
+```sh
+$ git clone git@github.com:Coalpha/hangul-unicode.git
+$ cd hangul-unicode
+$ npm install
+$ npm run build
+```
 
 ### A word on modes
-This library uses bitfields for modes since they're a compact way of telling a function what settings you'd like.
+This library uses bitfields for modes since they're a compact way of telling a
+function what settings you'd like.
 ```JS
 // mode.mjs
 export const hardFail = 0b1; // true can also be used
@@ -97,15 +112,11 @@ Hangul.composeSyllable('ㅁ', 'a', '', true); //> Error: "a" is not a valid jung
 Hangul.composeSyllable('ㅁㅏ', 'ㄷ'); //> Error: "ㅁㅏ" is not a Character!
 Hangul.composeSyllable('ㅃ', 'ㅏ'); //> "빠"
 ```
-#### `Hangul.decomposeComplex(char: Character, mode?: Hangul.useAll | Hangul.noDouble) : string`
-This default mode means:
-* will operate on archaic characters
-* will operate on complex characters composed of three base characters
-* will not operate on complex characters formed of the same character
-
+#### `Hangul.decomposeComplex(char: Character, double?: boolean) : string`
+By default, `Hangul.composeComplex` leaves doubles intact.
 ```JS
 Hangul.decomposeComplex('ㄸ'); //> "ㄸ"
-Hangul.decomposeComplex('ㄸ', Hangul.useAll) //> "ㄷㄷ"
+Hangul.decomposeComplex('ㄸ', true) //> "ㄷㄷ"
 ```
 #### `Hangul.decomposeSyllable(char: Character, hardFail?: boolean) : string`
 `Hangul.decomposeSyllable` does not decompose complex characters.
@@ -116,13 +127,14 @@ Hangul.decomposeSyllable('ㅂ') //> "ㅂ"
 Hangul.decomposeSyllable('ㅂ', true) //> Error: "ㅂ" is not a syllable!
 ```
 #### `Hangul.disassemble(data: string | Array, grouped?: boolean, mode?: any) : string | Array`
-`Hangul.a` is the same function
+`Hangul.d` is the same function
 ```JS
 Hangul.disassemble('고양이'); //> "ㄱㅗㅇㅑㅇㅇㅣ"
 Hangul.disassemble('빠른', true); //> [ [ "ㅃ", "ㅏ" ], [ "ㄹ", "ㅡ", "ㄴ" ] ]
+Hangul.disassemble('없다', true); //> [[ "ㅇ", "ㅓ", ["ㅂ", "ㅅ"] ], [ "ㄷ", "ㅏ" ] ]
 ```
 
-#### Types of Hangul and Testing
+#### Types of Hangul characters
 #### `Hangul.is`
 #### `Hangul.contains`
 #### `Hangul.isAll`

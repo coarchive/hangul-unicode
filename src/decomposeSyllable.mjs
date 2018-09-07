@@ -11,7 +11,7 @@ export const trustMe = (char) => {
   return [cho[choNum], jung[jungNum], jong[jongNum]].filter(v => v);
   // the .filter(v => v) removes blank space in the array
 };
-export default ((datum, hardFail) => {
+export default (datum, hardFail) => {
   const char = Character(datum);
   if (!syllables.contains(char)) {
     if (hardFail) {
@@ -23,4 +23,4 @@ export default ((datum, hardFail) => {
     // if it didn't fail
   }
   return trustMe(char);
-});
+};

@@ -14,10 +14,17 @@ import {
 const hangulToKeyFn = char => hangulToKey[char] || char;
 const transformToKeys = (hangulChar) => {
   const res = transformExceptCho(hangulChar);
-  return isCharacterGroup(res) ? res.split('').map(hangulToKeyFn) : hangulToKeyFn(res);
+  return do {
+    if (isCharacterGroup(res)) {
+      res.split('').map(hangulToKeyFn);
+    } else {
+      hangulToKeyFn(res);
+    }
+  };
 };
 const disassembleToKeys = disassembleFactory(transformToKeys);
-export const hangulToKeys = (data, grouped) => (grouped ? deepMap : deepFlatMap)(data, disassembleToKeys);
+export const hangulToKeys = (data, grouped) => (data, disassembleToKeys)
+  |> (grouped ? deepMap : deepFlatMap);
 
 // keystrokes to hangul
 const keyToHangulFn = char => keyToHangul[char];

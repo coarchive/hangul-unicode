@@ -76,7 +76,7 @@ export const composeComplex = (mode) => {
   return ary => deepFlatResMap(ary, cc);
 };
 const isVowel = char => char && char !== 'ㆍ' && vowels[char];
-export default ((mode) => {
+export default (mode) => {
   const cc = composeComplexBase(mode);
   return (ary) => {
   // while this function is named "composeSyllable", it actually
@@ -139,4 +139,4 @@ export default ((mode) => {
     return new R(composeSyllableFn(cho, jung), jungRem);
   // The last argument is optional for the Result constructor
   };
-});
+};

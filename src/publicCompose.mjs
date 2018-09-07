@@ -6,46 +6,46 @@ import { standardizeCharacterBase } from './standardize';
 // since these functions are exposed, the characters must be
 // standardized so that the libaray can function properly
 const standardizeCharacter = standardizeCharacterBase(useComp3 | useArchaic);
-export const complex = (first, second, third = '', hardFail) => {
-  if (first === undefined || second === undefined) {
+export const complex = (char1, char2, char3 = '', hardFail) => {
+  if (char1 === undefined || char2 === undefined) {
     throw Error('Cannot compose a complex with less than two values!');
   }
-  const d1 = all[standardizeCharacter(first)];
+  const d1 = all[standardizeCharacter(char1)];
   // depth 1
   if (!d1) {
     if (hardFail) {
-      throw Error(`There's no complex character that starts with ${first}`);
+      throw Error(`There's no complex character that starts with "${char1}"`);
     }
-    return `${first}${second}${third}`;
+    return `${char1}${char2}${char3}`;
   }
-  const d2 = d1[standardizeCharacter(second)];
+  const d2 = d1[standardizeCharacter(char2)];
   // depth 2
   if (!d2) {
     if (hardFail) {
-      throw Error(`Cannot combine ${first} and ${second}`);
+      throw Error(`Cannot combine "${char1}" and "${char2}"`);
     }
-    return `${first}${second}${third}`;
+    return `${char1}${char2}${char3}`;
   }
   const d2val = d2.$ || d2;
-  if (third) {
-    // if there's a third character (optional)
-    const d3 = d2[standardizeCharacter(third)];
+  if (char3) {
+    // if there's a char3 character (optional)
+    const d3 = d2[standardizeCharacter(char3)];
     // depth 3
     if (!d3) {
       // if depth 3 doesn't exist
       if (hardFail) {
-        throw Error(`Found "${d2val}" but cannot combine "${first}" and "${second}" with "${third}"`);
+        throw Error(`Found "${d2val}" but cannot combine "${char1}" and "${char2}" with "${char3}"`);
         // the reason for this ^^^ is because sometimes
         // d2 is a string rather than an object
       }
-      return `${d2val}${third}`;
+      return `${d2val}${char3}`;
       // at depth three, there should be a complex formed from
-      // the first and second characters so return that instead
+      // the char1 and char2 characters so return that instead
       // of the inputs concatenated
     }
     return d3; // this should always be a string
   }
-  // the third character was falsy so just return the composition
+  // the char3 character was falsy so just return the composition
   return d2val;
 };
 // this function will always return a String or it'll error (hardFail)

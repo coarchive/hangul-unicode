@@ -21,4 +21,5 @@ export const transformExceptCho = (char) => {
   return res;
 };
 // this function is needed by disassemble so it's trusting
-export default ((datum, decomposeDoubles) => toArray((decomposeDoubles ? transformEveryChar : transformExceptCho)(Character(datum))));
+export default (datum, decomposeDoubles) => Character(datum)
+  |> toArray((decomposeDoubles ? transformEveryChar : transformExceptCho));

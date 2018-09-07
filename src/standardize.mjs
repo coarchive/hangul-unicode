@@ -22,4 +22,4 @@ export const standardizeFactory = ((mode) => {
   const currentStandardize = standardizeCharacterBase(mode);
   return (data, grouped) => (grouped ? deepMap : deepFlatMap)(data, currentStandardize);
 });
-export default ((data, grouped, mode) => standardizeFactory(mode)(data, grouped));
+export default (data, grouped, mode) => standardizeFactory(mode)(data, grouped);

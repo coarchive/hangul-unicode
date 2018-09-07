@@ -20,13 +20,13 @@ const disassembleAll = disassembleFactory(transformEveryChar);
 const disassemble = disassembleFactory(transformExceptCho);
 // not to be confused with Hangul.disassemble
 // this disassemble takes Characters as inputs, not CharacterGroups
-export const disassembleChar = (datum, grouped, decomposeDoubles) => {
-  const res = (decomposeDoubles ? disassembleAll : disassemble)(datum);
+export const disassembleCharacter = (datum, grouped, mode) => {
+  const res = datum |> (decomposeDoubles ? disassembleAll : disassemble);
   if (!grouped) {
     return flatten(res);
   }
   return res;
 };
-export default ((data, grouped, decomposeDoubles) => (grouped ? deepMap : deepFlatMap)(data, decomposeDoubles ? disassembleAll : disassemble, true));
+export default (data, grouped, mode) => (grouped ? deepMap : deepFlatMap)(data, decomposeDoubles ? disassembleAll : disassemble, true);
 // I know this looks really bad since it's all on
 // one line but ESlint was being really finicky
