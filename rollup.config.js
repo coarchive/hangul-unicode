@@ -3,7 +3,7 @@ import resolve from 'rollup-plugin-node-resolve';
 import serve from 'rollup-plugin-serve';
 import babel from 'rollup-plugin-babel';
 
-function makeOutput(format, outfile, plugins) {
+function makeOutput(format, outfile, plugins = []) {
   return ({
     input: 'src/main.js',
     moduleName: 'Hangul',
@@ -19,6 +19,7 @@ function makeOutput(format, outfile, plugins) {
 const production = !process.env.ROLLUP_WATCH;
 export default ((() => {
   if (production) {
+    process.env.BABEL_ENV = 'production';
     return [
       makeOutput('iife', 'dist/Hangul.iife.min.js'),
       makeOutput('cjs', 'dist/Hangul.cjs.min.js'),
