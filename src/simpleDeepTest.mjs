@@ -7,8 +7,9 @@ const base = (bool) => {
       for (let i = 0; i < len; i++) {
         const val = data[i];
         if (!bool ^ (isCharacterGroup(val) ? resFn(testFn)(val) : testFn(val))) {
+          // I'm not really sure how to explain this
+          // Just do your best to run the logic in your head
           return bool;
-          // this allows the function to short circut
         }
       }
       return !bool;
