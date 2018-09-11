@@ -1,4 +1,4 @@
-import UnicodeRange, { CombinedRange } from './UnicodeRange';
+import { CombinedRange, UnicodeRange } from './UnicodeRange';
 
 export const jamo = new UnicodeRange(0x1100, 0x11FF);
 export const compatibilityJamo = new UnicodeRange(0x3130, 0x318F);

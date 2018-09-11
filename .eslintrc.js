@@ -1,6 +1,6 @@
 module.exports = {
   extends: 'airbnb-base',
-  parser: "babel-eslint",
+  parser: 'babel-eslint',
   plugins: [
     'jest',
     'babel',
@@ -8,6 +8,8 @@ module.exports = {
   rules: {
     'no-plusplus': 'off',
     'no-bitwise': 'off',
-    // 'object-curly-newline': 'off',
+  },
+  env: {
+    'jest/globals': true,
   },
 };

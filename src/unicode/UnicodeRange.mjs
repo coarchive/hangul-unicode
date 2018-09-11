@@ -1,4 +1,4 @@
-export default class UnicodeRange {
+export class UnicodeRange {
   constructor(start, end) {
     this.start = start;
     this.end = end;

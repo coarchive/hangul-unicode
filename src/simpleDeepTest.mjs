@@ -1,46 +1,28 @@
 import { isCharacterGroup } from './types';
 
-export const isAll = testFn => (data) => {
-  const len = data.length;
-  if (Array.isArray(data)) {
-    for (let i = 0; i < len; i++) {
-      const val = data[i];
-      if (!(isCharacterGroup(val) ? isAll(testFn)(val) : testFn(val))) {
-        return false;
-        // the loop will get here if it doesn't satisfy the testing function
+const base = (bool) => {
+  const resFn = testFn => (data) => {
+    const len = data.length;
+    if (Array.isArray(data)) {
+      for (let i = 0; i < len; i++) {
+        const val = data[i];
+        if (!bool ^ (isCharacterGroup(val) ? resFn(testFn)(val) : testFn(val))) {
+          return bool;
+          // this allows the function to short circut
+        }
       }
-    }
-    return true;
-  } if (typeof data === 'string') {
-    for (let i = 0; i < len; i++) {
-      const val = data[i];
-      if (!testFn(val)) {
-        return false;
+      return !bool;
+    } if (typeof data === 'string') {
+      for (let i = 0; i < len; i++) {
+        const val = data[i];
+        if (!bool ^ testFn(val)) {
+          return bool;
+        }
       }
+      return !bool;
     }
-    return true;
-  }
-  throw TypeError('The data must be an Array or a String!');
+    throw TypeError('The data must be an Array or a String!');
+  };
 };
-export const contains = testFn => (data) => {
-  const len = data.length;
-  if (Array.isArray(data)) {
-    for (let i = 0; i < len; i++) {
-      const val = data[i];
-      if (isCharacterGroup(val) ? isAll(testFn)(val) : testFn(val)) {
-        return true;
-        // this allows the function to short circut
-      }
-    }
-    return false;
-  } if (typeof data === 'string') {
-    for (let i = 0; i < len; i++) {
-      const val = data[i];
-      if (testFn(val)) {
-        return true;
-      }
-    }
-    return false;
-  }
-  throw TypeError('The data must be an Array or a String!');
-};
+export const contains = base(true);
+export const isAll = base(false);
