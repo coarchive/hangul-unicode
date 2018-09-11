@@ -21,7 +21,7 @@ export * from './mode';
 export { default as standardize } from './standardize';
 export { flatten, deepMap } from './types';
 export * from './keys';
-export * from './test';
+export * from './testStrings';
 export {
   assemble,
   assemble as a,

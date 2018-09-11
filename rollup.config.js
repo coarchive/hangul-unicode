@@ -4,7 +4,7 @@ import serve from 'rollup-plugin-serve';
 import babel from 'rollup-plugin-babel';
 import { terser } from 'rollup-plugin-terser';
 
-function makeOutput(format, outfile, ...plugins) {
+function makeOutput(format, outfile, plugins) {
   return ({
     input: 'src/main.js',
     moduleName: 'Hangul',
@@ -22,9 +22,9 @@ export default ((() => {
   if (production) {
     process.env.BABEL_ENV = 'production';
     return [
-      makeOutput('iife', 'dist/Hangul.iife.min.js', terser()),
-      makeOutput('cjs', 'dist/Hangul.cjs.min.js', terser()),
-      makeOutput('umd', 'dist/Hangul.umd.min.js', terser()),
+      makeOutput('iife', 'dist/Hangul.iife.min.js', [terser()]),
+      makeOutput('cjs', 'dist/Hangul.cjs.min.js', [terser()]),
+      makeOutput('umd', 'dist/Hangul.umd.min.js', [terser()]),
     ];
   }
   const o = makeOutput('iife', 'dev/bundle.js', [

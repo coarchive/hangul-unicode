@@ -8,7 +8,7 @@ export const Character = (val) => {
 };
 // this function turns values into characters if it can
 // otherwise it just fails
-const ENOARYLIKE = () => { throw TypeError('The data must be an Array or a String!'); };
+const ENOARYLIKE = () => throw TypeError('The data must be an Array or a String!');
 export const toArray = aryOrStr => (Array.isArray(aryOrStr) ? aryOrStr : aryOrStr.split(''));
 // as a general note, calling .split like that instead of .split`` is faster
 export const isCharacterGroup = (val) => {
@@ -30,13 +30,18 @@ const identity = i => i;
 export const deepMap = (data, func, useToArray) => {
   const modifier = useToArray ? toArray : identity;
   if (Array.isArray(data)) {
-    return data.map(val => (isCharacterGroup(val) ? deepMap(val, func, useToArray) : modifier(func(val))));
+    return data.map(val => (
+      isCharacterGroup(val)
+        ? deepMap(val, func, useToArray)
+        : modifier(func(val))
+    ));
   } if (typeof data === 'string') {
     // since the data was a string, the array created from
     // the string won't contain any character groups
     return data.split('').map(char => modifier(func(char)));
   }
-  ENOARYLIKE();
+  return ENOARYLIKE();
+  // satisfy consistent-return
 };
 export const deepFlatMap = (data, func) => {
   let res = '';
@@ -89,7 +94,7 @@ export const flatten = (data) => {
   } if (typeof data === 'string') {
     return data;
   }
-  ENOARYLIKE();
+  return ENOARYLIKE();
 };
 export const deepFlatResMap = (data, func) => {
   // this is different since it deals with functions that return Result objects.

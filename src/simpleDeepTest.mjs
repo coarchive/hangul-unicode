@@ -5,20 +5,18 @@ export const isAll = testFn => (data) => {
   if (Array.isArray(data)) {
     for (let i = 0; i < len; i++) {
       const val = data[i];
-      if (isCharacterGroup(val) ? isAll(testFn)(val) : testFn(val)) {
-        continue;
+      if (!(isCharacterGroup(val) ? isAll(testFn)(val) : testFn(val))) {
+        return false;
+        // the loop will get here if it doesn't satisfy the testing function
       }
-      // the loop will get here if it doesn't satisfy the testing function
-      return false;
     }
     return true;
   } if (typeof data === 'string') {
     for (let i = 0; i < len; i++) {
       const val = data[i];
-      if (testFn(val)) {
-        continue;
+      if (!testFn(val)) {
+        return false;
       }
-      return false;
     }
     return true;
   }
