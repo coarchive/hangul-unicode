@@ -4,46 +4,38 @@ import { choNum, jungNum, jongNum } from './unicode/syllable';
 import composeSyllableFn from './composeSyllable';
 import R from './Result';
 import { deepFlatResMap } from './types';
-import {
-  hardFail,
-  useArchaic,
-  useComp3,
-  noJungJong,
-  noDouble,
-} from './mode';
+import computeMode from './mode';
 // important note!
 // these functions aren't going to really make any sense until
 // you understand how they work in conjunction with the stuff
 // that's in './types'. Read './Result' and './types' first.
 // then read this.
-const objCache = [];
-
 const composeComplexBase = (mode) => {
-  // mode is being used as a bitfield
-  if (hardFail && (mode < 0 || mode > 31)) {
-    throw Error('The mode cannot be less than zero or greater than 31 (0b11111)!');
-  }
-  const usingArchaic = mode & useArchaic;
-  const usingComp3 = usingArchaic && mode & useComp3;
-  const usingnoDouble = mode & noDouble;
-  let obj = objCache[mode];
-  if (!obj) {
-    const objs = [complex.cho];
-    // there are no comp3 values in non archaic complex objects
-    if (!(mode & noJungJong)) {
-      // if you're usingJungJong
-      objs.push(complex.jung, complex.jong);
-    } if (usingArchaic) {
-      objs.push(complex.archaic);
+  if (!mode.complex) {
+    if (mode.hardFail) {
+      throw Error("composeComplexBase shouldn't have been called since mode.complex is false!");
     }
-    obj = Object.assign({}, ...objs);
-    objCache[mode] = obj;
-    // eslint got mad at me for chaining assignments
+    return chars => new R(chars.join(''));
+    // this means don't process complex characters
   }
+  const objs = [];
+  if (mode.complexCho) {
+    objs.push(complex.cho);
+  } if (mode.complexJung) {
+    objs.push(complex.jung);
+  } if (mode.complexJong) {
+    objs.push(complex.jong);
+  } if (mode.archaic) {
+    objs.push(complex.archaic);
+  }
+  const obj = Object.assign({}, ...objs);
   return (chars) => {
     const len = chars.length;
     if (len < 1) {
-      throw Error('Cannot compose array of zero characters!');
+      if (mode.hardFail) {
+        throw Error('Cannot compose array of zero characters!');
+      }
+      return new R('');
     }
     const char1 = chars[0];
     if (len < 2) {
@@ -51,36 +43,39 @@ const composeComplexBase = (mode) => {
       return new R(char1);
     }
     const char2 = chars[1];
-    if (usingnoDouble && char1 === char2) {
-      return new R(char1, chars.slice(1));
-    }
-    const comp2 = obj[char1 + char2];
-    // comp2 = composition of 2 characters
-    if (comp2) {
-      if (usingComp3 && len > 2) {
-      // if there's more data, try to compose a tripple
-        const comp3 = obj[char1 + char2 + chars[2]];
-        if (comp3) {
-          return new R(comp3, chars.slice(3));
+    if (!mode.composeComplexDouble && char1 !== char2) {
+      // we don't care about checking for complex doubles
+      // or char1 !== char2
+      const comp2 = obj[char1 + char2];
+      // comp2 = composition of 2 characters
+      if (comp2) {
+        if (mode.complex3 && len > 2) {
+        // if there's more data, try to compose a triple
+          const comp3 = obj[char1 + char2 + chars[2]];
+          if (comp3) {
+            return new R(comp3, chars.slice(3));
+          }
         }
+        // there's no more data or couldn't find a comp3
+        return new R(comp2, chars.slice(2));
       }
-      // there's no more data or couldn't find a comp3
-      return new R(comp2, chars.slice(2));
     }
     // couldn't find a comp2
+    // or we care about checking for complex doubles
+    // and char1 === char2
     return new R(char1, chars.slice(1));
   };
 };
 export const composeComplex = (mode) => {
-  const cc = composeComplexBase(mode);
+  const cc = computeMode(mode) |> composeComplexBase;
   return ary => deepFlatResMap(ary, cc);
 };
 const isVowel = char => char && char !== 'ㆍ' && vowels[char];
 export default (mode) => {
-  const cc = composeComplexBase(mode);
+  const currentMode = computeMode({ hardFail: true }, mode);
+  const cc = composeComplexBase(currentMode);
   return (ary) => {
-  // while this function is named "composeSyllable", it actually
-  // can be used to compose anything, really.
+    // this function takes an Array of characters and returns a new Result
     if (ary.length < 2) {
       return new R(ary[0]);
     // don't do extra computing for small operations
@@ -103,7 +98,6 @@ export default (mode) => {
     // choRes is already a Result so no need to make another
     }
     const jungRes = cc(choRem);
-
     const jungChar = jungRes.result;
     const jungRem = jungRes.remainder;
     const jung = jungNum[jungChar];
@@ -122,7 +116,6 @@ export default (mode) => {
         // we need this part so that
         // ㅁㅣㅇㅏ => 미아
         const jongRes = cc(jungRem);
-
         const jongChar = jongRes.result;
         const jongRem = jongRes.remainder;
         const jong = jongNum[jongChar];

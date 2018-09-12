@@ -1,15 +1,32 @@
-export const hardFail = 0b1;
-// throws an error when there's something unexpected
-export const useArchaic = 0b10;
-// allows operation on archaic complex characters such as "ㅨ"
-export const useComp3 = 0b100;
-// allows operation on complex characters composed of three base characters.
-// this means you can make things like "ㅩ", "ㅫ", "ㅴ", and "ㅵ".
-export const noJungJong = 0b1000;
-// disallows operation on complex jung and complex jong
-// useful for only composing complex cho
-export const noDouble = 0b10000;
-// disallows operation on two of the same character
-// this means that things like "ㄲ" will not be made
-export const useAll = useArchaic | useComp3;
-// both useArchaic and useComp3
+const defaultMode = {
+  // all of these descriptions are for what happens if you set the
+  // values to true.
+  hardFail: false,
+  // will error if there's something unexpected.
+  // otherwise, the code just tries to deal with it.
+  complex: true,
+  // compute complex characters
+  complex3: false,
+  // allows operation on complex characters composed of three base characters.
+  // this means you can make things like "ㅩ", "ㅫ", "ㅴ", and "ㅵ".
+  // since these characters are all archaic,
+  // there's no point in setting this without also setting complexArchaic.
+  complexCho: true,
+  // compute complex cho
+  complexJung: true,
+  // compute complex jung
+  complexJong: true,
+  // compute complex jong
+  complexArchaic: false,
+  // compute complex characters such as "ㅨ"
+  composeComplexDouble: true,
+  // allows composition of two of the same character
+  // this means that things like "ㄲ" will be made
+  decomposeComplexDouble: false,
+  // allows composition of two of the same character
+  // this means that things like "ㄲ" will turned into ['ㄱ', 'ㄱ']
+  grouped: false,
+  // only used when decomposing / disassembling something
+  // produces a CharacterGroup instead of a string
+};
+export default ((...modes) => Object.assign({}, defaultMode, ...modes));

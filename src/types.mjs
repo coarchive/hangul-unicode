@@ -24,24 +24,27 @@ export const isCharacterGroup = (val) => {
   }
   return false;
 };
+// type CharacterGroup = Array<Character | CharacterGroup>
+export const makeNiceOutput = val => (isCharacterGroup(val) ? toArray : Character)(val);
 // while Characters can be a CharacterGroup,
 // this function ignores characters
-const identity = i => i;
-export const deepMap = (data, func, useToArray) => {
-  const modifier = useToArray ? toArray : identity;
-  if (Array.isArray(data)) {
-    return data.map(val => (
-      isCharacterGroup(val)
-        ? deepMap(val, func, useToArray)
-        : modifier(func(val))
-    ));
-  } if (typeof data === 'string') {
-    // since the data was a string, the array created from
-    // the string won't contain any character groups
-    return data.split('').map(char => modifier(func(char)));
-  }
-  return ENOARYLIKE();
-  // satisfy consistent-return
+export const identity = i => i;
+export const deepMap = (func, useToArray) => {
+  const recurse = deepMap(func, useToArray);
+  const shouldRecurse = val => (isCharacterGroup(val) ? recurse(val) : func(val));
+  // might want to use makeNiceOutput above
+  return (data) => {
+    if (Array.isArray(data)) {
+      return data.map(shouldRecurse);
+    } if (typeof data === 'string') {
+      // since the data was a string, the array created from
+      // the string won't contain any character groups
+      return data.split('').map(char => func(char));
+      // might want to use makeNiceOutput here too
+    }
+    return ENOARYLIKE();
+    // satisfy consistent-return
+  };
 };
 export const deepFlatMap = (data, func) => {
   let res = '';

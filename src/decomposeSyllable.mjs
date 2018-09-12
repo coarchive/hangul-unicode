@@ -11,10 +11,10 @@ export const trustMe = (char) => {
   return [cho[choNum], jung[jungNum], jong[jongNum]].filter(v => v);
   // the .filter(v => v) removes blank space in the array
 };
-export default (datum, hardFail) => {
+export default (datum, mode) => {
   const char = Character(datum);
   if (!syllables.contains(char)) {
-    if (hardFail) {
+    if (mode.hardFail) {
       throw Error('Decomposing a syllable requires a syllable to decompose!');
     }
     return [datum];

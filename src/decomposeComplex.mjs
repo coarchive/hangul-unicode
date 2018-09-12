@@ -1,25 +1,17 @@
 import { composeComplex } from './compose';
-import { noJungJong } from './mode';
 import { transformEveryChar } from './transform';
-import { Character, toArray } from './types';
+import {
+  Character, isCharacterGroup, makeNiceOutput,
+} from './types';
 
-const composeComplexCho = composeComplex(noJungJong);
-export const transformExceptCho = (char) => {
+const composeComplexCho = composeComplex({ complexJung: false, complexJong: false });
+export const transformLeavingCho = (char) => {
   const res = transformEveryChar(char);
-  if (Array.isArray(res)) {
-    const comp = composeComplexCho(res);
-    // the default composeComplex only composes cho
-    // HACK: this bug might be an issue with composeComplex
-    if (Array.isArray(comp) && comp.length === 1) {
-      // if the composition actually ends up composing
-      // something and it's only one Character, just
-      // return the Character instead of an Array
-      return Character(comp);
-    }
-    return comp;
+  if (isCharacterGroup(res)) {
+    return res |> composeComplexCho |> makeNiceOutput;
   }
   return res;
 };
-// this function is needed by disassemble so it's trusting
-export default (datum, decomposeDoubles) => Character(datum)
-  |> toArray((decomposeDoubles ? transformEveryChar : transformExceptCho));
+export default (datum, mode) => datum
+  |> Character // turn the datum into a Character
+  |> (mode.decomposeComplexDouble ? transformEveryChar : transformLeavingCho);
