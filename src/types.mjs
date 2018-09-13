@@ -28,10 +28,10 @@ export const makeNiceOutput = val => (isCharacterGroup(val) ? toArray : Characte
 // this function ignores characters
 export const identity = i => i;
 export const deepMap = (func) => {
-  const recurse = deepMap(func);
+  let recurse;
+  // yes, this sucks but eslint stays happy
   const shouldRecurse = val => (isCharacterGroup(val) ? recurse(val) : func(val));
-  // might want to use makeNiceOutput above
-  return (data) => {
+  recurse = (data) => {
     if (Array.isArray(data)) {
       return data.map(shouldRecurse);
     } if (typeof data === 'string') {
@@ -43,6 +43,7 @@ export const deepMap = (func) => {
     return ENOARYLIKE();
     // satisfy consistent-return
   };
+  return recurse;
 };
 export const flatten = (data) => {
   if (Array.isArray(data)) {
@@ -70,6 +71,8 @@ const deepFlatMapHelper = func => (val) => {
   return recurseRes;
 };
 export const deepFlatMap = (func) => {
+  // you may ask, why have a separate function for this
+  // well, it's actually a little faster (I hope)
   const helper = deepFlatMapHelper(func);
   const recurse = (data) => {
     let res = '';
@@ -104,45 +107,43 @@ export const deepFlatMap = (func) => {
   };
   return recurse;
 };
-/*
-else if (typeof data === 'string') {
- const len = data.length;
-
-} else {
-*/
-export const deepFlatResMap = (data, func) => {
+export const deepFlatResMap = (func) => {
   // this is different since it deals with functions that return Result objects.
-  let rem;
-  // remaining
-  let res = '';
-  // result
-  if (Array.isArray(data)) {
-    rem = [];
-    const len = data.length;
-    for (let i = 0; i < len; i++) {
-      const val = data[i];
-      if (isCharacterGroup(val)) {
-        rem.push(...deepFlatResMap(val, func));
-        // deepFlatResMap always returns an array
-        // (or at least it should)
-      } else {
-        rem.push(val);
+  // hence "Res"
+  const recurse = (data) => {
+    let rem;
+    // remaining
+    let res = '';
+    // result
+    if (Array.isArray(data)) {
+      rem = [];
+      const len = data.length;
+      for (let i = 0; i < len; i++) {
+        const val = data[i];
+        if (isCharacterGroup(val)) {
+          rem.push(...recurse(func));
+          // deepFlatResMap always returns an array
+          // (or at least it should)
+        } else {
+          rem.push(val);
+        }
       }
+    } else if (typeof data === 'string') {
+      rem = data.split('');
+      // could have used toArray but since we already know
+      // the type of this, there's no need to
+    } else {
+      // it's not an Array or a String
+      ENOARYLIKE();
     }
-  } else if (typeof data === 'string') {
-    rem = data.split('');
-    // could have used toArray but since we already know
-    // the type of this, there's no need to
-  } else {
-    // it's not an Array or a String
-    ENOARYLIKE();
-  }
-  while (rem.length) {
-    const comp = func(rem);
-    // func needs to return a Result like interface for this to work
-    // otherwise we'll get a really nasty to debug error
-    res += comp.result;
-    rem = comp.remainder;
-  }
-  return res;
+    while (rem.length) {
+      const comp = func(rem);
+      // func needs to return a Result like interface for this to work
+      // otherwise we'll get a really nasty to debug error
+      res += comp.result;
+      rem = comp.remainder;
+    }
+    return res;
+  };
+  return recurse;
 };

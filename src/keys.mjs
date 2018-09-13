@@ -22,8 +22,10 @@ const transformToKeys = (hangulChar) => {
   };
 };
 const disassembleToKeys = disassembleFactory(transformToKeys);
-export const hangulToKeys = (data, grouped) => (data, disassembleToKeys)
-  |> (grouped ? deepMap : deepFlatMap);
+const groupedDisassembleToKeys = deepMap(disassembleToKeys);
+const flatDisassembleToKeys = deepFlatMap(disassembleToKeys);
+export const hangulToKeys = (data, grouped) => data
+  |> (grouped ? groupedDisassembleToKeys : flatDisassembleToKeys);
 
 // keystrokes to hangul
 const keyToHangulFn = char => keyToHangul[char];
@@ -40,8 +42,8 @@ const transformCharToHangul = (latinDatum) => {
   }
   return res;
 };
-const transformToHangul = data => deepMap(data, transformCharToHangul);
+const transformToHangul = deepMap(transformCharToHangul);
 const assembleFromKeys = assembleFactory(transformToHangul);
-export const keysToHangul = data => assembleFromKeys()(data);
+export const keysToHangul = assembleFromKeys();
 // it's okay that we're not standarizing because the data
 // in hangulToKey is already standard :)
