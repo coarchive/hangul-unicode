@@ -1,5 +1,5 @@
 module.exports = {
-  verbose: true,
+  verbose: false,
   testMatch: [
     '**/__tests__/**/*.?(m)js',
     '**/?(*.)(test|t).?(m)js',

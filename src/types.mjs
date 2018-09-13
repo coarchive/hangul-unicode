@@ -31,6 +31,9 @@ export const deepMap = (func) => {
   let recurse;
   // yes, this sucks but eslint stays happy
   const shouldRecurse = val => (isCharacterGroup(val) ? recurse(val) : func(val));
+  // WARNING: isCharacterGroup will return false for ['a']
+  // this may cause problems if func expects a String with length 1!
+  // what will happen is that ['a'] will be passed instead of 'a'!
   recurse = (data) => {
     if (Array.isArray(data)) {
       return data.map(shouldRecurse);
