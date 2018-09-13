@@ -24,8 +24,10 @@ const transformToKeys = (hangulChar) => {
 const disassembleToKeys = disassembleFactory(transformToKeys);
 const groupedDisassembleToKeys = deepMap(disassembleToKeys);
 const flatDisassembleToKeys = deepFlatMap(disassembleToKeys);
-export const hangulToKeys = (data, grouped) => data
+export const hangulToKeys = (data, mode) => data
   |> (grouped ? groupedDisassembleToKeys : flatDisassembleToKeys);
+// TODO: types needs to have a "generalDeepMap" which
+// generalDeepMap: fn => mode => data
 
 // keystrokes to hangul
 const keyToHangulFn = char => keyToHangul[char];
