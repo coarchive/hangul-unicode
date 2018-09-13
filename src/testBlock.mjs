@@ -2,7 +2,7 @@ import * as blocks from './unicode/blocks';
 import * as test from './simpleDeepTest';
 import { Character } from './types';
 
-const isFactory = blockName => datum => blocks[blockName].conains(Character(datum));
+const isFactory = blockName => datum => blocks[blockName].contains(Character(datum));
 export const is = {
   jamo: isFactory('jamo'),
   compatibilityJamo: isFactory('compatibilityJamo'),
