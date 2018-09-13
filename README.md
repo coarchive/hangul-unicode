@@ -1,3 +1,6 @@
+# WAIT! DON'T DOWNLOAD IT! IT'S BUGGY AND NOT DONE!
+Can you wait for like, two weeks?
+
 # hangul-unicode
 Full disclosure: I cannot speak Korean and I can't write hangul.
 If I've accidentally written something offensive, sorry.
