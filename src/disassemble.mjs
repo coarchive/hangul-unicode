@@ -6,20 +6,21 @@ import {
   Character, deepMap, deepFlatMap, flatten,
 } from './types';
 
-export const disassembleThingy = (mode) => {
-  const transformer = mode.decomposeComplexDouble ? transformEveryChar : transformLeavingCho;
-  return (datum) => {
-    const char = Character(datum);
-    if (syllables.contains(char)) {
-      return trustMe(char).map(transformer);
-    }
-    return transformer(char);
-  };
+export const disassembleFactory = transformer => (datum) => {
+  const char = Character(datum);
+  if (syllables.contains(char)) {
+    return trustMe(char).map(transformer);
+  }
+  return transformer(char);
 };
 // not to be confused with Hangul.disassemble
 // this disassemble takes Characters as inputs, not CharacterGroups
 export const disassembleCharacter = (mode) => {
-  const dT = disassembleThingy(mode);
+  const dT = disassembleFactory(
+    mode.decomposeComplexDouble
+      ? transformEveryChar
+      : transformLeavingCho, // eww, trailing comma here, eslint?
+  );
   return (datum) => {
     const res = datum |> dT;
     if (!mode.grouped) {
@@ -28,6 +29,6 @@ export const disassembleCharacter = (mode) => {
     return res;
   };
 };
-export default (data, mode) => (grouped ? deepMap : deepFlatMap)(data, disassembleCharacter(mode));
+export default (data, mode) => (mode.grouped ? deepMap : deepFlatMap)(data, disassembleCharacter(mode));
 // I know this looks really bad since it's all on
 // one line but ESlint was being really finicky

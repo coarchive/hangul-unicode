@@ -19,18 +19,16 @@ export const isCharacterGroup = (val) => {
       return true;
     }
     return isCharacterGroup(val[0]);
-  } if (typeof val === 'string' && val.length > 1) {
-    return true;
   }
-  return false;
+  return typeof val === 'string' && val.length > 1;
 };
 // type CharacterGroup = Array<Character | CharacterGroup>
 export const makeNiceOutput = val => (isCharacterGroup(val) ? toArray : Character)(val);
 // while Characters can be a CharacterGroup,
 // this function ignores characters
 export const identity = i => i;
-export const deepMap = (func, useToArray) => {
-  const recurse = deepMap(func, useToArray);
+export const deepMap = (func) => {
+  const recurse = deepMap(func);
   const shouldRecurse = val => (isCharacterGroup(val) ? recurse(val) : func(val));
   // might want to use makeNiceOutput above
   return (data) => {
@@ -45,41 +43,6 @@ export const deepMap = (func, useToArray) => {
     return ENOARYLIKE();
     // satisfy consistent-return
   };
-};
-export const deepFlatMap = (data, func) => {
-  let res = '';
-  if (Array.isArray(data)) {
-    const len = data.length;
-    for (let i = 0; i < len; i++) {
-      // for is faster than forEach
-      // this function is used a lot so I'll
-      // take any optimization that I can get
-      const val = data[i];
-      if (isCharacterGroup(val)) {
-        res += deepFlatMap(val, func);
-      } else {
-        const recurseRes = func(val);
-        if (isCharacterGroup(recurseRes)) {
-          res += deepFlatMap(recurseRes, identity);
-        } else {
-          res += recurseRes;
-        }
-      }
-    }
-  } else if (typeof data === 'string') {
-    const len = data.length;
-    for (let i = 0; i < len; i++) {
-      const recurseRes = func(data[i]);
-      if (isCharacterGroup(recurseRes)) {
-        res += deepFlatMap(recurseRes, identity);
-      } else {
-        res += recurseRes;
-      }
-    }
-  } else {
-    ENOARYLIKE();
-  }
-  return res;
 };
 export const flatten = (data) => {
   if (Array.isArray(data)) {
@@ -99,9 +62,56 @@ export const flatten = (data) => {
   }
   return ENOARYLIKE();
 };
+const deepFlatMapHelper = func => (val) => {
+  const recurseRes = func(val);
+  if (isCharacterGroup(recurseRes)) {
+    return flatten(recurseRes);
+  }
+  return recurseRes;
+};
+export const deepFlatMap = (func) => {
+  const helper = deepFlatMapHelper(func);
+  const recurse = (data) => {
+    let res = '';
+    const isString = typeof data === 'string';
+    if (Array.isArray(data) || isString) {
+      const len = data.length;
+      if (isString) {
+        for (let i = 0; i < len; i++) {
+          const cRes = func(data[i]);
+          if (isCharacterGroup(cRes)) {
+            res += flatten(cRes);
+          } else {
+            res += cRes;
+          }
+        }
+      } else {
+        for (let i = 0; i < len; i++) {
+          // for is faster than forEach
+          // this function is used a lot so I'll
+          // take any optimization that I can get
+          const val = data[i];
+          if (isCharacterGroup(val)) {
+            res += recurse(val);
+          } else {
+            res += helper(val);
+          }
+        }
+      }
+      return res;
+    }
+    return ENOARYLIKE();
+  };
+  return recurse;
+};
+/*
+else if (typeof data === 'string') {
+ const len = data.length;
+
+} else {
+*/
 export const deepFlatResMap = (data, func) => {
   // this is different since it deals with functions that return Result objects.
-  // consumeLeftovers
   let rem;
   // remaining
   let res = '';

@@ -24,6 +24,7 @@ const base = (bool) => {
     }
     throw TypeError('The data must be an Array or a String!');
   };
+  return resFn;
 };
 export const contains = base(true);
 export const isAll = base(false);
