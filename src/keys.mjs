@@ -1,5 +1,5 @@
 import { hangulToKey, keyToHangul } from './unicode/characters';
-import { assembleFactory } from './assemble';
+import { assembleFactory_g_T } from './assemble';
 import { transformLeavingCho_T } from './decomposeComplex';
 import { publicMap } from './deepMap';
 import { disassembleFactory_U } from './disassemble';
@@ -22,7 +22,7 @@ export const disassembleToKeys = disassembleFactory_U(transformToKeys_T) |> publ
 
 // keystrokes to hangul
 const keyToHangulFn = char => keyToHangul[char];
-const transformCharToHangul = (latinDatum) => {
+const transformToHangul_U = (latinDatum) => {
   const latinChar = Character(latinDatum);
   const res = keyToHangulFn(latinChar);
   if (!res) {
@@ -35,8 +35,7 @@ const transformCharToHangul = (latinDatum) => {
   }
   return res;
 };
-const transformToHangul = deepMap(transformCharToHangul);
-const assembleFromKeys = assembleFactory(transformToHangul);
-export const keysToHangul = assembleFromKeys();
+const assembler = assembleFactory_g_T(transformToHangul_U);
+export const keysToHangul = (data, opts) => data |> assembler(opts);
 // it's okay that we're not standarizing because the data
 // in hangulToKey is already standard :)

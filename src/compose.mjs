@@ -10,7 +10,7 @@ import computeOpts from './options';
 // you understand how they work in conjunction with the stuff
 // that's in './types'. Read './Result' and './types' first.
 // then read this.
-const composeComplexBase = (opts) => {
+export const composeComplex_T = (opts) => {
   if (!opts.complex) {
     if (opts.hardFail) {
       throw Error("composeComplexBase shouldn't have been called since opts.complex is false!");
@@ -66,15 +66,15 @@ const composeComplexBase = (opts) => {
     return new R(char1, chars.slice(1));
   };
 };
-export const composeComplex_T = (opts) => {
-  const cc = computeOpts(opts) |> composeComplexBase;
+export const composeComplex_g_T = (opts) => {
+  const cc = computeOpts(opts) |> composeComplex_T;
   return deepFlatResMap(cc);
   // this return value is a function that takes a CharacterGroup
 };
 const isVowel = char => char && char !== 'ㆍ' && vowels[char];
 export default (opts) => {
   const currentopts = computeOpts(opts);
-  const cc = composeComplexBase(currentopts);
+  const cc = composeComplex_T(currentopts);
   return (ary) => {
     // this function takes an Array of characters and returns a new Result
     if (ary.length < 2) {

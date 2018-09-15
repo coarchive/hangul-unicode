@@ -114,3 +114,4 @@ export const publicMap = (fn) => {
   const flat = deepFlatMap(fn);
   return (data, opts = {}) => data |> (opts.grouped ? map : flat);
 };
+export const publicMapOpts = fn => (data, opts) => data |> (fn(opts) |> (opts.grouped ? deepMap : deepFlatMap));

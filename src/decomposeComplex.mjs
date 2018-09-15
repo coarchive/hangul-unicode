@@ -2,7 +2,6 @@ import { composeComplex_T } from './compose';
 import { transform_T } from './transform';
 import { Character, isCharacterGroup, toString } from './types';
 
-
 const composeComplexCho_g_T = composeComplex_T({ complexJung: false, complexJong: false });
 export const transformLeavingCho_T = (char) => {
   const res = transform_T(char);

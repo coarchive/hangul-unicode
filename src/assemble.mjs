@@ -1,5 +1,5 @@
 import composeAnything from './compose';
-import sanitize from './sanitize';
+import { flatSanitize_g_U } from './sanitize';
 import { deepFlatResMap } from './deepMap';
 // this way, we can trust the inputs to composeAnything
 export const assembleFactory_g_T = transformer => (opts) => {
@@ -10,4 +10,4 @@ export const assembleFactory_g_T = transformer => (opts) => {
   |> transformer
   |> fn;
 };
-export default (assembleFactory_g_T(sanitize)(false));
+export default (false |> assembleFactory_g_T(flatSanitize_g_U));
