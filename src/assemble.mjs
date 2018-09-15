@@ -1,13 +1,13 @@
 import composeAnything from './compose';
 import sanitize from './sanitize';
-import { deepFlatResMap } from './types';
+import { deepFlatResMap } from './deepMap';
 // this way, we can trust the inputs to composeAnything
-export const assembleFactory = transformer => (mode) => {
-  const fn = mode
+export const assembleFactory = transformer => (opts) => {
+  const fn = opts
   |> composeAnything
   |> deepFlatResMap;
   return data => data
   |> transformer
   |> fn;
 };
-export default ((data, mode) => assembleFactory(sanitize)(mode)(data));
+export default (assembleFactory(sanitize)(false));

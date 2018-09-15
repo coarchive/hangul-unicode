@@ -24,3 +24,6 @@ test('70 is not within the CombinedRange', () => {
 test('"b" is within the CombinedRange', () => {
   expect(cRange.contains('b')).toBeTruthy();
 });
+test('1337 is witin the CombinedRange', () => {
+  expect(cRange.containsCodePoint(1337)).toBeTruthy();
+});

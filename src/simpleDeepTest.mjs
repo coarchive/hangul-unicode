@@ -1,5 +1,3 @@
-import { isCharacterGroup } from './types';
-
 // Unless you know bitwise operators pretty well,
 // this file might be a bit hellish.
 // Some knowledge of curried functions would be useful too.

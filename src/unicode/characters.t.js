@@ -15,7 +15,7 @@ describe('keyToHangul agrees with hangulToKey', () => {
   keyToHangulEntries.forEach((pair) => {
     const latin = pair[0];
     const hangul = pair[1];
-    test(`{${latin}: "${hangul}}"`, () => {
+    test(`{${latin}: "${hangul}"}`, () => {
       expect(hangulToKey[hangul]).toBe(latin);
     });
   });

@@ -1,4 +1,4 @@
-const defaultMode = {
+const defaultOpts = {
   // all of these descriptions are for what happens if you set the
   // values to true.
   hardFail: false,
@@ -29,4 +29,4 @@ const defaultMode = {
   // only used when decomposing / disassembling something
   // produces a CharacterGroup instead of a string
 };
-export default ((...modes) => Object.assign({}, defaultMode, ...modes));
+export default (opts => (opts ? Object.assign({}, defaultOpts, opts) : defaultOpts));

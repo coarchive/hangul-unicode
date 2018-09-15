@@ -5,12 +5,16 @@ import { pairs } from './unicode/complex';
 import mappings from './unicode/mappings';
 import { Character } from './types';
 
-export const transformChar = char => (!standardHangul.contains(char) && mappings[char]) || char;
-export const transformDatum = datum => transformChar(Character(datum));
-export const transformEveryChar = char => (
+export const transformNonStandard_d_T = char => (!standardHangul.contains(char) && mappings[char]) || char;
+export const transformNonStandard_d_U = datum => datum
+  |> Character
+  |> transformNonStandard_d_T;
+export const transform_d_T = char => (
   (standardHangul.contains(char) ? pairs : mappings)[char]
   || char
 );
-export const transformEveryDatum = datum => transformEveryChar(Character(datum));
+export const transform_d_U = datum => datum
+  |> Character
+  |> transformEveryCharacter;
 // transform everything just means that it also transforms
 // standard hangul characters instead of ignoring them

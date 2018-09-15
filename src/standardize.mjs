@@ -2,8 +2,8 @@ import { composeComplex } from './compose';
 import { transformDatum } from './transform';
 import { deepMap, deepFlatMap } from './types';
 
-export const standardizeCharacterBase = (mode) => {
-  const cc = composeComplex(mode);
+export const standardizeCharacterBase = (opts) => {
+  const cc = composeComplex(opts);
   return (datum) => {
     const res = transformDatum(datum);
     if (Array.isArray(res)) {
@@ -18,8 +18,9 @@ export const standardizeCharacterBase = (mode) => {
     return res;
   };
 };
-export const standardizeFactory = ((mode) => {
-  const currentStandardize = standardizeCharacterBase(mode);
+export const standardizeFactory = ((opts) => {
+  const currentStandardize = standardizeCharacterBase(opts);
   return (data, grouped) => (grouped ? deepMap : deepFlatMap)(data, currentStandardize);
+  // TODO: fix when publicMap is made
 });
-export default (data, grouped, mode) => standardizeFactory(mode)(data, grouped);
+export default (data, grouped, opts) => standardizeFactory(opts)(data, grouped);

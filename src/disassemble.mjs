@@ -1,10 +1,9 @@
 import { syllables } from './unicode/blocks';
 import { transformLeavingCho } from './decomposeComplex';
 import { trustMe } from './decomposeSyllable';
+import { deepMap, deepFlatMap } from './deepMap';
 import { transformEveryChar } from './transform';
-import {
-  Character, deepMap, deepFlatMap, flatten,
-} from './types';
+import { Character, flatten } from './types';
 
 export const disassembleFactory = transformer => (datum) => {
   const char = Character(datum);
@@ -29,6 +28,9 @@ export const disassembleCharacter = (mode) => {
     return res;
   };
 };
-export default (data, mode) => (mode.grouped ? deepMap : deepFlatMap)(data, disassembleCharacter(mode));
-// I know this looks really bad since it's all on
-// one line but ESlint was being really finicky
+export default (data, mode) => data
+  |> (
+    disassembleCharacter(mode)
+    |> (mode.grouped ? deepMap : deepFlatMap)
+  );
+// it looks fine if you don't look at the parens in detail

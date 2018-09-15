@@ -12,6 +12,6 @@ export const transformLeavingCho = (char) => {
   }
   return res;
 };
-export default (datum, mode) => datum
+export default (datum, opts) => datum
   |> Character // turn the datum into a Character
-  |> (mode.decomposeComplexDouble ? transformEveryChar : transformLeavingCho);
+  |> (opts.decomposeComplexDouble ? transformEveryChar : transformLeavingCho);

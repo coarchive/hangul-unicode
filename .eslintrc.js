@@ -8,6 +8,7 @@ module.exports = {
   rules: {
     'no-plusplus': 'off',
     'no-bitwise': 'off',
+    camelcase: 'off',
   },
   env: {
     'jest/globals': true,

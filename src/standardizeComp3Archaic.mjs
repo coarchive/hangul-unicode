@@ -1,7 +1,13 @@
 import { standardizeCharacterBase } from './standardize';
+import { Character } from './types';
 
-export default (standardizeCharacterBase({
+const cs = standardizeCharacterBase({
   complex3: true,
   complexArchaic: true,
-}));
-// support all types of complex
+});
+export default (
+  datum => datum
+    |> Character
+    |> cs
+);
+// support all types of complex and check for Characters

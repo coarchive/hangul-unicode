@@ -35,3 +35,4 @@ export {
   stronger,
 };
 // TODO: Add smarter caching of function based on mode
+// TODO: remove } if

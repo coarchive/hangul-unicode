@@ -8,14 +8,13 @@ import {
   deepFlatMap,
   isCharacterGroup,
 } from './types';
-
 // hangul to keystrokes
 const hangulToKeyFn = char => hangulToKey[char] || char;
 const transformToKeys = (hangulChar) => {
   const res = transformLeavingCho(hangulChar);
   return do {
     if (isCharacterGroup(res)) {
-      res.split('').map(hangulToKeyFn);
+      res.map(hangulToKeyFn);
     } else {
       hangulToKeyFn(res);
     }
@@ -24,10 +23,10 @@ const transformToKeys = (hangulChar) => {
 const disassembleToKeys = disassembleFactory(transformToKeys);
 const groupedDisassembleToKeys = deepMap(disassembleToKeys);
 const flatDisassembleToKeys = deepFlatMap(disassembleToKeys);
-export const hangulToKeys = (data, mode) => data
-  |> (grouped ? groupedDisassembleToKeys : flatDisassembleToKeys);
+export const hangulToKeys = (data, opts = {}) => data
+  |> (opts.grouped ? groupedDisassembleToKeys : flatDisassembleToKeys);
 // TODO: types needs to have a "generalDeepMap" which
-// generalDeepMap: fn => mode => data
+// generalDeepMap: fn => opts => data
 
 // keystrokes to hangul
 const keyToHangulFn = char => keyToHangul[char];

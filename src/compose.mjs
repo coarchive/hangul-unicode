@@ -3,36 +3,36 @@ import * as complex from './unicode/complex';
 import { choNum, jungNum, jongNum } from './unicode/syllable';
 import composeSyllableFn from './composeSyllable';
 import R from './Result';
-import { deepFlatResMap } from './types';
-import computeMode from './mode';
+import { deepFlatResMap } from './deepMap';
+import computeOpts from './options';
 // important note!
 // these functions aren't going to really make any sense until
 // you understand how they work in conjunction with the stuff
 // that's in './types'. Read './Result' and './types' first.
 // then read this.
-const composeComplexBase = (mode) => {
-  if (!mode.complex) {
-    if (mode.hardFail) {
-      throw Error("composeComplexBase shouldn't have been called since mode.complex is false!");
+const composeComplexBase = (opts) => {
+  if (!opts.complex) {
+    if (opts.hardFail) {
+      throw Error("composeComplexBase shouldn't have been called since opts.complex is false!");
     }
     return chars => new R(chars.join(''));
     // this means don't process complex characters
   }
   const objs = [];
-  if (mode.complexCho) {
+  if (opts.complexCho) {
     objs.push(complex.cho);
-  } if (mode.complexJung) {
+  } if (opts.complexJung) {
     objs.push(complex.jung);
-  } if (mode.complexJong) {
+  } if (opts.complexJong) {
     objs.push(complex.jong);
-  } if (mode.archaic) {
+  } if (opts.archaic) {
     objs.push(complex.archaic);
   }
   const obj = Object.assign({}, ...objs);
   return (chars) => {
     const len = chars.length;
     if (len < 1) {
-      if (mode.hardFail) {
+      if (opts.hardFail) {
         throw Error('Cannot compose array of zero characters!');
       }
       return new R('');
@@ -43,13 +43,13 @@ const composeComplexBase = (mode) => {
       return new R(char1);
     }
     const char2 = chars[1];
-    if (!mode.composeComplexDouble && char1 !== char2) {
+    if (!opts.composeComplexDouble && char1 !== char2) {
       // we don't care about checking for complex doubles
       // or char1 !== char2
       const comp2 = obj[char1 + char2];
       // comp2 = composition of 2 characters
       if (comp2) {
-        if (mode.complex3 && len > 2) {
+        if (opts.complex3 && len > 2) {
         // if there's more data, try to compose a triple
           const comp3 = obj[char1 + char2 + chars[2]];
           if (comp3) {
@@ -66,21 +66,22 @@ const composeComplexBase = (mode) => {
     return new R(char1, chars.slice(1));
   };
 };
-export const composeComplex = (mode) => {
-  const cc = computeMode(mode) |> composeComplexBase;
-  return ary => deepFlatResMap(ary, cc);
+export const composeComplex = (opts) => {
+  const cc = computeOpts(opts) |> composeComplexBase;
+  return deepFlatResMap(cc);
+  // this return value is a function that takes a CharacterGroup
 };
 const isVowel = char => char && char !== 'ㆍ' && vowels[char];
-export default (mode) => {
-  const currentMode = computeMode({ hardFail: true }, mode);
-  const cc = composeComplexBase(currentMode);
+export default (opts) => {
+  const currentopts = computeOpts(opts);
+  const cc = composeComplexBase(currentopts);
   return (ary) => {
     // this function takes an Array of characters and returns a new Result
     if (ary.length < 2) {
       return new R(ary[0]);
     // don't do extra computing for small operations
     }
-    // the composeComplex function with the mode that is specified
+    // the composeComplex function with the options that are specified
     const choRes = cc(ary);
     // ^^ that's a Result object
     const choChar = choRes.result;
