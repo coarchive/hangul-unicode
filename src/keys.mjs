@@ -17,7 +17,7 @@ const transformToKeys_T = (hangulChar) => {
     }
   };
 };
-export const disassembleToKeys = disassembleFactory_U(transformToKeys_T) |> publicMap;
+export const hangulToKeys = disassembleFactory_U(transformToKeys_T) |> publicMap;
 // _g_U
 
 // keystrokes to hangul

@@ -13,7 +13,7 @@ export const splitSyllable_T = (char) => {
 };
 export default (datum, opts) => {
   const char = Character(datum);
-  if (!syllables.contains(char)) {
+  if (!syllables.contains_T(char)) {
     if (opts.hardFail) {
       throw Error('Decomposing a syllable requires a syllable to decompose!');
     }

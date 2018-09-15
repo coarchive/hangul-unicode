@@ -6,7 +6,7 @@ import { Character } from './types';
 
 export const disassembleFactory_U = transformer => (datum) => {
   const char = Character(datum);
-  if (syllables.contains(char)) {
+  if (syllables.contains_T(char)) {
     return splitSyllable_T(char).map(transformer);
   }
   return transformer(char);
