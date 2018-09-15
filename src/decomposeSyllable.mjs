@@ -2,7 +2,7 @@ import { syllables } from './unicode/blocks';
 import { cho, jung, jong } from './unicode/syllable';
 import { Character } from './types';
 
-export const trustMe = (char) => {
+export const splitSyllable_T = (char) => {
   const code = char.codePointAt(0) - syllables.start;
   const jongNum = code % 28;
   const q = (code - jongNum) / 28;
@@ -22,5 +22,5 @@ export default (datum, opts) => {
     // still return the same type as it would have
     // if it didn't fail
   }
-  return trustMe(char);
+  return splitSyllable_T(char);
 };

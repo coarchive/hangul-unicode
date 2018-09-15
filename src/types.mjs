@@ -10,6 +10,7 @@ export const Character = (val) => {
 // otherwise it just fails
 export const ENOARYLIKE = () => throw TypeError('The data must be an Array or a String!');
 export const toArray = aryOrStr => (Array.isArray(aryOrStr) ? aryOrStr : aryOrStr.split(''));
+export const toString = strOrAry => (Array.isArray(strOrAry) ? strOrAry.join('') : `${strOrAry}`);
 // as a general note, calling .split like that instead of .split`` is faster
 export const isCharacterGroup = (val) => {
   if (val.length < 1) {

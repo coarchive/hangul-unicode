@@ -13,7 +13,7 @@ test("10 isn't within 80 & 100", () => {
   expect(uRange1.containsCodePoint(10)).toBeFalsy();
 });
 test('"a" is within 80 & 100', () => {
-  expect(uRange1.contains('a')).toBeTruthy();
+  expect(uRange1.contains_T('a')).toBeTruthy();
 });
 test('10 is within the CombinedRange', () => {
   expect(cRange.containsCodePoint(10)).toBeTruthy();
@@ -22,7 +22,7 @@ test('70 is not within the CombinedRange', () => {
   expect(cRange.containsCodePoint(70)).toBeFalsy();
 });
 test('"b" is within the CombinedRange', () => {
-  expect(cRange.contains('b')).toBeTruthy();
+  expect(cRange.contains_T('b')).toBeTruthy();
 });
 test('1337 is witin the CombinedRange', () => {
   expect(cRange.containsCodePoint(1337)).toBeTruthy();

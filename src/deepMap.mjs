@@ -109,6 +109,8 @@ export const deepFlatResMap = (func) => {
   };
   return recurse;
 };
-export const publicMap = fn => (data, opts) => {
-
+export const publicMap = (fn) => {
+  const map = deepMap(fn);
+  const flat = deepFlatMap(fn);
+  return (data, opts) => data |> (opts.grouped ? map : flat);
 };

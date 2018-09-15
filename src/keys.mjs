@@ -1,26 +1,23 @@
 import { hangulToKey, keyToHangul } from './unicode/characters';
 import { assembleFactory } from './assemble';
-import { transformLeavingCho } from './decomposeComplex';
+import { transformLeavingCho_U } from './decomposeComplex';
+import { deepMap, deepFlatMap } from './deepMap';
 import { disassembleFactory } from './disassemble';
-import {
-  Character,
-  deepMap,
-  deepFlatMap,
-  isCharacterGroup,
-} from './types';
+import { Character, isCharacterGroup, toArray } from './types';
 // hangul to keystrokes
+
 const hangulToKeyFn = char => hangulToKey[char] || char;
-const transformToKeys = (hangulChar) => {
-  const res = transformLeavingCho(hangulChar);
+const transformToKeys_U = (hangulChar) => {
+  const res = transformLeavingCho_U(hangulChar);
   return do {
     if (isCharacterGroup(res)) {
-      res.map(hangulToKeyFn);
+      toArray(res).map(hangulToKeyFn);
     } else {
       hangulToKeyFn(res);
     }
   };
 };
-const disassembleToKeys = disassembleFactory(transformToKeys);
+const disassembleToKeys = disassembleFactory(transformToKeys_U);
 const groupedDisassembleToKeys = deepMap(disassembleToKeys);
 const flatDisassembleToKeys = deepFlatMap(disassembleToKeys);
 export const hangulToKeys = (data, opts = {}) => data

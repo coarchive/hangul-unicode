@@ -8,7 +8,7 @@ export class UnicodeRange {
     return num >= this.start && num <= this.end;
   }
 
-  contains(char) {
+  contains_T(char) {
     return this.containsCodePoint(char.codePointAt(0));
   }
 }
@@ -25,7 +25,7 @@ export class CombinedRange {
     );
   }
 
-  contains(char) {
+  contains_T(char) {
     const num = char.codePointAt(0);
     return this.containsCodePoint(num);
   }

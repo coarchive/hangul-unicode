@@ -29,7 +29,7 @@ const composeComplexBase = (opts) => {
     objs.push(complex.archaic);
   }
   const obj = Object.assign({}, ...objs);
-  return (chars) => {
+  return function composeComplex_g_T(chars) {
     const len = chars.length;
     if (len < 1) {
       if (opts.hardFail) {
@@ -66,7 +66,7 @@ const composeComplexBase = (opts) => {
     return new R(char1, chars.slice(1));
   };
 };
-export const composeComplex = (opts) => {
+export const composeComplex_T = (opts) => {
   const cc = computeOpts(opts) |> composeComplexBase;
   return deepFlatResMap(cc);
   // this return value is a function that takes a CharacterGroup
