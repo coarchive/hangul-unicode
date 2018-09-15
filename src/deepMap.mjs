@@ -112,5 +112,5 @@ export const deepFlatResMap = (func) => {
 export const publicMap = (fn) => {
   const map = deepMap(fn);
   const flat = deepFlatMap(fn);
-  return (data, opts) => data |> (opts.grouped ? map : flat);
+  return (data, opts = {}) => data |> (opts.grouped ? map : flat);
 };

@@ -1,14 +1,14 @@
 import { hangulToKey, keyToHangul } from './unicode/characters';
 import { assembleFactory } from './assemble';
-import { transformLeavingCho_U } from './decomposeComplex';
-import { deepMap, deepFlatMap } from './deepMap';
-import { disassembleFactory } from './disassemble';
+import { transformLeavingCho_T } from './decomposeComplex';
+import { publicMap } from './deepMap';
+import { disassembleFactory_U } from './disassemble';
 import { Character, isCharacterGroup, toArray } from './types';
 // hangul to keystrokes
 
 const hangulToKeyFn = char => hangulToKey[char] || char;
-const transformToKeys_U = (hangulChar) => {
-  const res = transformLeavingCho_U(hangulChar);
+const transformToKeys_T = (hangulChar) => {
+  const res = transformLeavingCho_T(hangulChar);
   return do {
     if (isCharacterGroup(res)) {
       toArray(res).map(hangulToKeyFn);
@@ -17,13 +17,8 @@ const transformToKeys_U = (hangulChar) => {
     }
   };
 };
-const disassembleToKeys = disassembleFactory(transformToKeys_U);
-const groupedDisassembleToKeys = deepMap(disassembleToKeys);
-const flatDisassembleToKeys = deepFlatMap(disassembleToKeys);
-export const hangulToKeys = (data, opts = {}) => data
-  |> (opts.grouped ? groupedDisassembleToKeys : flatDisassembleToKeys);
-// TODO: types needs to have a "generalDeepMap" which
-// generalDeepMap: fn => opts => data
+export const disassembleToKeys = disassembleFactory_U(transformToKeys_T) |> publicMap;
+// _g_U
 
 // keystrokes to hangul
 const keyToHangulFn = char => keyToHangul[char];

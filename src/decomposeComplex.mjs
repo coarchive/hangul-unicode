@@ -4,7 +4,7 @@ import { Character, isCharacterGroup, toString } from './types';
 
 
 const composeComplexCho_g_T = composeComplex_T({ complexJung: false, complexJong: false });
-const transformLeavingCho_T = (char) => {
+export const transformLeavingCho_T = (char) => {
   const res = transform_T(char);
   if (isCharacterGroup(res)) {
     return res |> composeComplexCho_g_T |> toString;

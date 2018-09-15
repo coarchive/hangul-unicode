@@ -1,10 +1,11 @@
 import { syllables } from './unicode/blocks';
 import { curriedDecomposeComplex_T } from './decomposeComplex';
 import { splitSyllable_T } from './decomposeSyllable';
-import { publicMap } from './deepMap';
+import { deepMap, deepFlatMap } from './deepMap';
 import { Character } from './types';
 
-const disassembleFactory_T = transformer => (char) => {
+export const disassembleFactory_U = transformer => (datum) => {
+  const char = Character(datum);
   if (syllables.contains(char)) {
     return splitSyllable_T(char).map(transformer);
   }
@@ -12,8 +13,12 @@ const disassembleFactory_T = transformer => (char) => {
 };
 // not to be confused with Hangul.disassemble
 // this disassemble takes Characters as inputs, not CharacterGroups
-const disassembleCharacter_T = opts => opts
+const disassembleCharacter_U = opts => opts
   |> curriedDecomposeComplex_T
-  |> disassembleFactory_T;
-export default ((data, opts) => );
-// it looks fine if you don't look at the parens in detail
+  |> disassembleFactory_U;
+export default ((data, opts) => data
+  |> (
+    disassembleCharacter_U(opts)
+    |> (opts.grouped ? deepMap : deepFlatMap)
+  )
+);
