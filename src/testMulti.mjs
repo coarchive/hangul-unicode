@@ -1,3 +1,3 @@
-import { flatSanitize } from './sanitize';
+import { flatSanitize_g_U } from './sanitize';
 
-export default (aryFnName => isFn => data => flatSanitize(data).split('')[aryFnName](isFn));
+export default (aryFnName => isFn => data => flatSanitize_g_U(data).split('')[aryFnName](isFn));
