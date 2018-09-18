@@ -1,33 +1,32 @@
 import { hangulToKey, keyToHangul } from './unicode/characters';
-import { assembleFactory_g_T } from './assemble';
-import { transformLeavingCho_T } from './decomposeComplex';
-import { publicMap } from './deepMap';
-import { disassembleFactory_U } from './disassemble';
-import { Character, isCharacterGroup, toArray } from './types';
-// hangul to keystrokes
+import { generalMap, flatResReducer } from './map';
+import { disassembleCharacter_T } from './disassemble';
+import { characterCollection, toArray } from './types';
+import { compose_T } from './compose';
 
-const hangulToKeyFn = char => hangulToKey[char] || char;
-const transformToKeys_T = (hangulChar) => {
-  const res = transformLeavingCho_T(hangulChar);
-  return do {
-    if (isCharacterGroup(res)) {
-      toArray(res).map(hangulToKeyFn);
-    } else {
-      hangulToKeyFn(res);
-    }
-  };
+// 한글 => gksrmf
+const h2kfetcher = char => hangulToKey[char] || char;
+const h2kconverter = hangulChar => do {
+  const cc = characterCollection(hangulChar);
+  if (cc[0] & 2) {
+    toArray(cc[1]).map(h2kfetcher);
+  } else {
+    h2kfetcher(cc[1]);
+  }
 };
-export const hangulToKeys = disassembleFactory_U(transformToKeys_T) |> publicMap;
-// _g_U
+const h2ktransformer = (opts) => {
+  const dC = disassembleCharacter_T(opts);
+  return char => char |> dC |> h2kconverter;
+};
+export const hangulToKeys = (data, opts = {}) => generalMap(opts |> h2ktransformer, opts, data);
 
-// keystrokes to hangul
-const keyToHangulFn = char => keyToHangul[char];
-const transformToHangul_U = (latinDatum) => {
-  const latinChar = Character(latinDatum);
-  const res = keyToHangulFn(latinChar);
+// gksrmf => 한글
+const k2hfetcher = char => keyToHangul[char] || char;
+const k2hconverter = (latinChar) => {
+  const res = k2hfetcher(latinChar);
   if (!res) {
     // couldn't find a key for that characters
-    const lowerCaseRes = keyToHangulFn(latinChar.toLowerCase());
+    const lowerCaseRes = k2hfetcher(latinChar.toLowerCase());
     if (!lowerCaseRes) {
       return latinChar;
     }
@@ -35,7 +34,11 @@ const transformToHangul_U = (latinDatum) => {
   }
   return res;
 };
-const assembler = assembleFactory_g_T(transformToHangul_U);
-export const keysToHangul = (data, opts) => data |> assembler(opts);
+const k2htransformer = (data, opts = {}) => generalMap(k2hconverter, opts, data);
+export const keysToHangul = (data, opts = {}) => {
+  const c = compose_T(opts);
+  const t = str => k2htransformer(str, opts) |> c;
+  return flatResReducer(t, data);
+};
 // it's okay that we're not standarizing because the data
 // in hangulToKey is already standard :)

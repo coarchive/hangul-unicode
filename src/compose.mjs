@@ -3,15 +3,15 @@ import * as complex from './unicode/complex';
 import { choNum, jungNum, jongNum } from './unicode/syllable';
 import composeSyllableFn from './composeSyllable';
 import R from './Result';
-import { flatResReducer } from './map';
 import computeOpts from './options';
+
 // important note!
 // these functions aren't going to really make any sense until
 // you understand how they work in conjunction with the stuff
 // that's in './types'. Read './Result' and './types' first.
 // then read this.
 export const composeComplex_T = (opts) => {
-  if (!opts.complex) {
+  if (opts.complex === false) {
     if (opts.hardFail) {
       throw Error("composeComplexBase shouldn't have been called since opts.complex is false!");
     }
@@ -38,7 +38,7 @@ export const composeComplex_T = (opts) => {
       if (opts.hardFail) {
         throw Error('Cannot compose array of zero characters!');
       }
-      return new R('');
+      return new R();
     }
     const char1 = chars[0];
     if (len < 2) {
@@ -46,7 +46,7 @@ export const composeComplex_T = (opts) => {
       return new R(char1);
     }
     const char2 = chars[1];
-    if (!opts.composeComplexDouble && char1 !== char2) {
+    if (!opts.composeComplexDouble || char1 !== char2) {
       // we don't care about checking for complex doubles
       // or char1 !== char2
       const comp2 = obj[char1 + char2];
@@ -108,7 +108,8 @@ export const compose_T = (opts) => {
     // still only return choChar as a result since we want
     // to try starting a syllable off with the jungChar next
     // time this function is called
-    } if (jungRem.length) {
+    }
+    if (jungRem.length) {
       // there's no point in trying to add anything on to the complex
       // if there aren't any characters left
       if (!isVowel(jungRem[1])) {

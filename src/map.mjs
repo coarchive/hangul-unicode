@@ -1,16 +1,17 @@
-import { characterCollection } from './types';
+import { characterCollection, ENOARYLIKE, toString } from './types';
+
 
 function flatMapInternal(fn, data) {
   let res = '';
   const len = data.length;
   for (let i = 0; i < len; i++) {
     const val = data[i];
-    const cg = characterCollection(val);
-    if (cg[0] & 2) {
+    const cc = characterCollection(val);
+    if (cc[0] & 2) {
       // the data is a characterGroup
-      res += flatMapInternal(fn, cg[1]);
+      res += flatMapInternal(fn, cc[1]);
     } else {
-      res += cg[1];
+      res += fn(cc[1]) |> toString;
     }
   }
   return res;
@@ -20,12 +21,12 @@ function mapInternal(fn, data) {
   const len = data.length;
   for (let i = 0; i < len; i++) {
     const val = data[i];
-    const cg = characterCollection(val);
-    if (cg[0] & 2) {
+    const cc = characterCollection(val);
+    if (cc[0] & 2) {
       // the data is a characterGroup
-      res.push(flatMapInternal(fn, cg[1]));
+      res.push(mapInternal(fn, cc[1]));
     } else {
-      res.push(cg[1]);
+      res.push(cc[1] |> fn);
     }
   }
   return res;
@@ -36,7 +37,8 @@ const mapWrap = internalFn => (fn, data) => {
   if (typeof data === 'string' || Array.isArray(data)) {
     return internalFn(fn, data);
   }
-  throw TypeError('The data must be an Array or String!');
+  console.error(data);
+  ENOARYLIKE();
 };
 export const flatMap = mapWrap(flatMapInternal);
 export const map = mapWrap(mapInternal);
@@ -50,22 +52,22 @@ export function flatResReducer(fn, data) {
     const len = data.length;
     for (let i = 0; i < len; i++) {
       const val = data[i];
-      const cg = characterCollection(val);
-      if (cg[0] & 2) {
-        rem += flatResReducer(fn, cg[1]);
+      const cc = characterCollection(val);
+      if (cc[0] & 2) {
+        rem += flatResReducer(fn, cc[1]);
         // deepFlatResMap always returns an array
         // (or at least it should)
       } else {
-        rem += cg[1];
+        rem += cc[1];
       }
     }
   } else if (typeof data === 'string') {
-    rem = data.split('');
+    rem = data;
     // we know the type so there's no need to check
     // for CharacterGroups within the String
   } else {
     // it's not an Array or a String
-    throw TypeError('The data must be an Array or String!');
+    ENOARYLIKE();
   }
   while (rem.length) {
     const comp = fn(rem);
@@ -79,3 +81,4 @@ export function flatResReducer(fn, data) {
 // this is a special type of mapping function
 // the input to the fn argument is a CharacterGroup
 // rather than a single character
+export const generalMap = (fn, opts, data) => (opts.grouped ? map : flatMap)(fn, data);

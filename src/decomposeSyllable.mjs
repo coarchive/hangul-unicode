@@ -1,6 +1,6 @@
 import { syllables } from './unicode/blocks';
 import { cho, jung, jong } from './unicode/syllable';
-import { Character } from './types';
+import { character } from './types';
 
 export const splitSyllable_T = (char) => {
   const code = char.codePointAt(0) - syllables.start;
@@ -12,7 +12,7 @@ export const splitSyllable_T = (char) => {
   // the .filter(v => v) removes blank space in the array
 };
 export default (datum, opts) => {
-  const char = Character(datum);
+  const char = character(datum);
   if (!syllables.contains_T(char)) {
     if (opts.hardFail) {
       throw Error('Decomposing a syllable requires a syllable to decompose!');

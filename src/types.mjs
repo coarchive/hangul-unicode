@@ -27,4 +27,20 @@ export const characterCollection = (val) => {
   }
   return [1, character(val)];
 };
+export const ENOARYLIKE = () => throw TypeError('The data must be an Array or String!');
+export function toString(data) {
+  let res = '';
+  const len = data.length;
+  for (let i = 0; i < len; i++) {
+    const val = data[i];
+    if (Array.isArray(val)) {
+      // the data is a characterGroup
+      res += toString(val);
+    } else {
+      res += val;
+    }
+  }
+  return res;
+}
+export const toArray = data => (Array.isArray(data) ? data : data.split(''));
 // this function does it all!

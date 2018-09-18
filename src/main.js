@@ -1,10 +1,9 @@
-export { default as assemble } from './assemble';
+export assemble from './assemble';
+export disassemble, { disassembleCharacter } from './disassemble';
+// import name from './name';
+// import { complex as composeComplex, syllable as composeSyllable } from './publicCompose';
+// import stronger from './stronger';
 /*
-import disassemble, { disassembleCharacter_U } from './disassemble';
-import name from './name';
-import { complex as composeComplex, syllable as composeSyllable } from './publicCompose';
-import stronger from './stronger';
-
 name({
   assemble,
 
@@ -16,11 +15,13 @@ name({
 
   stronger,
 });
+*/
 export { default as decomposeComplex } from './decomposeComplex';
 export { default as decomposeSyllable } from './decomposeSyllable';
-export { default as standardize } from './standardize';
+// export { default as standardize } from './standardize';
 export * from './keys';
-export * from './testStrings';
+// export * from './testStrings';
+/*
 export {
   assemble,
   assemble as a,
@@ -34,6 +35,6 @@ export {
 
   stronger,
 };
+*/
 // TODO: Add smarter caching of function based on mode
 // TODO: remove } if
-*/

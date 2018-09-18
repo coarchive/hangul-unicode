@@ -1,17 +1,24 @@
 import { composeComplex_T } from './compose';
 import { transform_T } from './transform';
-import { Character, isCharacterGroup, toString } from './types';
+import { flatResReducer } from './map';
+import { character, characterCollection } from './types';
 
-const composeComplexCho_g_T = composeComplex_T({ complexJung: false, complexJong: false });
+const c = composeComplex_T({ complexJung: false, complexJong: false });
+const composeComplexCho_g_T = data => flatResReducer(c, data);
 export const transformLeavingCho_T = (char) => {
   const res = transform_T(char);
-  if (isCharacterGroup(res)) {
-    return res |> composeComplexCho_g_T |> toString;
+  const cc = characterCollection(res);
+  if (cc[0] & 2) {
+    return composeComplexCho_g_T(cc[1]);
   }
-  return res;
+  return cc[1];
 };
-export const curriedDecomposeComplex_T = (opts = {}) => (opts.decomposeComplexDouble ? transform_T : transformLeavingCho_T);
+export const chooseTransformer = (opts = {}) => (
+  opts.decomposeComplexDouble
+    ? transform_T
+    : transformLeavingCho_T
+);
 export default ((datum, opts) => datum
-  |> Character
-  |> curriedDecomposeComplex_T(opts)
+  |> character
+  |> chooseTransformer(opts)
 );
