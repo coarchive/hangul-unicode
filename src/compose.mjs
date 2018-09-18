@@ -3,7 +3,7 @@ import * as complex from './unicode/complex';
 import { choNum, jungNum, jongNum } from './unicode/syllable';
 import composeSyllableFn from './composeSyllable';
 import R from './Result';
-import { deepFlatResMap } from './deepMap';
+import { flatResReducer } from './map';
 import computeOpts from './options';
 // important note!
 // these functions aren't going to really make any sense until
@@ -16,20 +16,23 @@ export const composeComplex_T = (opts) => {
       throw Error("composeComplexBase shouldn't have been called since opts.complex is false!");
     }
     return chars => new R(chars.join(''));
-    // this means don't process complex characters
+    // this means that it doesn't process complex characters
   }
   const objs = [];
   if (opts.complexCho) {
     objs.push(complex.cho);
-  } if (opts.complexJung) {
+  }
+  if (opts.complexJung) {
     objs.push(complex.jung);
-  } if (opts.complexJong) {
+  }
+  if (opts.complexJong) {
     objs.push(complex.jong);
-  } if (opts.archaic) {
+  }
+  if (opts.archaic) {
     objs.push(complex.archaic);
   }
   const obj = Object.assign({}, ...objs);
-  return function composeComplex_g_T(chars) {
+  return (chars) => {
     const len = chars.length;
     if (len < 1) {
       if (opts.hardFail) {
@@ -66,23 +69,18 @@ export const composeComplex_T = (opts) => {
     return new R(char1, chars.slice(1));
   };
 };
-export const composeComplex_g_T = (opts) => {
-  const cc = computeOpts(opts) |> composeComplex_T;
-  return deepFlatResMap(cc);
-  // this return value is a function that takes a CharacterGroup
-};
 const isVowel = char => char && char !== 'ㆍ' && vowels[char];
-export default (opts) => {
+export const compose_T = (opts) => {
   const currentopts = computeOpts(opts);
   const cc = composeComplex_T(currentopts);
-  return (ary) => {
+  return (str) => {
     // this function takes an Array of characters and returns a new Result
-    if (ary.length < 2) {
-      return new R(ary[0]);
+    if (str.length < 2) {
+      return new R(str[0]);
     // don't do extra computing for small operations
     }
     // the composeComplex function with the options that are specified
-    const choRes = cc(ary);
+    const choRes = cc(str);
     // ^^ that's a Result object
     const choChar = choRes.result;
     // the result of the composition, should be a Character
@@ -106,7 +104,7 @@ export default (opts) => {
     // there's no need to check to see if there's any more
     // remaining since cho and jung are all that's needed
     // to compose a syllable
-      return new R(choChar, [jungChar, ...jungRem]);
+      return new R(choChar, jungChar + jungRem);
     // still only return choChar as a result since we want
     // to try starting a syllable off with the jungChar next
     // time this function is called

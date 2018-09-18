@@ -1,4 +1,5 @@
-import assemble from './assemble';
+export { default as assemble } from './assemble';
+/*
 import disassemble, { disassembleCharacter_U } from './disassemble';
 import name from './name';
 import { complex as composeComplex, syllable as composeSyllable } from './publicCompose';
@@ -35,3 +36,4 @@ export {
 };
 // TODO: Add smarter caching of function based on mode
 // TODO: remove } if
+*/

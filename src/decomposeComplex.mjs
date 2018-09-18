@@ -10,7 +10,7 @@ export const transformLeavingCho_T = (char) => {
   }
   return res;
 };
-export const curriedDecomposeComplex_T = opts => (opts.decomposeComplexDouble ? transform_T : transformLeavingCho_T);
+export const curriedDecomposeComplex_T = (opts = {}) => (opts.decomposeComplexDouble ? transform_T : transformLeavingCho_T);
 export default ((datum, opts) => datum
   |> Character
   |> curriedDecomposeComplex_T(opts)

@@ -32,42 +32,38 @@ const deepFlatMapHelper = func => (val) => {
   }
   return recurseRes;
 };
-export const deepFlatMap = (func) => {
+export const deepFlatMap = (func, data) => {
   // you may ask, why have a separate function for this
   // well, it's actually a little faster (I hope)
-  const helper = deepFlatMapHelper(func);
-  const recurse = (data) => {
-    let res = '';
-    const isString = typeof data === 'string';
-    if (Array.isArray(data) || isString) {
-      const len = data.length;
-      if (isString) {
-        for (let i = 0; i < len; i++) {
-          const cRes = func(data[i]);
-          if (isCharacterGroup(cRes)) {
-            res += flatten(cRes);
-          } else {
-            res += cRes;
-          }
-        }
-      } else {
-        for (let i = 0; i < len; i++) {
-          // for is faster than forEach
-          // this function is used a lot so I'll
-          // take any optimization that I can get
-          const val = data[i];
-          if (isCharacterGroup(val)) {
-            res += recurse(val);
-          } else {
-            res += helper(val);
-          }
+  let res = '';
+  const isString = typeof data === 'string';
+  if (Array.isArray(data) || isString) {
+    const len = data.length;
+    if (isString) {
+      for (let i = 0; i < len; i++) {
+        const cRes = func(data[i]);
+        if (isCharacterGroup(cRes)) {
+          res += flatten(cRes);
+        } else {
+          res += cRes;
         }
       }
-      return res;
+    } else {
+      for (let i = 0; i < len; i++) {
+        // for is faster than forEach
+        // this function is used a lot so I'll
+        // take any optimization that I can get
+        const val = data[i];
+        if (isCharacterGroup(val)) {
+          res += recurse(val);
+        } else {
+          res += helper(val);
+        }
+      }
     }
-    return ENOARYLIKE();
-  };
-  return recurse;
+    return res;
+  }
+  return ENOARYLIKE();
 };
 export const deepFlatResMap = (func) => {
   // this is different since it deals with functions that return Result objects.
@@ -114,4 +110,7 @@ export const publicMap = (fn) => {
   const flat = deepFlatMap(fn);
   return (data, opts = {}) => data |> (opts.grouped ? map : flat);
 };
-export const publicMapOpts = fn => (data, opts) => data |> (fn(opts) |> (opts.grouped ? deepMap : deepFlatMap));
+export const publicMapOpts = (fn, data, opts = {}) => {
+
+};
+data |> (fn(opts) |> (opts.grouped ? deepMap : deepFlatMap));
