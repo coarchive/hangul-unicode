@@ -7,6 +7,7 @@ function flatMapInternal(fn, data) {
   for (let i = 0; i < len; i++) {
     const val = data[i];
     const cc = characterCollection(val);
+    // TODO: use cc[2]
     if (cc[0] & 2) {
       // the data is a characterGroup
       res += flatMapInternal(fn, cc[1]);

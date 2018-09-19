@@ -1,8 +1,10 @@
 import * as blocks from './unicode/blocks';
 import * as test from './simpleDeepTest';
-import { Character } from './types';
+import { character } from './types';
 
-const isFactory = blockName => datum => blocks[blockName].contains(Character(datum));
+const isFactory = blockName => datum => datum
+  |> character
+  |> blocks[blockName].contains;
 export const is = {
   jamo: isFactory('jamo'),
   compatibilityJamo: isFactory('compatibilityJamo'),

@@ -1,7 +1,6 @@
 import { vowels } from './unicode/characters';
-import contains from './contains';
+import { contains, isAll } from './simpleDeepTest';
 import is from './is';
-import isAll from './isAll';
 
 const vowel = char => vowels[char];
 export const isVowel = is(vowel);

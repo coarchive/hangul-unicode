@@ -11,7 +11,7 @@ export const character = (val) => {
 export const characterCollection = (val) => {
   if (Array.isArray(val)) {
     if (val.length > 1) {
-      return [2, val];
+      return [2, val, 1];
     }
     if (val.length === 1) {
       return characterCollection(val[0]);
@@ -19,14 +19,34 @@ export const characterCollection = (val) => {
   }
   if (typeof val === 'string') {
     if (val.length === 1) {
-      return [1, val];
+      return [1, val, 0];
     }
     if (val.length > 1) {
-      return [2, val];
+      return [2, val, 0];
     }
   }
-  return [1, character(val)];
+  if (typeof val === 'number') {
+    const str = `${val}`;
+    if (str.length !== 1) {
+      return [2, str, 0];
+    }
+    return [1, str, 0];
+  }
+  return [1, character(val), 0];
 };
+// characterCollection returns an Array
+/*
+enum charType {
+  nothing
+  Character,
+  CharacterGroup,
+}
+enum returnType {
+  String,
+  Array,
+}
+[charType, Array | String, returnType]
+*/
 export const ENOARYLIKE = () => throw TypeError('The data must be an Array or String!');
 export function toString(data) {
   let res = '';

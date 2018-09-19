@@ -3,7 +3,6 @@ import * as complex from './unicode/complex';
 import { choNum, jungNum, jongNum } from './unicode/syllable';
 import composeSyllableFn from './composeSyllable';
 import R from './Result';
-import computeOpts from './options';
 
 // important note!
 // these functions aren't going to really make any sense until
@@ -71,8 +70,7 @@ export const composeComplex_T = (opts) => {
 };
 const isVowel = char => char && char !== 'ㆍ' && vowels[char];
 export const compose_T = (opts) => {
-  const currentopts = computeOpts(opts);
-  const cc = composeComplex_T(currentopts);
+  const cc = composeComplex_T(opts);
   return (str) => {
     // this function takes an Array of characters and returns a new Result
     if (str.length < 2) {

@@ -1,8 +1,8 @@
 import { hangulToKey, keyToHangul } from './unicode/characters';
-import { generalMap, flatResReducer } from './map';
+import { generalMap } from './map';
 import { disassembleCharacter_T } from './disassemble';
 import { characterCollection, toArray } from './types';
-import { compose_T } from './compose';
+import { assembleFactory } from './assemble';
 
 // 한글 => gksrmf
 const h2kfetcher = char => hangulToKey[char] || char;
@@ -34,11 +34,6 @@ const k2hconverter = (latinChar) => {
   }
   return res;
 };
-const k2htransformer = (data, opts = {}) => generalMap(k2hconverter, opts, data);
-export const keysToHangul = (data, opts = {}) => {
-  const c = compose_T(opts);
-  const t = str => k2htransformer(str, opts) |> c;
-  return flatResReducer(t, data);
-};
-// it's okay that we're not standarizing because the data
-// in hangulToKey is already standard :)
+const k2htransformer = (data, opts) => generalMap(k2hconverter, opts, data);
+export const keysToHangul = assembleFactory(k2htransformer);
+// it's okay that we're not standarizing

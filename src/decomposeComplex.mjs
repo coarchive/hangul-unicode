@@ -13,12 +13,12 @@ export const transformLeavingCho_T = (char) => {
   }
   return cc[1];
 };
-export const chooseTransformer = (opts = {}) => (
+export const chooseTransformer = opts => (
   opts.decomposeComplexDouble
     ? transform_T
     : transformLeavingCho_T
 );
-export default ((datum, opts) => datum
+export default ((datum, opts = {}) => datum
   |> character
   |> chooseTransformer(opts)
 );

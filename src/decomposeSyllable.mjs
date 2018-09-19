@@ -11,7 +11,7 @@ export const splitSyllable_T = (char) => {
   return [cho[choNum], jung[jungNum], jong[jongNum]].filter(v => v);
   // the .filter(v => v) removes blank space in the array
 };
-export default (datum, opts) => {
+export default (datum, opts = {}) => {
   const char = character(datum);
   if (!syllables.contains_T(char)) {
     if (opts.hardFail) {
