@@ -1,5 +1,5 @@
 import * as blocks from './unicode/blocks';
-import * as test from './simpleDeepTest';
+import * as test from './deepTest';
 import { character } from './types';
 
 const isFactory = blockName => datum => datum

@@ -5,12 +5,14 @@ import { generalMap } from './map';
 import { character } from './types';
 import computeOpts from './options';
 
-export const disassembleCharacter_T = opts => (char) => {
+export const disassembleCharacter_T = (opts) => {
   const t = chooseTransformer(opts);
-  if (syllables.contains_T(char)) {
-    return splitSyllable_T(char).map(t);
-  }
-  return t(char);
+  return (char) => {
+    if (syllables.contains_T(char)) {
+      return splitSyllable_T(char).map(t);
+    }
+    return t(char);
+  };
 };
 export const disassembleCharacter = (datum, opts) => datum
   |> character

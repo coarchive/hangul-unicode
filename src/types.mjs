@@ -47,8 +47,13 @@ enum returnType {
 }
 [charType, Array | String, returnType]
 */
+// this function does it all!
+
 export const ENOARYLIKE = () => throw TypeError('The data must be an Array or String!');
 export function toString(data) {
+  if (typeof data === 'string') {
+    return data;
+  }
   let res = '';
   const len = data.length;
   for (let i = 0; i < len; i++) {
@@ -62,5 +67,6 @@ export function toString(data) {
   }
   return res;
 }
+// this is basically deep toString
+// [[['foobar'], 'baz'], 'q', 'u', 'x'] => "foobarbazqux"
 export const toArray = data => (Array.isArray(data) ? data : data.split(''));
-// this function does it all!

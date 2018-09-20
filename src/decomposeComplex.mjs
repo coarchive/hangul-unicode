@@ -3,7 +3,7 @@ import { transform_T } from './transform';
 import { flatResReducer } from './map';
 import { character, characterCollection } from './types';
 
-const c = composeComplex_T({ complexJung: false, complexJong: false });
+const c = composeComplex_T({ complexCho: true });
 const composeComplexCho_g_T = data => flatResReducer(c, data);
 export const transformLeavingCho_T = (char) => {
   const res = transform_T(char);

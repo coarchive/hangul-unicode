@@ -1,5 +1,5 @@
 import { vowels } from './unicode/characters';
-import { contains, isAll } from './simpleDeepTest';
+import { contains, isAll } from './deepTest';
 import is from './is';
 
 const vowel = char => vowels[char];

@@ -1,48 +1,69 @@
-import { characterCollection, ENOARYLIKE, toString } from './types';
+import {
+  characterCollection, ENOARYLIKE, toArray, toString,
+} from './types';
 
-
-function flatMapInternal(fn, data) {
+export function flatMapStr(fn, str) {
   let res = '';
-  const len = data.length;
+  const len = str.length;
   for (let i = 0; i < len; i++) {
-    const val = data[i];
-    const cc = characterCollection(val);
-    // TODO: use cc[2]
+    res += str[i] |> fn |> toString;
+    // we already know that data[i] it's a String
+    // we also already know it's a character
+  }
+  return res;
+}
+function flatMapAry(fn, ary) {
+  let res = '';
+  const len = ary.length;
+  for (let i = 0; i < len; i++) {
+    const cc = characterCollection(ary[i]);
     if (cc[0] & 2) {
-      // the data is a characterGroup
-      res += flatMapInternal(fn, cc[1]);
+      // the cc[1] is a characterGroup
+      res += (cc[2] ? flatMapAry : flatMapStr)(fn, cc[1]);
     } else {
-      res += fn(cc[1]) |> toString;
+      res += cc[1] |> fn |> toString;
     }
   }
   return res;
 }
-function mapInternal(fn, data) {
+function mapStr(fn, str) {
+  const res = [];
+  const len = str.length;
+  for (let i = 0; i < len; i++) {
+    res.push(str[i] |> fn);
+    // TODO: add a |> toArray if needed?
+  }
+  return res;
+}
+function mapAry(fn, data) {
   const res = [];
   const len = data.length;
   for (let i = 0; i < len; i++) {
     const val = data[i];
     const cc = characterCollection(val);
     if (cc[0] & 2) {
-      // the data is a characterGroup
-      res.push(mapInternal(fn, cc[1]));
+      res.push((cc[2] ? mapAry : mapStr)(fn, cc[1]));
     } else {
       res.push(cc[1] |> fn);
+      // TODO: add a |> toArray if needed?
     }
   }
   return res;
 }
 // I know that this is basically the same code but
 // I'm not sure how to remove redundancy
-const mapWrap = internalFn => (fn, data) => {
-  if (typeof data === 'string' || Array.isArray(data)) {
-    return internalFn(fn, data);
+const mapWrap = (strFn, aryFn) => (fn, data) => {
+  if (typeof data === 'string') {
+    return strFn(fn, data);
+  }
+  if (Array.isArray(data)) {
+    return aryFn(fn, data);
   }
   console.error(data);
-  ENOARYLIKE();
+  return ENOARYLIKE();
 };
-export const flatMap = mapWrap(flatMapInternal);
-export const map = mapWrap(mapInternal);
+export const flatMap = mapWrap(flatMapStr, flatMapAry);
+export const map = mapWrap(mapStr, mapAry);
 export function flatResReducer(fn, data) {
   let res = '';
   // result
@@ -56,8 +77,7 @@ export function flatResReducer(fn, data) {
       const cc = characterCollection(val);
       if (cc[0] & 2) {
         rem += flatResReducer(fn, cc[1]);
-        // deepFlatResMap always returns an array
-        // (or at least it should)
+        // this should always be returning a String
       } else {
         rem += cc[1];
       }

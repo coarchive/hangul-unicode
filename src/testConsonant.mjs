@@ -1,5 +1,5 @@
 import { consonants } from './unicode/characters';
-import { contains, isAll } from './simpleDeepTest';
+import { contains, isAll } from './deepTest';
 import is from './is';
 
 const consonant = char => consonants[char];

@@ -1,13 +1,14 @@
 import { compose_T } from './compose';
-import { flatResReducer } from './map';
+import { flatMapStr, flatResReducer } from './map';
 import computeOpts from './options';
-// import { flatSanitize_g_U } from './sanitize';
-// this way, we can trust the inputs to composeAnything
-export const assembleFactory = transformer => (data, opts) => {
+import { transformNonStandard_T } from './transform';
+
+export const assembleFactory = characterTransformer => (data, opts) => {
   const cOpts = computeOpts(opts);
   const c = compose_T(cOpts);
-  const t = str => str |> transformer |> c;
+  const t = str => flatMapStr(characterTransformer, str) |> c;
+  // transformer will always get a String as an input
   return flatResReducer(t, data);
 };
 
-export default (assembleFactory(v => v));
+export default (assembleFactory(transformNonStandard_T));

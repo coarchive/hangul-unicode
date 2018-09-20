@@ -5,10 +5,15 @@ import { pairs } from './unicode/complex';
 import mappings from './unicode/mappings';
 import { character } from './types';
 
-export const transformNonStandard_T = char => (!standardHangul.contains_T(char) && mappings[char]) || char;
-export const transformNonStandard_U = datum => datum
-  |> character
-  |> transformNonStandard_T;
+export const transformNonStandard_T = char => (
+  standardHangul.contains_T(char)
+    ? char
+    : mappings[char]
+);
+// this toString is unneeded if the mappings aren't Arrays.
+// export const transformNonStandard_U = datum => datum
+//   |> character
+//   |> transformNonStandard_T;
 export const transform_T = char => (
   (standardHangul.contains_T(char) ? pairs : mappings)[char]
   || char

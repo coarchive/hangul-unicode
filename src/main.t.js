@@ -1,4 +1,4 @@
-import Hangul from './main';
+import * as Hangul from './main';
 
 const typeDecorator = datum => ((typeof datum === 'object' || typeof datum === 'string')
   ? JSON.stringify(datum)
@@ -14,7 +14,7 @@ Object.keys(tests).forEach((functionName) => {
   describe(`Hangul.${functionName}`, () => {
     pairs.forEach((pair) => {
       test(`${typeDecorator(pair[0])} => ${typeDecorator(pair[1])}`, () => {
-        expect(Hangul[functionName](pair[0])).toBe(pair[2]);
+        expect(Hangul[functionName](pair[0])).toBe(pair[1]);
       });
     });
   });

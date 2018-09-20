@@ -32,4 +32,7 @@ describe('toArray', () => {
 describe('toString', () => {
   test('returns the same String', () => expect(types.toString('a')).toBe('a'));
   test('converts ["f", "o", "o"] to "foo"', () => expect(types.toString(['f', 'o', 'o'])).toBe('foo'));
+  test("[[['foobar'], 'baz'], 'q', 'u', 'x'] => 'foobarbazqux'", () => {
+    expect(types.toString([[['foobar'], 'baz'], 'q', 'u', 'x'])).toBe('foobarbazqux');
+  });
 });

@@ -21,7 +21,7 @@ const h2ktransformer = (opts) => {
 export const hangulToKeys = (data, opts = {}) => generalMap(opts |> h2ktransformer, opts, data);
 
 // gksrmf => 한글
-const k2hfetcher = char => keyToHangul[char] || char;
+const k2hfetcher = char => keyToHangul[char];
 const k2hconverter = (latinChar) => {
   const res = k2hfetcher(latinChar);
   if (!res) {
@@ -34,6 +34,6 @@ const k2hconverter = (latinChar) => {
   }
   return res;
 };
-const k2htransformer = (data, opts) => generalMap(k2hconverter, opts, data);
-export const keysToHangul = assembleFactory(k2htransformer);
-// it's okay that we're not standarizing
+export const keysToHangul = assembleFactory(k2hconverter);
+// it's okay that we're not standarizing since it's latin
+// that goes into the transformer

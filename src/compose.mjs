@@ -30,6 +30,9 @@ export const composeComplex_T = (opts) => {
   if (opts.archaic) {
     objs.push(complex.archaic);
   }
+  if (!objs.length) {
+    throw Error('No objects specified for complex character composition!');
+  }
   const obj = Object.assign({}, ...objs);
   return (chars) => {
     const len = chars.length;
