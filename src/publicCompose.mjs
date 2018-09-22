@@ -3,6 +3,7 @@ import { choNum, jungNum, jongNum } from './unicode/syllable';
 import composeSyllable from './composeSyllable';
 import { standardizeCharacter } from './standardize';
 import { character } from './types';
+import computeOpts from './options';
 // since these functions are exposed, the characters must be
 // standardized so that the libaray can function properly
 // Character checking is performed within standardizeCharacter
@@ -10,7 +11,8 @@ const standardizeDatum = datum => datum
   |> character
   |> standardizeCharacter;
 export const complex = (char1 = '', char2 = '', char3 = '', opts) => {
-  if (opts.complex) {
+  const cOpts = computeOpts(opts);
+  if (cOpts.complex) {
     if (char1 !== '' && char2 !== '') {
       const d1 = all[standardizeDatum(char1)];
       if (d1) {
@@ -25,7 +27,7 @@ export const complex = (char1 = '', char2 = '', char3 = '', opts) => {
             // depth 3
             if (!d3) {
               // if depth 3 doesn't exist
-              if (opts.hardFail) {
+              if (cOpts.hardFail) {
                 throw Error(`Found "${d2val}" but cannot combine "${char1}" and "${char2}" with "${char3}"`);
               }
               return `${d2val}${char3}`;
@@ -40,16 +42,16 @@ export const complex = (char1 = '', char2 = '', char3 = '', opts) => {
           return d2val;
         }
         // if the code reaches this point, depth 2 doesn't exist
-        if (opts.hardFail) {
+        if (cOpts.hardFail) {
           throw Error(`Cannot combine "${char1}" and "${char2}"`);
         }
-      } else if (opts.hardFail) {
+      } else if (cOpts.hardFail) {
         throw Error(`There's no complex character that starts with "${char1}"`);
       }
-    } else if (opts.hardFail) {
+    } else if (cOpts.hardFail) {
       throw Error('Cannot compose a complex with less than two values!');
     }
-  } else if (opts.hardFail) {
+  } else if (cOpts.hardFail) {
     // error if hardFail is truthy and opts.complex is falsy
     throw Error('opts.complex is falsy!');
   }
@@ -58,7 +60,7 @@ export const complex = (char1 = '', char2 = '', char3 = '', opts) => {
   return `${char1}${char2}${char3}`;
 };
 
-export const syllable = (choChar = '', jungChar = '', jongChar = '', opts) => {
+export const syllable = (choChar = '', jungChar = '', jongChar = '', opts = {}) => {
   if (choChar !== '' && jungChar !== '') {
     const cho = choNum[standardizeDatum(choChar)];
     if (Number.isInteger(cho)) {
