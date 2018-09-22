@@ -8,6 +8,9 @@ const tests = {
     ['ㄱㅗㅇㅑㅇㅇㅣ', '고양이'],
     [['ㄱ', 'ㅗ', 'ㅇ', 'ㅑ', 'ㅇ', 'ㅇ', 'ㅣ'], '고양이'],
   ],
+  a: [
+    
+  ],
 };
 Object.keys(tests).forEach((functionName) => {
   const pairs = tests[functionName];

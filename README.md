@@ -1,6 +1,3 @@
-# WAIT! DON'T DOWNLOAD IT! IT'S BUGGY AND NOT DONE!
-Can you wait for like, two weeks?
-
 # hangul-unicode
 Full disclosure: I cannot speak Korean and I can't write hangul.
 If I've accidentally written something offensive, sorry.
@@ -21,8 +18,7 @@ $ cd hangul-unicode
 $ npm install
 $ npm run build
 ```
-
-### Characters
+### Characters and CharacterGroups
 In these docs, you may see a type called `Character`.
 A Character is any value that when coerced to a string, has length of one.
 For instance, `1` can be a Character but `true` cannot.
@@ -31,6 +27,9 @@ This also means that you can create Objects that are also Characters.
 `{toString() { return 1 }}` is a valid Character too.
 Even without the hardFail flag enabled,
 functions that expect Characters will error if the argument is not a Character.
+
+
+All strings are valid character groups.
 
 ### A word about modes
 This is the default mode for each function
@@ -87,7 +86,7 @@ Alias: `Hangul.a`
 ```JS
 Hangul.assemble('ㄱㅗㅇㅑㅇㅇㅣ'); //> "고양이"
 Hangul.assemble(['ㄱ', 'ㅗ', 'ㅇ', 'ㅑ', 'ㅇ', 'ㅇ', 'ㅣ']); //> "고양이"
-Hangul.a('ㄱㅗㅇㅑㅇㅇㅣ') //> "고양이"
+Hangul.a(['ㄱㅗㅇㅑㅇㅇㅣ']) //> "고양이"
 Hangul.a === Hangul.assemble //> true
 ```
 #### `Hangul.composeComplex(char1: Character, char2: Character, char3?: any, mode?: any) : string`

@@ -1,6 +1,4 @@
-import {
-  characterCollection, ENOARYLIKE, toArray, toString,
-} from './types';
+import { characterCollection, ENOARYLIKE, toString } from './types';
 
 export function flatMapStr(fn, str) {
   let res = '';
@@ -103,3 +101,4 @@ export function flatResReducer(fn, data) {
 // the input to the fn argument is a CharacterGroup
 // rather than a single character
 export const generalMap = (fn, opts, data) => (opts.grouped ? map : flatMap)(fn, data);
+export const curriedMap = fn => (data, opts = {}) => generalMap(fn, opts, data);

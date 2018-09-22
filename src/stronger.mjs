@@ -1,4 +1,10 @@
 import { stronger } from './unicode/complex';
-import standardizeComp3Archaic from './standardizeComp3Archaic';
+import { curriedMap } from './map';
+import { standardizeCharacter } from './standardize';
 
-export default (data => standardizeComp3Archaic(data).map(char => stronger[char] || char));
+const transform = char => stronger[char] || char;
+const standardizeAndTransform = char => char
+  |> standardizeCharacter
+  |> transform;
+export default (curriedMap(standardizeAndTransform));
+// TODO: this should take a grouped option

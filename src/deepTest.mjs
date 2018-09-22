@@ -21,7 +21,7 @@ function recurseAry(testFn, bool, data) {
     const cc = characterCollection(val);
     const valSatisfiesTestFn = do {
       if (cc[0] & 2) {
-        [recurseStr, recurseAry][cc[2]](cc[1]);
+        [recurseStr, recurseAry][cc[2]](testFn, bool, cc[1]);
       } else {
         testFn(cc[1]);
       }

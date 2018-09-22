@@ -1,24 +1,27 @@
 import { all } from './unicode/complexTree';
 import { choNum, jungNum, jongNum } from './unicode/syllable';
 import composeSyllable from './composeSyllable';
-import standardizeCharacter from './standardizeComp3Archaic';
+import { standardizeCharacter } from './standardize';
+import { character } from './types';
 // since these functions are exposed, the characters must be
 // standardized so that the libaray can function properly
 // Character checking is performed within standardizeCharacter
-
+const standardizeDatum = datum => datum
+  |> character
+  |> standardizeCharacter;
 export const complex = (char1 = '', char2 = '', char3 = '', opts) => {
   if (opts.complex) {
     if (char1 !== '' && char2 !== '') {
-      const d1 = all[standardizeCharacter(char1)];
+      const d1 = all[standardizeDatum(char1)];
       if (d1) {
         // depth 1 exists
-        const d2 = d1[standardizeCharacter(char2)];
+        const d2 = d1[standardizeDatum(char2)];
         if (d2) {
           // depth 2 exists
           const d2val = d2.$ || d2;
           if (char3 !== '') {
             // if there's a char3 character (optional)
-            const d3 = d2[standardizeCharacter(char3)];
+            const d3 = d2[standardizeDatum(char3)];
             // depth 3
             if (!d3) {
               // if depth 3 doesn't exist
@@ -57,13 +60,13 @@ export const complex = (char1 = '', char2 = '', char3 = '', opts) => {
 
 export const syllable = (choChar = '', jungChar = '', jongChar = '', opts) => {
   if (choChar !== '' && jungChar !== '') {
-    const cho = choNum[standardizeCharacter(choChar)];
+    const cho = choNum[standardizeDatum(choChar)];
     if (Number.isInteger(cho)) {
       // cho is valid
-      const jung = jungNum[standardizeCharacter(jungChar)];
+      const jung = jungNum[standardizeDatum(jungChar)];
       if (Number.isInteger(jung)) {
         // jung is valid
-        const jong = jongNum[standardizeCharacter(jongChar)];
+        const jong = jongNum[standardizeDatum(jongChar)];
         if (!Number.isInteger(jong)) {
           // jong is not valid
           if (opts.hardFail) {

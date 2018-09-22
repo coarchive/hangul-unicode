@@ -3,6 +3,8 @@ import * as complex from './unicode/complex';
 import { choNum, jungNum, jongNum } from './unicode/syllable';
 import composeSyllableFn from './composeSyllable';
 import R from './Result';
+import { flatResReducer } from './map';
+import computeOpts from './options';
 
 // important note!
 // these functions aren't going to really make any sense until
@@ -10,6 +12,7 @@ import R from './Result';
 // that's in './types'. Read './Result' and './types' first.
 // then read this.
 export const composeComplex_T = (opts) => {
+  console.log(opts);
   if (opts.complex === false) {
     if (opts.hardFail) {
       throw Error("composeComplexBase shouldn't have been called since opts.complex is false!");
@@ -35,6 +38,7 @@ export const composeComplex_T = (opts) => {
   }
   const obj = Object.assign({}, ...objs);
   return (chars) => {
+    console.log(chars);
     const len = chars.length;
     if (len < 1) {
       if (opts.hardFail) {
@@ -71,6 +75,7 @@ export const composeComplex_T = (opts) => {
     return new R(char1, chars.slice(1));
   };
 };
+// export const composeComplex = (data, opts) => flatResReducer(opts |> computeOpts |> composeComplex_T, data);
 const isVowel = char => char && char !== 'ㆍ' && vowels[char];
 export const compose_T = (opts) => {
   const cc = composeComplex_T(opts);
