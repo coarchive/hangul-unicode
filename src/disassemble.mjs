@@ -2,8 +2,8 @@ import { syllables } from './unicode/blocks';
 import { chooseTransformer } from './decomposeComplex';
 import { splitSyllable_T } from './decomposeSyllable';
 import { generalMap } from './map';
-import { character } from './types';
 import computeOpts from './options';
+import { character } from './types';
 
 export const disassembleCharacter_T = (opts) => {
   const t = chooseTransformer(opts);

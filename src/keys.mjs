@@ -1,8 +1,8 @@
 import { hangulToKey, keyToHangul } from './unicode/characters';
-import { generalMap } from './map';
-import { disassembleCharacter_T } from './disassemble';
-import { characterCollection, toArray } from './types';
 import { assembleFactory } from './assemble';
+import { disassembleCharacter_T } from './disassemble';
+import { generalMap } from './map';
+import { characterCollection, toArray } from './types';
 
 // 한글 => gksrmf
 const h2kfetcher = char => hangulToKey[char] || char;

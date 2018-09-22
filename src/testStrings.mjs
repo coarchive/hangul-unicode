@@ -1,6 +1,6 @@
 import { nameObject } from './name';
-import * as consonant from './testConsonant';
 import { is, isAll, contains } from './testBlock';
+import * as consonant from './testConsonant';
 import * as vowel from './testVowel';
 
 is.consonant = consonant.isConsonant;

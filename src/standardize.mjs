@@ -1,7 +1,7 @@
 import { composeComplex_T } from './compose';
-import { transformNonStandard_T } from './transform';
 import { curriedMap } from './map';
 import computeOpts from './options';
+import { transformNonStandard_T } from './transform';
 
 const cc = composeComplex_T({ complex3: true, complexArchaic: true } |> computeOpts);
 export const standardizeCharacter = (char) => {

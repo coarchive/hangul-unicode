@@ -1,8 +1,8 @@
 import { composeComplex_T } from './compose';
-import { transform_T } from './transform';
 import { flatResReducer } from './map';
-import { character, characterCollection } from './types';
 import computeOpts from './options';
+import { transform_T } from './transform';
+import { character, characterCollection } from './types';
 
 const c = composeComplex_T({
   complexJung: false,

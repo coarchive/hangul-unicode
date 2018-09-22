@@ -1,10 +1,8 @@
-import { vowels } from './unicode/characters';
+import { choNum, jongNum, jungNum } from './unicode/syllable';
 import * as complex from './unicode/complex';
-import { choNum, jungNum, jongNum } from './unicode/syllable';
+import { vowels } from './unicode/characters';
 import composeSyllableFn from './composeSyllable';
 import R from './Result';
-import { flatResReducer } from './map';
-import computeOpts from './options';
 
 // important note!
 // these functions aren't going to really make any sense until
@@ -12,7 +10,6 @@ import computeOpts from './options';
 // that's in './types'. Read './Result' and './types' first.
 // then read this.
 export const composeComplex_T = (opts) => {
-  console.log(opts);
   if (opts.complex === false) {
     if (opts.hardFail) {
       throw Error("composeComplexBase shouldn't have been called since opts.complex is false!");
@@ -38,7 +35,6 @@ export const composeComplex_T = (opts) => {
   }
   const obj = Object.assign({}, ...objs);
   return (chars) => {
-    console.log(chars);
     const len = chars.length;
     if (len < 1) {
       if (opts.hardFail) {

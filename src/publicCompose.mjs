@@ -1,9 +1,9 @@
 import { all } from './unicode/complexTree';
 import { choNum, jungNum, jongNum } from './unicode/syllable';
 import composeSyllable from './composeSyllable';
+import computeOpts from './options';
 import { standardizeCharacter } from './standardize';
 import { character } from './types';
-import computeOpts from './options';
 // since these functions are exposed, the characters must be
 // standardized so that the libaray can function properly
 // Character checking is performed within standardizeCharacter
