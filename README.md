@@ -18,54 +18,6 @@ $ cd hangul-unicode
 $ npm install
 $ npm run build
 ```
-### Characters and CharacterGroups
-In these docs, you may see a type called `Character`.
-A Character is any value that when coerced to a string, has length of one.
-For instance, `1` can be a Character but `true` cannot.
-The code views `1` and `"1"` as basically the same when it expects a Character.
-This also means that you can create Objects that are also Characters.
-`{toString() { return 1 }}` is a valid Character too.
-Even without the hardFail flag enabled,
-functions that expect Characters will error if the argument is not a Character.
-
-
-All strings are valid character groups.
-
-### A word about modes
-This is the default mode for each function
-```JS
-const defaultMode = {
-  // all of these descriptions are for what happens if you set the
-  // values to true.
-  hardFail: false,
-  // will error if there's something unexpected.
-  // otherwise, the code just tries to deal with it.
-  complex: true,
-  // compute complex characters
-  complex3: false,
-  // allows operation on complex characters composed of three base characters.
-  // this means you can make things like "ㅩ", "ㅫ", "ㅴ", and "ㅵ".
-  // since these characters are all archaic,
-  // there's no point in setting this without also setting complexArchaic.
-  complexCho: true,
-  // compute complex cho
-  complexJung: true,
-  // compute complex jung
-  complexJong: true,
-  // compute complex jong
-  complexArchaic: false,
-  // compute complex characters such as "ㅨ"
-  composeComplexDouble: true,
-  // allows composition of two of the same character
-  // this means that things like "ㄲ" will be made
-  decomposeComplexDouble: false,
-  // allows composition of two of the same character
-  // this means that things like "ㄲ" will turned into ['ㄱ', 'ㄱ']
-  grouped: false,
-  // only used when decomposing / disassembling something
-  // produces a CharacterGroup instead of a string
-};
-```
 
 ### Different Unicode Blocks
 This library supports many Hangul Unicode blocks:

@@ -4,7 +4,7 @@ import { character } from './types';
 
 const isFactory = blockName => datum => datum
   |> character
-  |> blocks[blockName].contains;
+  |> blocks[blockName].contains_T;
 export const is = {
   jamo: isFactory('jamo'),
   compatibilityJamo: isFactory('compatibilityJamo'),

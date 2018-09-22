@@ -16,16 +16,14 @@ export const characterCollection = (val) => {
     if (val.length === 1) {
       return characterCollection(val[0]);
     }
-  }
-  if (typeof val === 'string') {
-    if (val.length === 1) {
+  } else if (typeof val === 'string') {
+    if (val.length < 2) {
       return [1, val, 0];
     }
     if (val.length > 1) {
       return [2, val, 0];
     }
-  }
-  if (typeof val === 'number') {
+  } else if (typeof val === 'number') {
     const str = `${val}`;
     if (str.length !== 1) {
       return [2, str, 0];

@@ -2,11 +2,11 @@ import assemble from './assemble';
 import disassemble, { disassembleCharacter } from './disassemble';
 import { hangulToKeys, keysToHangul } from './keys';
 import name from './name';
+import standardize from './standardize';
+import stronger from './stronger';
 
-export stronger from './stronger';
 export decomposeComplex from './decomposeComplex';
 export decomposeSyllable from './decomposeSyllable';
-export standardize from './standardize';
 export * from './testStrings';
 export { complex as composeComplex, syllable as composeSyllable } from './publicCompose';
 
@@ -15,13 +15,19 @@ name({
   hangulToKeys,
   keysToHangul,
   disassemble,
+  standardize,
+  stronger,
 });
 export {
+  assemble as a,
   assemble,
+  disassemble,
+  disassemble as d,
+  disassembleCharacter,
   hangulToKeys,
   keysToHangul,
-  disassemble,
-  disassembleCharacter,
+  standardize,
+  stronger,
 };
 // TODO: Add smarter caching of function based on mode
 // TODO: remove } if
