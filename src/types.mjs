@@ -1,10 +1,17 @@
-export const character = (val) => {
+export const valCharacter = (val) => {
   const str = `${val}`;
   // not using .toString because Symbol.toPrimitive overrides when present
   if (str.length !== 1) {
-    throw Error(`"${str}" is not a Character!`);
+    return [false, val];
   }
-  return str;
+  return [true, str];
+};
+export const character = (val) => {
+  const vC = valCharacter(val);
+  if (vC[0]) {
+    return vC[1];
+  }
+  throw Error(`"${val}" is not a Character!`);
 };
 // this function turns values into characters if it can
 // otherwise it just fails

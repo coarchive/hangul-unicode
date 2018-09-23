@@ -5,11 +5,7 @@ import { character } from './types';
 // this file tries to transform everything into disassembled
 // standard hangul. it ignores syllables though
 
-export const transformNonStandard_T = char => (
-  standardHangul.contains_T(char)
-    ? char
-    : mappings[char]
-);
+export const transformNonStandard_T = char => mappings[char] || char;
 // this toString is unneeded if the mappings aren't Arrays.
 // export const transformNonStandard_U = datum => datum
 //   |> character

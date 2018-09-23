@@ -9,7 +9,8 @@
   "scripts": {
     "start": "rollup -c -w",
     "build": "rollup -c",
-    "test": "jest"
+    "test": "jest --no-cache",
+    "intest": "jest src/main.t.js"
   },
   "author": "Cole Gannon",
   "license": "MIT",
