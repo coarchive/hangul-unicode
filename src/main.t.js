@@ -25,7 +25,7 @@ const tests = {
     ],
     [
       ['', 'ㅅ', '', { hardFail: true }],
-      Error('Cannot compose a complex character with less than two values'),
+      Error('is not a Character!'),
     ],
     [
       ['ㄷ', 'ㄷ', 'ㅁ', { hardFail: true }],
