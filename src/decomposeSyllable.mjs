@@ -15,7 +15,7 @@ export default (datum, opts = {}) => {
   const char = character(datum);
   if (!syllables.contains_T(char)) {
     if (opts.hardFail) {
-      throw Error('Decomposing a syllable requires a syllable to decompose!');
+      throw Error(`"${datum}" is not a syllable!`);
     }
     return [datum];
     // if there's no hardFail, the function must

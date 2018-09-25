@@ -42,7 +42,7 @@ Hangul.assemble(['ㅇㅣㄱㅓㅅㄷㅗ ㅈㅏㄱㄷㅗㅇㅎㅏㅂㄴㅣㄷㅏ'
 Hangul.assemble('Hello ㅇㅏㄴㄴㅕㅇ World ㅅㅔㅅㅏㅇ') //> 'Hello 안녕 World 세상'
 Hangul.a === Hangul.assemble //> true
 ```
-#### `Hangul.composeComplex(char1: Character, char2: Character, char3?: any, mode?: any) : string`
+#### `Hangul.composeComplex(char1: Character, char2: Character, char3?: any, options?: object) : string`
 ```JS
 Hangul.composeComplex('ㄷ', 'ㄷ'); //> 'ㄸ'
 Hangul.composeComplex('ㅅㅅ', 'ㅅ'); //> 'ㅅㅅㅅ'
@@ -64,9 +64,7 @@ Hangul.composeComplex('ㅂ', 'ㅅ', 'ㄷ', {
 Hangul.composeComplex('ㅗ', 'ㅏ', '', { complexJung: false }); //> 'ㅗㅏ'
 Hangul.composeComplex('ㄱ', 'ㄱ', '', { composeComplexDouble: false}); //> 'ㄱㄱ'
 ```
-#### `Hangul.composeSyllable(char1: Character, char2: Character, char3?: any, hardFail?: boolean) : string`
-This function does not compose complex characters. Therefore, it doesn't need a mode argument.
-It still has a hardFail argument.
+#### `Hangul.composeSyllable(char1: Character, char2: Character, char3?: any, options?: object) : string`
 ```JS
 Hangul.composeSyllable('ㅈ', 'ㅣ', 'ㅂ'); //> '집'
 Hangul.composeSyllable('ㅁ', 'ㅗ', 'ㅣ'); //> '모ㅣ'
@@ -76,29 +74,34 @@ Hangul.composeSyllable('ㅁ', 'a', '', { hardFail: true }); //> Error: 'a' is no
 Hangul.composeSyllable('ㅁㅏ', 'ㄷ'); //> Error: 'ㅁㅏ' is not a Character!
 Hangul.composeSyllable('ㅃ', 'ㅏ'); //> '빠'
 ```
-#### `Hangul.decomposeComplex(char: Character, double?: boolean) : string`
+#### `Hangul.decomposeComplex(char: Character, options?: object) : CharacterCollection`
 By default, `Hangul.composeComplex` leaves doubles intact.
 ```JS
 Hangul.decomposeComplex('ㄸ'); //> 'ㄸ'
-Hangul.decomposeComplex('ㄸ', { decomposeDouble: false }) //> 'ㄷㄷ'
+Hangul.decomposeComplex('ㄸ', { grouped: true }); //> 'ㄸ'
+Hangul.decomposeComplex('ㄸ', { decomposeDouble: true }) //> 'ㄷㄷ'
+Hangul.decomposeComplex('ㄸ', { grouped: true, decomposeDouble: true}); //> ['ㄷ', 'ㄷ']
 ```
-#### `Hangul.decomposeSyllable(char: Character, hardFail?: boolean) : string`
+#### `Hangul.decomposeSyllable(char: Character, options?: object) : string`
 `Hangul.decomposeSyllable` does not decompose complex characters.
 ```JS
 Hangul.decomposeSyllable('빠'); //> 'ㅃㅏ'
 Hangul.decomposeSyllable('양'); //> 'ㅇㅑㅇ'
 Hangul.decomposeSyllable('ㅂ') //> 'ㅂ'
-Hangul.decomposeSyllable('ㅂ', true) //> Error: 'ㅂ' is not a syllable!
+Hangul.decomposeSyllable('ㅂ', { hardFail: true }) //> Error: 'ㅂ' is not a syllable!
 ```
-#### `Hangul.disassemble(data: string | Array, grouped?: boolean, mode?: any) : string | Array`
-`Hangul.d` is the same function
+#### `Hangul.disassemble(data: CharacterCollection, options?: object) : CharacterCollection`
+Alias: `Hangul.d`
 ```JS
 Hangul.disassemble('고양이'); //> 'ㄱㅗㅇㅑㅇㅇㅣ'
 Hangul.disassemble('빠른', { grouped: true }); //> [['ㅃ', 'ㅏ'], ['ㄹ', 'ㅡ', 'ㄴ']]
 Hangul.disassemble('없다', { grouped: true }); //> [['ㅇ', 'ㅓ', ['ㅂ', 'ㅅ']], ['ㄷ', 'ㅏ']]
+Hangul.disassemble(''); //> ''
+Hangul.disassemble('', { grouped: true }); //> ['']
+Hangul.d === Hangul.disassemble;
 ```
 
 #### Types of Hangul characters
-#### `Hangul.is`
-#### `Hangul.contains`
-#### `Hangul.isAll`
+#### `Hangul.is.*(datum: Character) : boolean`
+#### `Hangul.contains.*(CharacterCollection) : boolean`
+#### `Hangul.isAll.*(CharacterCollection) : boolean`

@@ -50,6 +50,9 @@ const tests = {
     [['ㅁㅏ', 'ㄷ'], 'ㅁㅏㄷ'],
     [['ㅃ', 'ㅏ'], '빠'],
   ],
+  decomposeComplex: [
+    ['ㄸ', { decomposeDouble: false }, '']
+  ]
   disassemble: [
     ['고양이', 'ㄱㅗㅇㅑㅇㅇㅣ'],
     [['빠른', { grouped: true }], [['ㅃ', 'ㅏ'], ['ㄹ', 'ㅡ', 'ㄴ']]],
