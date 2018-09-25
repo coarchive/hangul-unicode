@@ -46,27 +46,31 @@ export const composeComplex_T = (opts) => {
     // if there aren't even two Characters to use
       return new R(char1);
     }
-    if (!opts.composeComplexDouble || char1 !== char2) {
+    if (!(
+      opts.composeComplexDouble
+      && char1 === char2
+      || opts.internalSyllablePriority
+      && isConsonant(char2)
+      && isVowel(char3)
+    )) {
       // we don't care about checking for complex doubles
       // or char1 !== char2
-      if (!(opts.internalSyllablePriority && isConsonant(char2) && isVowel(char3))) {
-        // for the above conditional to return false, three things need to happen:
-        // we care about checking for internalSyllablePriority
-        // char2 is a consonant
-        // char3 is a vowel
-        const comp2 = obj[char1 + char2];
-        // comp2 = composition of 2 characters
-        if (comp2) {
-          if (opts.complex3 && len > 2) {
+      // for the above conditional to return false, three things need to happen:
+      // we care about checking for internalSyllablePriority
+      // char2 is a consonant
+      // char3 is a vowel
+      const comp2 = obj[char1 + char2];
+      // comp2 = composition of 2 characters
+      if (comp2) {
+        if (opts.complex3 && len > 2) {
           // if there's more data, try to compose a triple
-            const comp3 = obj[char1 + char2 + chars[2]];
-            if (comp3) {
-              return new R(comp3, chars.slice(3));
-            }
+          const comp3 = obj[char1 + char2 + chars[2]];
+          if (comp3) {
+            return new R(comp3, chars.slice(3));
           }
-          // there's no more data or couldn't find a comp3
-          return new R(comp2, chars.slice(2));
         }
+        // there's no more data or couldn't find a comp3
+        return new R(comp2, chars.slice(2));
       }
     }
     // couldn't find a comp2
@@ -113,22 +117,19 @@ export const compose_T = (opts) => {
     // to try starting a syllable off with the jungChar next
     // time this function is called
     }
-    if (jungRem.length) {
+    if (jungRem.length && isConsonant(jungRem[1])) {
       // there's no point in trying to add anything on to the complex
       // if there aren't any characters left
-      // TODO: ㄱㅅㅓ => ㄱ서
-      if (isConsonant(jungRem[1])) {
-        // we need this part so that
-        // ㅁㅣㅇㅏ => 미아
-        const jongRes = cc(jungRem);
-        const jongChar = jongRes.result;
-        const jongRem = jongRes.remainder;
-        const jong = jongNum[jongChar];
-        if (jong) {
-          // if the character after the syllable is not a vowel
-          // and the jong character is valid
-          return new R(composeSyllableFn(cho, jung, jong), jongRem);
-        }
+      // we need this part so that
+      // ㅁㅣㅇㅏ => 미아
+      const jongRes = cc(jungRem);
+      const jongChar = jongRes.result;
+      const jongRem = jongRes.remainder;
+      const jong = jongNum[jongChar];
+      if (jong) {
+        // if the character after the syllable is not a vowel
+        // and the jong character is valid
+        return new R(composeSyllableFn(cho, jung, jong), jongRem);
       }
     }
     // there aren't any characters left

@@ -8,6 +8,7 @@ module.exports = {
   rules: {
     'no-plusplus': 'off',
     'no-bitwise': 'off',
+    'no-mixed-operators': 'off',
     camelcase: 'off',
   },
   env: {
