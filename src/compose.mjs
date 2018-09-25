@@ -1,14 +1,11 @@
 import { choNum, jongNum, jungNum } from './unicode/syllable';
 import * as complex from './unicode/complex';
-import { vowels } from './unicode/characters';
+import { consonants, vowels } from './unicode/characters';
 import composeSyllableFn from './composeSyllable';
 import R from './Result';
 
-// important note!
-// these functions aren't going to really make any sense until
-// you understand how they work in conjunction with the stuff
-// that's in './types'. Read './Result' and './types' first.
-// then read this.
+const isConsonant = char => char && consonants[char];
+const isVowel = char => char && char !== 'ㆍ' && vowels[char];
 export const composeComplex_T = (opts) => {
   if (opts.complex === false) {
     if (opts.hardFail) {
@@ -43,26 +40,33 @@ export const composeComplex_T = (opts) => {
       return new R();
     }
     const char1 = chars[0];
+    const char2 = chars[1];
+    const char3 = chars[2];
     if (len < 2) {
     // if there aren't even two Characters to use
       return new R(char1);
     }
-    const char2 = chars[1];
     if (!opts.composeComplexDouble || char1 !== char2) {
       // we don't care about checking for complex doubles
       // or char1 !== char2
-      const comp2 = obj[char1 + char2];
-      // comp2 = composition of 2 characters
-      if (comp2) {
-        if (opts.complex3 && len > 2) {
-        // if there's more data, try to compose a triple
-          const comp3 = obj[char1 + char2 + chars[2]];
-          if (comp3) {
-            return new R(comp3, chars.slice(3));
+      if (!(opts.internalSyllablePriority && isConsonant(char2) && isVowel(char3))) {
+        // for the above conditional to return false, three things need to happen:
+        // we care about checking for internalSyllablePriority
+        // char2 is a consonant
+        // char3 is a vowel
+        const comp2 = obj[char1 + char2];
+        // comp2 = composition of 2 characters
+        if (comp2) {
+          if (opts.complex3 && len > 2) {
+          // if there's more data, try to compose a triple
+            const comp3 = obj[char1 + char2 + chars[2]];
+            if (comp3) {
+              return new R(comp3, chars.slice(3));
+            }
           }
+          // there's no more data or couldn't find a comp3
+          return new R(comp2, chars.slice(2));
         }
-        // there's no more data or couldn't find a comp3
-        return new R(comp2, chars.slice(2));
       }
     }
     // couldn't find a comp2
@@ -71,10 +75,8 @@ export const composeComplex_T = (opts) => {
     return new R(char1, chars.slice(1));
   };
 };
-// export const composeComplex = (data, opts) => flatResReducer(opts |> computeOpts |> composeComplex_T, data);
-const isVowel = char => char && char !== 'ㆍ' && vowels[char];
 export const compose_T = (opts) => {
-  const cc = composeComplex_T(opts);
+  const cc = Object.assign({}, opts, { internalSyllablePriority: true }) |> composeComplex_T;
   return (str) => {
     // this function takes an Array of characters and returns a new Result
     if (str.length < 2) {
@@ -114,7 +116,8 @@ export const compose_T = (opts) => {
     if (jungRem.length) {
       // there's no point in trying to add anything on to the complex
       // if there aren't any characters left
-      if (!isVowel(jungRem[1])) {
+      // TODO: ㄱㅅㅓ => ㄱ서
+      if (isConsonant(jungRem[1])) {
         // we need this part so that
         // ㅁㅣㅇㅏ => 미아
         const jongRes = cc(jungRem);

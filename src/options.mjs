@@ -28,5 +28,6 @@ const defaultOpts = {
   grouped: false,
   // only used when decomposing / disassembling something
   // produces a CharacterGroup instead of a string
+  internalSyllablePriority: false,
 };
 export default (opts => (opts ? Object.assign({}, defaultOpts, opts) : defaultOpts));

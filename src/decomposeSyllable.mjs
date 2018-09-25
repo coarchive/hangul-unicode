@@ -22,5 +22,9 @@ export default (datum, opts = {}) => {
     // still return the same type as it would have
     // if it didn't fail
   }
-  return splitSyllable_T(char);
+  const resAry = splitSyllable_T(char);
+  if (opts.grouped) {
+    return resAry;
+  }
+  return resAry.join('');
 };
