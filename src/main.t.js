@@ -31,6 +31,29 @@ const tests = {
       ['ㄷ', 'ㄷ', 'ㅁ', { hardFail: true }],
       Error('but cannot combine'),
     ],
+    [
+      ['ㅂ', 'ㅅ', 'ㄷ', {
+        complex3: true,
+        complexArchaic: true,
+      }],
+      'ㅵ',
+    ],
+    // [['ㅗ', 'ㅏ', '', { complexJung: false }], 'ㅗㅏ'],
+    // [['ㄱ', 'ㄱ', '', { composeComplexDouble: false }], 'ㄱㄱ'],
+  ],
+  composeSyllable: [
+    [['ㅈ', 'ㅣ', 'ㅂ'], '집'],
+    [['ㅁ', 'ㅗ', 'ㅣ'], '모ㅣ'],
+    [['ㅁ', 'ㅗ', 'ㅣ', { hardFail: true }], Error('')],
+    [['ㅁ', 'a'], 'ㅁa'],
+    [['ㅁ', 'a', '', { hardFail: true }], Error('is not a valid jung Character!')],
+    [['ㅁㅏ', 'ㄷ'], 'ㅁㅏㄷ'],
+    [['ㅃ', 'ㅏ'], '빠'],
+  ],
+  disassemble: [
+    ['고양이', 'ㄱㅗㅇㅑㅇㅇㅣ'],
+    [['빠른', { grouped: true }], [['ㅃ', 'ㅏ'], ['ㄹ', 'ㅡ', 'ㄴ']]],
+    [['없다', { grouped: true }], [['ㅇ', 'ㅓ', ['ㅂ', 'ㅅ']], ['ㄷ', 'ㅏ']]],
   ],
 };
 
@@ -58,6 +81,10 @@ Object.keys(tests).forEach((functionName) => {
         const { message } = res;
         test(`${stargs} throws "${message}"`, () => {
           expect(() => fn(...args)).toThrow(message);
+        });
+      } else if (res instanceof Object) {
+        test(`${(stargs)} => ${typeDecorator(res)}`, () => {
+          expect(fn(...args)).toEqual(res);
         });
       } else if (Array.isArray(en)) {
         test(`${(stargs)} => ${typeDecorator(res)}`, () => {

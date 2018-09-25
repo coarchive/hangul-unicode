@@ -22,7 +22,7 @@ const defaultOpts = {
   composeComplexDouble: true,
   // allows composition of two of the same character
   // this means that things like "ㄲ" will be made
-  decomposeComplexDouble: false,
+  decomposeDouble: false,
   // allows composition of two of the same character
   // this means that things like "ㄲ" will turned into ['ㄱ', 'ㄱ']
   grouped: false,

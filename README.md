@@ -54,7 +54,7 @@ Hangul.composeComplex('ㄹ', 'ㄱ', 1); //> 'ㄺ1'
 ```
 Composition with different options
 ```JS
-Hangul.composeComplex('ㅅㅅ', 'ㅅ'); //> Error: 
+Hangul.composeComplex('ㅅㅅ', 'ㅅ'); //> Error:
 Hangul.composeComplex('ㄷ', 'ㄷ', 'ㅁ', { hardFail: true }); //> Error: Found 'ㄸ' but cannot combine 'ㄷ' and 'ㄷ' with 'ㅁ'
 Hangul.composeComplex('ㅁ', 'ㅿ', '', { hardFail: true }); //> 'ㅰ'
 Hangul.composeComplex('ㅂ', 'ㅅ', 'ㄷ', {
@@ -80,7 +80,7 @@ Hangul.composeSyllable('ㅃ', 'ㅏ'); //> '빠'
 By default, `Hangul.composeComplex` leaves doubles intact.
 ```JS
 Hangul.decomposeComplex('ㄸ'); //> 'ㄸ'
-Hangul.decomposeComplex('ㄸ', { grouped: true }) //> 'ㄷㄷ'
+Hangul.decomposeComplex('ㄸ', { decomposeDouble: false }) //> 'ㄷㄷ'
 ```
 #### `Hangul.decomposeSyllable(char: Character, hardFail?: boolean) : string`
 `Hangul.decomposeSyllable` does not decompose complex characters.
@@ -94,8 +94,8 @@ Hangul.decomposeSyllable('ㅂ', true) //> Error: 'ㅂ' is not a syllable!
 `Hangul.d` is the same function
 ```JS
 Hangul.disassemble('고양이'); //> 'ㄱㅗㅇㅑㅇㅇㅣ'
-Hangul.disassemble('빠른', true); //> [ [ 'ㅃ', 'ㅏ' ], [ 'ㄹ', 'ㅡ', 'ㄴ' ] ]
-Hangul.disassemble('없다', true); //> [[ 'ㅇ', 'ㅓ', ['ㅂ', 'ㅅ'] ], [ 'ㄷ', 'ㅏ' ] ]
+Hangul.disassemble('빠른', { grouped: true }); //> [['ㅃ', 'ㅏ'], ['ㄹ', 'ㅡ', 'ㄴ']]
+Hangul.disassemble('없다', { grouped: true }); //> [['ㅇ', 'ㅓ', ['ㅂ', 'ㅅ']], ['ㄷ', 'ㅏ']]
 ```
 
 #### Types of Hangul characters

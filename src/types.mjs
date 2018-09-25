@@ -75,3 +75,10 @@ export function toString(data) {
 // this is basically deep toString
 // [[['foobar'], 'baz'], 'q', 'u', 'x'] => "foobarbazqux"
 export const toArray = data => (Array.isArray(data) ? data : data.split(''));
+export const formatType = (data) => {
+  const cc = characterCollection(data);
+  if (!cc[2] && cc[0] & 2) {
+    return cc[1].split('');
+  }
+  return cc[1];
+};

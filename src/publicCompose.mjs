@@ -86,7 +86,7 @@ export const syllable = (datum1 = '', datum2 = '', datum3 = '', opts = {}) => {
               }
               // jong is not valid
               if (opts.hardFail) {
-                throw Error(`"${jongChar}" is not a valid jong Character`);
+                throw Error(`"${jongChar}" is not a valid jong Character!`);
               }
             } else if (opts.hardFail) {
               throw TypeError(`The third input to Hangul.composeComplex, "${jongChar}", is not a Character or an empty string!`);
@@ -98,10 +98,10 @@ export const syllable = (datum1 = '', datum2 = '', datum3 = '', opts = {}) => {
         // if the code reaches this point,
         // the jungChar was not a valid jung character.
         if (opts.hardFail) {
-          throw Error(`"${jungChar}" is not a valid jung Character`);
+          throw Error(`"${jungChar}" is not a valid jung Character!`);
         }
       } else if (opts.hardFail) {
-        throw Error(`"${choChar}" is not a valid cho Character`);
+        throw Error(`"${choChar}" is not a valid cho Character!`);
       }
     } else if (opts.hardFail) {
       throw TypeError(`The second input to Hangul.composeComplex, "${jungChar}", is not a Character!`);
