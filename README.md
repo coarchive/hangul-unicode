@@ -33,7 +33,7 @@ the `Hangul Compatibility Jamo` and `Hangul Syllables` blocks if possible.
 See `Hangul.standardize`.
 
 ### Documentation
-#### `Hangul.assemble(data: string) : string`
+#### `Hangul.assemble(data: string, options?: object) : string`
 Alias: `Hangul.a`
 ```JS
 Hangul.assemble('ㄱㅗㅇㅑㅇㅇㅣ'); //> '고양이'
