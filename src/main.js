@@ -32,3 +32,4 @@ export {
 // TODO: Add smarter caching of function based on mode
 // TODO: remove } if
 // const testCompression = (str) => Hangul.keysToHangul(str).length / str.length
+// TODO: Add archaic

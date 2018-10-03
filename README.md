@@ -1,4 +1,4 @@
-# hangul-unicode
+Unicode# hangul-unicode
 Full disclosure: I cannot speak Korean and I can't write hangul.
 If I've accidentally written something offensive, sorry.
 I tried to use Google Translate for the docs to prevent that.
@@ -55,7 +55,8 @@ Hangul.composeComplex('ㄹ', 'ㄱ', 1); //> 'ㄺ1'
 Composition with different options
 ```JS
 Hangul.composeComplex('ㅅㅅ', 'ㅅ'); //> Error:
-Hangul.composeComplex('ㄷ', 'ㄷ', 'ㅁ', { hardFail: true }); //> Error: Found 'ㄸ' but cannot combine 'ㄷ' and 'ㄷ' with 'ㅁ'
+Hangul.composeComplex('ㄷ', 'ㄷ', 'ㅁ', { hardFail: true });
+//> Error: Found 'ㄸ' but cannot combine 'ㄷ' and 'ㄷ' with 'ㅁ'
 Hangul.composeComplex('ㅁ', 'ㅿ', '', { hardFail: true }); //> 'ㅰ'
 Hangul.composeComplex('ㅂ', 'ㅅ', 'ㄷ', {
   complex3: true,
@@ -100,8 +101,67 @@ Hangul.disassemble(''); //> ''
 Hangul.disassemble('', { grouped: true }); //> ['']
 Hangul.d === Hangul.disassemble;
 ```
-
+#### `Hangul.disassembleCharacter(char: Character, options?:object) : CharacterCollection`
+```JS
+Hangul.disassembleCharacter('없'); //> 'ㅇㅓㅂㅅ'
+Hangul.disassembleCharacter('없', { grouped: true }); //> ['ㅇ', 'ㅓ', ['ㅂ', 'ㅅ']]
+```
+## Keystrokes
+#### `Hangul.keysToHangul()`
+#### `Hangul.stronger(char: Character) : Character`
+This function is essentially the same as the one found in `hangul-js`
+```JS
+Hangul.stronger('ㄱ'); //> 'ㄲ'
+Hangul.stronger('ㅋ'); //> 'ㄲ'
+Hangul.stronger('ㅅ'); //> 'ㅆ'
+```
+It basically converts every character into it's stronger counterpart.
+```JS
+const stronger = {
+  ㄱ: 'ㄲ',
+  ㅋ: 'ㄲ',
+  ㄷ: 'ㄸ',
+  ㅌ: 'ㄸ',
+  ㅂ: 'ㅃ',
+  ㅍ: 'ㅃ',
+  ㅅ: 'ㅆ',
+  ㅈ: 'ㅉ',
+  ㅊ: 'ㅉ',
+};
+```
 #### Types of Hangul characters
 #### `Hangul.is.*(datum: Character) : boolean`
 #### `Hangul.contains.*(CharacterCollection) : boolean`
 #### `Hangul.isAll.*(CharacterCollection) : boolean`
+In these objects are functions that can test for different types of Hangul.
+- `compatibilityJamo` tests for Unicode Characters within the
+[Hangul Compatibility Jamo](https://en.wikipedia.org/wiki/Hangul_Compatibility_Jamo)
+Unicode block.
+- `halfwidth` tests for Unicode Characters within the
+[Halfwidth and fullwidth forms](https://en.wikipedia.org/wiki/Halfwidth_and_fullwidth_forms)
+Unicode block.
+- `hangul` tests for any Hangul Character regardless of what Unicode block it is in.
+- `jamo` tests for Hangul Characters within the older
+[Hangul Jamo](https://en.wikipedia.org/wiki/Hangul_Jamo_(Unicode_block)
+Unicode block.
+- `jamoExtendedA` tests for Hangul Characters within the
+[Hangul Jamo Extended-A](https://en.wikipedia.org/wiki/Hangul_Jamo_Extended-A)
+Unicode block.
+- `jamoExtendedB` tests for Hangul Characters within the
+[Hangul Jamo Extended-B](https://en.wikipedia.org/wiki/Hangul_Jamo_Extended-B)
+Unicode block.
+- `syllable` tests for Characters within the
+[Hangul Syllables](https://en.wikipedia.org/wiki/Hangul_Syllables)
+Unicode block.
+- `standardHangul` tests for Characters within the
+[Hangul Compatibility Jamo](https://en.wikipedia.org/wiki/Hangul_Compatibility_Jamo)
+Unicode block
+or the
+[Hangul Syllables](https://en.wikipedia.org/wiki/Hangul_Syllables)
+Unicode block.
+- `reserved` tests for the reserved Characters within
+any Unicode block that contains Hangul.
+- `consonant` tests for Hangul consonants.
+A list of them is within [src/unicode/characters.mjs](src/unicode/characters.mjs).
+- `vowel` tests for Hangul consonants.
+A list of them is within [src/unicode/characters.mjs](src/unicode/characters.mjs).

@@ -51,12 +51,15 @@ const tests = {
     [['ㅃ', 'ㅏ'], '빠'],
   ],
   decomposeComplex: [
-    ['ㄸ', { decomposeDouble: false }, '']
-  ]
+    ['ㄸ', { decomposeDouble: false }, ''],
+  ],
   disassemble: [
     ['고양이', 'ㄱㅗㅇㅑㅇㅇㅣ'],
     [['빠른', { grouped: true }], [['ㅃ', 'ㅏ'], ['ㄹ', 'ㅡ', 'ㄴ']]],
     [['없다', { grouped: true }], [['ㅇ', 'ㅓ', ['ㅂ', 'ㅅ']], ['ㄷ', 'ㅏ']]],
+  ],
+  stronger: [
+    [],
   ],
 };
 
