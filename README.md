@@ -131,9 +131,18 @@ const stronger = {
 ```
 #### Types of Hangul characters
 #### `Hangul.is.*(datum: Character) : boolean`
+Within this object, functions take a single Character and return a boolean
 #### `Hangul.contains.*(CharacterCollection) : boolean`
+In this object, functions take a CharacterCollection and test each value.
+If any value satisfies the inner testing function, the outer testing function
+will return true.
 #### `Hangul.isAll.*(CharacterCollection) : boolean`
-In these objects are functions that can test for different types of Hangul.
+In this object, functions take a CharacterCollection and test each value.
+If any value does not satisfy the inner testing function,
+the outer testing function will return false.
+
+`Hangul.contains`, `Hangul.is`, and `Hangul.isAll` have functions with these names:
+
 - `compatibilityJamo` tests for Unicode Characters within the
 [Hangul Compatibility Jamo](https://en.wikipedia.org/wiki/Hangul_Compatibility_Jamo)
 Unicode block.
