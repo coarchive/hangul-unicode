@@ -9,6 +9,7 @@ export decomposeComplex from './decomposeComplex';
 export decomposeSyllable from './decomposeSyllable';
 export * from './testStrings';
 export { complex as composeComplex, syllable as composeSyllable } from './publicCompose';
+export { characterCollection } from './types';
 
 name({
   assemble,
@@ -29,7 +30,4 @@ export {
   standardize,
   stronger,
 };
-// TODO: Add smarter caching of function based on mode
-// TODO: remove } if
-// const testCompression = (str) => Hangul.keysToHangul(str).length / str.length
 // TODO: Add archaic

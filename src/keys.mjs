@@ -1,15 +1,15 @@
 import { hangulToKey, keyToHangul } from './unicode/characters';
 import { assembleFactory } from './assemble';
 import { disassembleCharacter_T } from './disassemble';
-import { generalMap } from './map';
-import { characterCollection, toArray } from './types';
+import { generalMap, map } from './map';
+import { characterCollection } from './types';
 
 // 한글 => gksrmf
 const h2kfetcher = char => hangulToKey[char] || char;
 const h2kconverter = hangulChar => do {
   const cc = characterCollection(hangulChar);
   if (cc[0] & 2) {
-    toArray(cc[1]).map(h2kfetcher);
+    map(h2kfetcher, cc[1]);
   } else {
     h2kfetcher(cc[1]);
   }

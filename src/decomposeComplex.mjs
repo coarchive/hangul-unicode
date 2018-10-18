@@ -1,7 +1,9 @@
 import { composeComplex_T } from './compose';
 import computeOpts from './options';
 import { transform_T } from './transform';
-import { character, characterCollection, formatType } from './types';
+import {
+  characterCollection, ENOCHAR, formatType, toString, valCharacter,
+} from './types';
 
 const c = composeComplex_T({
   complexJung: false,
@@ -23,9 +25,14 @@ export const chooseTransformer = (opts) => {
   }
   return t;
 };
-export default ((datum, opts = {}) => datum
-  |> character
-  |> chooseTransformer(opts |> computeOpts)
-);
-// no need to computeOpts since the only
-// thing that it's going into is chooseTransformer
+export default ((datum, opts = {}) => {
+  const vC = valCharacter(datum);
+  if (vC[0] === 2) {
+    // nothing
+    return '';
+  }
+  if (vC[0]) {
+    return vC[1] |> chooseTransformer(opts) |> toString;
+  }
+  return ENOCHAR(vC[1]);
+});

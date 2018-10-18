@@ -1,4 +1,4 @@
-Unicode# hangul-unicode
+# hangul-unicode
 Full disclosure: I cannot speak Korean and I can't write hangul.
 If I've accidentally written something offensive, sorry.
 I tried to use Google Translate for the docs to prevent that.
@@ -13,10 +13,12 @@ Choose whatever flavor of module you like.
 
 You can also compile it from the source if you want.
 ```sh
-$ git clone git@github.com:Coalpha/hangul-unicode.git
-$ cd hangul-unicode
-$ npm install
-$ npm run build
+git clone git@github.com:Coalpha/hangul-unicode.git
+cd hangul-unicode
+npm install
+npm run build
+cd dist && ls && echo "I've compiled it"
+
 ```
 
 ### Different Unicode Blocks
@@ -36,84 +38,87 @@ See `Hangul.standardize`.
 #### `Hangul.assemble(data: string, options?: object) : string`
 Alias: `Hangul.a`
 ```JS
-Hangul.assemble('ㄱㅗㅇㅑㅇㅇㅣ'); //> '고양이'
-Hangul.assemble(['ㄱ', 'ㅗ', 'ㅇ', 'ㅑ', 'ㅇ', 'ㅇ', 'ㅣ']); //> '고양이'
-Hangul.assemble(['ㅇㅣㄱㅓㅅㄷㅗ ㅈㅏㄱㄷㅗㅇㅎㅏㅂㄴㅣㄷㅏ']) //> '이것도 작동합니다'
-Hangul.assemble('Hello ㅇㅏㄴㄴㅕㅇ World ㅅㅔㅅㅏㅇ') //> 'Hello 안녕 World 세상'
-Hangul.a === Hangul.assemble //> true
+Hangul.assemble('ㄱㅗㅇㅑㅇㅇㅣ'); // => '고양이'
+Hangul.assemble(['ㄱ', 'ㅗ', 'ㅇ', 'ㅑ', 'ㅇ', 'ㅇ', 'ㅣ']); // => '고양이'
+Hangul.assemble(['ㅇㅣㄱㅓㅅㄷㅗ ㅈㅏㄱㄷㅗㅇㅎㅏㅂㄴㅣㄷㅏ']) // => '이것도 작동합니다'
+Hangul.assemble('Hello ㅇㅏㄴㄴㅕㅇ World ㅅㅔㅅㅏㅇ') // => 'Hello 안녕 World 세상'
+Hangul.a === Hangul.assemble // => true
 ```
 #### `Hangul.composeComplex(char1: Character, char2: Character, char3?: any, options?: object) : string`
 ```JS
-Hangul.composeComplex('ㄷ', 'ㄷ'); //> 'ㄸ'
-Hangul.composeComplex('ㅅㅅ', 'ㅅ'); //> 'ㅅㅅㅅ'
-Hangul.composeComplex('', 'ㅅ') //> 'ㅅ'
-Hangul.composeComplex('ㄹ', 'ㄱ', ''); //> 'ㄺ'
+Hangul.composeComplex('ㄷ', 'ㄷ'); // => 'ㄸ'
+Hangul.composeComplex('ㅅㅅ', 'ㅅ'); // => 'ㅅㅅㅅ'
+Hangul.composeComplex('', 'ㅅ') // => 'ㅅ'
+Hangul.composeComplex('ㄹ', 'ㄱ', ''); // => 'ㄺ'
 // char3 does not have to be a Character
-Hangul.composeComplex('ㄹ', 'ㄱ', true); //> 'ㄺtrue'
-Hangul.composeComplex('ㄹ', 'ㄱ', 1); //> 'ㄺ1'
+Hangul.composeComplex('ㄹ', 'ㄱ', true); // => 'ㄺtrue'
+Hangul.composeComplex('ㄹ', 'ㄱ', 1); // => 'ㄺ1'
 ```
 Composition with different options
 ```JS
 Hangul.composeComplex('ㅅㅅ', 'ㅅ'); //> Error:
 Hangul.composeComplex('ㄷ', 'ㄷ', 'ㅁ', { hardFail: true });
 //> Error: Found 'ㄸ' but cannot combine 'ㄷ' and 'ㄷ' with 'ㅁ'
-Hangul.composeComplex('ㅁ', 'ㅿ', '', { hardFail: true }); //> 'ㅰ'
+Hangul.composeComplex('ㅁ', 'ㅿ', '', { hardFail: true }); // => 'ㅰ'
 Hangul.composeComplex('ㅂ', 'ㅅ', 'ㄷ', {
   complex3: true,
   complexArchaic: true,
-}); //> 'ㅵ'
-Hangul.composeComplex('ㅗ', 'ㅏ', '', { complexJung: false }); //> 'ㅗㅏ'
-Hangul.composeComplex('ㄱ', 'ㄱ', '', { composeComplexDouble: false}); //> 'ㄱㄱ'
+}); // => 'ㅵ'
+Hangul.composeComplex('ㅗ', 'ㅏ', '', { complexJung: false }); // => 'ㅗㅏ'
+Hangul.composeComplex('ㄱ', 'ㄱ', '', { composeComplexDouble: false}); // => 'ㄱㄱ'
 ```
 #### `Hangul.composeSyllable(char1: Character, char2: Character, char3?: any, options?: object) : string`
 ```JS
-Hangul.composeSyllable('ㅈ', 'ㅣ', 'ㅂ'); //> '집'
-Hangul.composeSyllable('ㅁ', 'ㅗ', 'ㅣ'); //> '모ㅣ'
+Hangul.composeSyllable('ㅈ', 'ㅣ', 'ㅂ'); // => '집'
+Hangul.composeSyllable('ㅁ', 'ㅗ', 'ㅣ'); // => '모ㅣ'
 Hangul.composeSyllable('ㅁ', 'ㅗ', 'ㅣ', { hardFail: true }); //> Error: 'ㅣ' is not a valid jong character
-Hangul.composeSyllable('ㅁ', 'a'); //> 'ㅁa'
+Hangul.composeSyllable('ㅁ', 'a'); // => 'ㅁa'
 Hangul.composeSyllable('ㅁ', 'a', '', { hardFail: true }); //> Error: 'a' is not a valid jung Character
 Hangul.composeSyllable('ㅁㅏ', 'ㄷ'); //> Error: 'ㅁㅏ' is not a Character!
-Hangul.composeSyllable('ㅃ', 'ㅏ'); //> '빠'
+Hangul.composeSyllable('ㅃ', 'ㅏ'); // => '빠'
 ```
-#### `Hangul.decomposeComplex(char: Character, options?: object) : CharacterCollection`
+#### `Hangul.decomposeComplex(char: Character, options?: object) : string`
 By default, `Hangul.composeComplex` leaves doubles intact.
+Even with the `grouped` option set, it will return a string.
 ```JS
-Hangul.decomposeComplex('ㄸ'); //> 'ㄸ'
-Hangul.decomposeComplex('ㄸ', { grouped: true }); //> 'ㄸ'
-Hangul.decomposeComplex('ㄸ', { decomposeDouble: true }) //> 'ㄷㄷ'
-Hangul.decomposeComplex('ㄸ', { grouped: true, decomposeDouble: true}); //> ['ㄷ', 'ㄷ']
+Hangul.decomposeComplex('ㄸ'); // => 'ㄸ'
+Hangul.decomposeComplex('ㄸ', { grouped: true }); // => 'ㄸ'
+Hangul.decomposeComplex('ㄸ', { decomposeDouble: true }) // => 'ㄷㄷ'
+Hangul.decomposeComplex('ㄸ', { grouped: true, decomposeDouble: true}); // => 'ㄷㄷ'
+Hangul.decomposeComplex('', { grouped: true }); // => ''
 ```
 #### `Hangul.decomposeSyllable(char: Character, options?: object) : string`
 `Hangul.decomposeSyllable` does not decompose complex characters.
 ```JS
-Hangul.decomposeSyllable('빠'); //> 'ㅃㅏ'
-Hangul.decomposeSyllable('양'); //> 'ㅇㅑㅇ'
-Hangul.decomposeSyllable('ㅂ') //> 'ㅂ'
-Hangul.decomposeSyllable('ㅂ', { hardFail: true }) //> Error: 'ㅂ' is not a syllable!
+Hangul.decomposeSyllable('빠'); // => 'ㅃㅏ'
+Hangul.decomposeSyllable('양'); // => 'ㅇㅑㅇ'
+Hangul.decomposeSyllable('ㅂ') // => 'ㅂ'
+Hangul.decomposeSyllable('ㅂ', { hardFail: true }) // => `Error:` 'ㅂ' is not a syllable!
 ```
 #### `Hangul.disassemble(data: CharacterCollection, options?: object) : CharacterCollection`
 Alias: `Hangul.d`
+This disassembles any Hangul character into it's basic components.
+By default, it won't disassemble doubles.
 ```JS
-Hangul.disassemble('고양이'); //> 'ㄱㅗㅇㅑㅇㅇㅣ'
-Hangul.disassemble('빠른', { grouped: true }); //> [['ㅃ', 'ㅏ'], ['ㄹ', 'ㅡ', 'ㄴ']]
-Hangul.disassemble('없다', { grouped: true }); //> [['ㅇ', 'ㅓ', ['ㅂ', 'ㅅ']], ['ㄷ', 'ㅏ']]
-Hangul.disassemble(''); //> ''
-Hangul.disassemble('', { grouped: true }); //> ['']
+Hangul.disassemble('고양이'); // => 'ㄱㅗㅇㅑㅇㅇㅣ'
+Hangul.disassemble('빠른', { grouped: true }); // => [['ㅃ', 'ㅏ'], ['ㄹ', 'ㅡ', 'ㄴ']]
+Hangul.disassemble('빠', {decomposeDouble: true}); // => 'ㅂㅂㅏ'
+Hangul.disassemble('없다', { grouped: true }); // => [['ㅇ', 'ㅓ', ['ㅂ', 'ㅅ']], ['ㄷ', 'ㅏ']]
+Hangul.disassemble(''); // => ''
+Hangul.disassemble('', { grouped: true }); // => []
 Hangul.d === Hangul.disassemble;
 ```
 #### `Hangul.disassembleCharacter(char: Character, options?:object) : CharacterCollection`
 ```JS
-Hangul.disassembleCharacter('없'); //> 'ㅇㅓㅂㅅ'
-Hangul.disassembleCharacter('없', { grouped: true }); //> ['ㅇ', 'ㅓ', ['ㅂ', 'ㅅ']]
+Hangul.disassembleCharacter('없'); // => 'ㅇㅓㅂㅅ'
+Hangul.disassembleCharacter('없', ); // => ['ㅇ', 'ㅓ', ['ㅂ', 'ㅅ']]
 ```
-## Keystrokes
-#### `Hangul.keysToHangul()`
 #### `Hangul.stronger(char: Character) : Character`
 This function is essentially the same as the one found in `hangul-js`
 ```JS
-Hangul.stronger('ㄱ'); //> 'ㄲ'
-Hangul.stronger('ㅋ'); //> 'ㄲ'
-Hangul.stronger('ㅅ'); //> 'ㅆ'
+Hangul.stronger('ㄱ'); // => 'ㄲ'
+Hangul.stronger('ㅋ'); // => 'ㄲ'
+Hangul.stronger('ㅅ'); // => 'ㅆ'
 ```
 It basically converts every character into it's stronger counterpart.
 ```JS
@@ -129,7 +134,25 @@ const stronger = {
   ㅊ: 'ㅉ',
 };
 ```
-#### Types of Hangul characters
+## Keystrokes
+#### `Hangul.hangulToKeys(char: Character, options?:object) : CharacterCollection`
+This function is basically a modified `Hangul.disassemble`.
+That's why the type signatures are the same.
+```JS
+Hangul.hangulToKeys('고양이'); // => 'rhdiddl'
+Hangul.hangulToKeys('빠른', { grouped: true }); // => [['Q', 'k'], ['f', 'm', 's']]
+Hangul.hangulToKeys('없다', { grouped: true }); // => [['d', 'j', ['q', 't']], ['e', 'k']]
+Hangul.hangulToKeys(''); // => ''
+Hangul.hangulToKeys('', { grouped: true }); // => []
+```
+#### `Hangul.keysToHangul(data: CharacterCollection) : string`
+This converts keystrokes, represented by Latin characters,
+into the corresponding Hangul output.
+```JS
+Hangul.keysToHangul('qwerty'); // => 'ㅂㅈㄷㄳㅛ'
+Hanguk.keysToHangul(['qwer', 'ty']); // => 'ㅂㅈㄷㄱ쇼'
+```
+## Types of Hangul characters
 #### `Hangul.is.*(datum: Character) : boolean`
 Within this object, functions take a single Character and return a boolean
 #### `Hangul.contains.*(CharacterCollection) : boolean`
@@ -174,3 +197,15 @@ any Unicode block that contains Hangul.
 A list of them is within [src/unicode/characters.mjs](src/unicode/characters.mjs).
 - `vowel` tests for Hangul consonants.
 A list of them is within [src/unicode/characters.mjs](src/unicode/characters.mjs).
+```JS
+Hangul.is.compatibilityJamo('ㅁ'); // => true
+Hangul.is.compatibilityJamo('a'); // => false
+Hangul.is.compatibilityJamo('ㅁㄴ'); //> Error: "ㅁㄴ" is not a Character!
+Hangul.is.compatibilityJamo(''); //> Error: "" is not a Character!
+Hangul.isAll.compatibilityJamo(''); // => false
+Hangul.isAll.compatibilityJamo('ㅁㄴ'); // => true
+Hangul.isAll.compatibilityJamo('ㅁㄴa'); // => false
+Hangul.contains.compatibilityJamo(''); // => false
+Hangul.contains.compatibilityJamo('hello world!'); // => false
+Hangul.contains.compatibilityJamo('hellㅇ!'); // => true
+```

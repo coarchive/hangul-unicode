@@ -32,6 +32,13 @@ function recurseAry(testFn, bool, data) {
   }
   return !bool;
 }
+function applyType(testFn, data) {
+  const len = data.length;
+  if (!len) {
+    // !len captures undefined too
+    return false;
+  }
+}
 const base = bool => testFn => (data) => {
   if (typeof data === 'string') {
     return recurseStr(testFn, bool, data);

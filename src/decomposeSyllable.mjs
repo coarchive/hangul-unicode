@@ -1,6 +1,6 @@
 import { syllables } from './unicode/blocks';
 import { cho, jung, jong } from './unicode/syllable';
-import { character } from './types';
+import { character, toString } from './types';
 
 export const splitSyllable_T = (char) => {
   const code = char.codePointAt(0) - syllables.start;
@@ -17,14 +17,10 @@ export default (datum, opts = {}) => {
     if (opts.hardFail) {
       throw Error(`"${datum}" is not a syllable!`);
     }
-    return [datum];
+    return toString(datum);
     // if there's no hardFail, the function must
     // still return the same type as it would have
     // if it didn't fail
   }
-  const resAry = splitSyllable_T(char);
-  if (opts.grouped) {
-    return resAry;
-  }
-  return resAry.join('');
+  return splitSyllable_T(char).join('');
 };

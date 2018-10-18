@@ -25,7 +25,7 @@ const tests = {
     ],
     [
       ['', 'ㅅ', '', { hardFail: true }],
-      Error('is not a Character!'),
+      Error('The first input to Hangul.composeComplex'),
     ],
     [
       ['ㄷ', 'ㄷ', 'ㅁ', { hardFail: true }],
@@ -51,15 +51,45 @@ const tests = {
     [['ㅃ', 'ㅏ'], '빠'],
   ],
   decomposeComplex: [
-    ['ㄸ', { decomposeDouble: false }, ''],
+    ['ㄸ', 'ㄸ'],
+    [['ㄸ', { grouped: true }], 'ㄸ'],
+    [['ㄸ', { decomposeDouble: true }], 'ㄷㄷ'],
+    [['ㄸ', { grouped: true, decomposeDouble: true }], 'ㄷㄷ'],
+    [['', { grouped: true }], ''],
+  ],
+  decomposeSyllable: [
+    ['빠', 'ㅃㅏ'],
+    ['양', 'ㅇㅑㅇ'],
+    ['ㅂ', 'ㅂ'],
+    [['ㅂ', { hardFail: true }], Error('is not a syllable!')],
   ],
   disassemble: [
     ['고양이', 'ㄱㅗㅇㅑㅇㅇㅣ'],
     [['빠른', { grouped: true }], [['ㅃ', 'ㅏ'], ['ㄹ', 'ㅡ', 'ㄴ']]],
     [['없다', { grouped: true }], [['ㅇ', 'ㅓ', ['ㅂ', 'ㅅ']], ['ㄷ', 'ㅏ']]],
+    ['', ''],
+    [['', { grouped: true }], []],
+  ],
+  disassembleCharacter: [
+    ['없', 'ㅇㅓㅂㅅ'],
+    [['없', { grouped: true }], ['ㅇ', 'ㅓ', ['ㅂ', 'ㅅ']]],
   ],
   stronger: [
-    [],
+    ['ㄱ', 'ㄲ'],
+    ['ㅂ', 'ㅃ'],
+    ['ㅋ', 'ㄲ'],
+    ['ㅅ', 'ㅆ'],
+  ],
+  hangulToKeys: [
+    ['고양이', 'rhdiddl'],
+    [['빠른', { grouped: true }], [['Q', 'k'], ['f', 'm', 's']]],
+    [['없다', { grouped: true }], [['d', 'j', ['q', 't']], ['e', 'k']]],
+    ['', ''],
+    [['', { grouped: true }], []],
+  ],
+  keysToHangul: [
+    ['qwerty', 'ㅂㅈㄷㄳㅛ'],
+    [a, ['qwer', 'ty'], 'ㅂㅈㄷㄱ쇼'],
   ],
 };
 
@@ -100,3 +130,4 @@ Object.keys(tests).forEach((functionName) => {
     });
   });
 });
+// I'm not gonna test the hangul block things because I'm lazy

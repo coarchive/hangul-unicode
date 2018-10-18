@@ -1,17 +1,29 @@
 export const valCharacter = (val) => {
   const str = `${val}`;
   // not using .toString because Symbol.toPrimitive overrides when present
-  if (str.length !== 1) {
-    return [false, val];
+  const len = str.length;
+  if (len === 0) {
+    return [2, str];
   }
-  return [true, str];
+  if (str.length === 1) {
+    return [1, str];
+  }
+  return [0, str];
 };
+/*
+enum valCharType {
+  notCharacter,
+  character,
+  nothing,
+}
+*/
+export const ENOCHAR = val => throw TypeError(`"${val}" is not a Character!`);
 export const character = (val) => {
   const vC = valCharacter(val);
-  if (vC[0]) {
+  if (vC[0] === 1) {
     return vC[1];
   }
-  throw Error(`"${val}" is not a Character!`);
+  return ENOCHAR(val);
 };
 // this function turns values into characters if it can
 // otherwise it just fails
@@ -42,7 +54,7 @@ export const characterCollection = (val) => {
 // characterCollection returns an Array
 /*
 enum charType {
-  nothing
+  nothing,
   Character,
   CharacterGroup,
 }
@@ -75,9 +87,10 @@ export function toString(data) {
 // this is basically deep toString
 // [[['foobar'], 'baz'], 'q', 'u', 'x'] => "foobarbazqux"
 export const toArray = data => (Array.isArray(data) ? data : data.split(''));
+export const toStarray = opts => data => data |> (opts.grouped ? toArray : toString);
 export const formatType = (data) => {
   const cc = characterCollection(data);
-  if (!cc[2] && cc[0] & 2) {
+  if (!cc[2] && cc[0] === 2) {
     return cc[1].split('');
   }
   return cc[1];

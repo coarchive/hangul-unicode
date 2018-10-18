@@ -3,7 +3,7 @@ import { chooseTransformer } from './decomposeComplex';
 import { splitSyllable_T } from './decomposeSyllable';
 import { generalMap } from './map';
 import computeOpts from './options';
-import { character } from './types';
+import { character, toStarray } from './types';
 
 export const disassembleCharacter_T = (opts) => {
   const t = chooseTransformer(opts);
@@ -14,9 +14,10 @@ export const disassembleCharacter_T = (opts) => {
     return t(char);
   };
 };
-export const disassembleCharacter = (datum, opts) => datum
+export const disassembleCharacter = (datum, opts = {}) => datum
   |> character
-  |> disassembleCharacter_T(opts |> computeOpts);
+  |> disassembleCharacter_T(opts |> computeOpts)
+  |> toStarray(opts);
 // not to be confused with Hangul.disassemble
 // this disassemble takes Characters as inputs, not CharacterGroups
 export default ((data, opts) => {
