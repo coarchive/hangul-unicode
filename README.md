@@ -35,6 +35,8 @@ the `Hangul Compatibility Jamo` and `Hangul Syllables` blocks if possible.
 See `Hangul.standardize`.
 
 ### Documentation
+[CharacterCollections](character-collections.md)
+[options](options.md)
 #### `Hangul.assemble(data: string, options?: object) : string`
 Alias: `Hangul.a`
 ```JS
@@ -99,6 +101,7 @@ Hangul.decomposeSyllable('ㅂ', { hardFail: true }) // => `Error:` 'ㅂ' is not 
 Alias: `Hangul.d`
 This disassembles any Hangul character into it's basic components.
 By default, it won't disassemble doubles.
+If `options.grouped` is true, `Hangul.disassemble` will return an Array.
 ```JS
 Hangul.disassemble('고양이'); // => 'ㄱㅗㅇㅑㅇㅇㅣ'
 Hangul.disassemble('빠른', { grouped: true }); // => [['ㅃ', 'ㅏ'], ['ㄹ', 'ㅡ', 'ㄴ']]
@@ -109,6 +112,7 @@ Hangul.disassemble('', { grouped: true }); // => []
 Hangul.d === Hangul.disassemble;
 ```
 #### `Hangul.disassembleCharacter(char: Character, options?:object) : CharacterCollection`
+If `options.grouped` is true, it will return an Array.
 ```JS
 Hangul.disassembleCharacter('없'); // => 'ㅇㅓㅂㅅ'
 Hangul.disassembleCharacter('없', ); // => ['ㅇ', 'ㅓ', ['ㅂ', 'ㅅ']]
