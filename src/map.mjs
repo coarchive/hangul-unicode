@@ -15,7 +15,7 @@ function flatMapAry(fn, ary) {
   const len = ary.length;
   for (let i = 0; i < len; i++) {
     const cc = characterCollection(ary[i]);
-    if (cc[0] & 2) {
+    if (cc[0] === 2) {
       // the cc[1] is a characterGroup
       res += (cc[2] ? flatMapAry : flatMapStr)(fn, cc[1]);
     } else {
@@ -39,7 +39,7 @@ function mapAry(fn, data) {
   for (let i = 0; i < len; i++) {
     const val = data[i];
     const cc = characterCollection(val);
-    if (cc[0] & 2) {
+    if (cc[0] === 2) {
       res.push((cc[2] ? mapAry : mapStr)(fn, cc[1]));
     } else {
       res.push(cc[1] |> fn);

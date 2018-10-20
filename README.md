@@ -34,20 +34,20 @@ All functions that are exposed will convert all valid Hangul characters into
 the `Hangul Compatibility Jamo` and `Hangul Syllables` blocks if possible.
 See `Hangul.standardize`.
 
-### Documentation
-[CharacterCollections](character-collections.md)
-[options](options.md)
+[Read about the CharacterCollection data type](character-collections.md)
+[Learn how to use the options argument in functions](options.md)
 #### `Hangul.assemble(data: string, options?: object) : string`
 Alias: `Hangul.a`
-```JS
+```js
 Hangul.assemble('ㄱㅗㅇㅑㅇㅇㅣ'); // => '고양이'
 Hangul.assemble(['ㄱ', 'ㅗ', 'ㅇ', 'ㅑ', 'ㅇ', 'ㅇ', 'ㅣ']); // => '고양이'
 Hangul.assemble(['ㅇㅣㄱㅓㅅㄷㅗ ㅈㅏㄱㄷㅗㅇㅎㅏㅂㄴㅣㄷㅏ']) // => '이것도 작동합니다'
 Hangul.assemble('Hello ㅇㅏㄴㄴㅕㅇ World ㅅㅔㅅㅏㅇ') // => 'Hello 안녕 World 세상'
+
 Hangul.a === Hangul.assemble // => true
 ```
 #### `Hangul.composeComplex(char1: Character, char2: Character, char3?: any, options?: object) : string`
-```JS
+```js
 Hangul.composeComplex('ㄷ', 'ㄷ'); // => 'ㄸ'
 Hangul.composeComplex('ㅅㅅ', 'ㅅ'); // => 'ㅅㅅㅅ'
 Hangul.composeComplex('', 'ㅅ') // => 'ㅅ'
@@ -57,7 +57,7 @@ Hangul.composeComplex('ㄹ', 'ㄱ', true); // => 'ㄺtrue'
 Hangul.composeComplex('ㄹ', 'ㄱ', 1); // => 'ㄺ1'
 ```
 Composition with different options
-```JS
+```js
 Hangul.composeComplex('ㅅㅅ', 'ㅅ'); //> Error:
 Hangul.composeComplex('ㄷ', 'ㄷ', 'ㅁ', { hardFail: true });
 //> Error: Found 'ㄸ' but cannot combine 'ㄷ' and 'ㄷ' with 'ㅁ'
@@ -70,7 +70,7 @@ Hangul.composeComplex('ㅗ', 'ㅏ', '', { complexJung: false }); // => 'ㅗㅏ'
 Hangul.composeComplex('ㄱ', 'ㄱ', '', { composeComplexDouble: false}); // => 'ㄱㄱ'
 ```
 #### `Hangul.composeSyllable(char1: Character, char2: Character, char3?: any, options?: object) : string`
-```JS
+```js
 Hangul.composeSyllable('ㅈ', 'ㅣ', 'ㅂ'); // => '집'
 Hangul.composeSyllable('ㅁ', 'ㅗ', 'ㅣ'); // => '모ㅣ'
 Hangul.composeSyllable('ㅁ', 'ㅗ', 'ㅣ', { hardFail: true }); //> Error: 'ㅣ' is not a valid jong character
@@ -82,7 +82,7 @@ Hangul.composeSyllable('ㅃ', 'ㅏ'); // => '빠'
 #### `Hangul.decomposeComplex(char: Character, options?: object) : string`
 By default, `Hangul.composeComplex` leaves doubles intact.
 Even with the `grouped` option set, it will return a string.
-```JS
+```js
 Hangul.decomposeComplex('ㄸ'); // => 'ㄸ'
 Hangul.decomposeComplex('ㄸ', { grouped: true }); // => 'ㄸ'
 Hangul.decomposeComplex('ㄸ', { decomposeDouble: true }) // => 'ㄷㄷ'
@@ -91,7 +91,7 @@ Hangul.decomposeComplex('', { grouped: true }); // => ''
 ```
 #### `Hangul.decomposeSyllable(char: Character, options?: object) : string`
 `Hangul.decomposeSyllable` does not decompose complex characters.
-```JS
+```js
 Hangul.decomposeSyllable('빠'); // => 'ㅃㅏ'
 Hangul.decomposeSyllable('양'); // => 'ㅇㅑㅇ'
 Hangul.decomposeSyllable('ㅂ') // => 'ㅂ'
@@ -102,7 +102,7 @@ Alias: `Hangul.d`
 This disassembles any Hangul character into it's basic components.
 By default, it won't disassemble doubles.
 If `options.grouped` is true, `Hangul.disassemble` will return an Array.
-```JS
+```js
 Hangul.disassemble('고양이'); // => 'ㄱㅗㅇㅑㅇㅇㅣ'
 Hangul.disassemble('빠른', { grouped: true }); // => [['ㅃ', 'ㅏ'], ['ㄹ', 'ㅡ', 'ㄴ']]
 Hangul.disassemble('빠', {decomposeDouble: true}); // => 'ㅂㅂㅏ'
@@ -111,21 +111,27 @@ Hangul.disassemble(''); // => ''
 Hangul.disassemble('', { grouped: true }); // => []
 Hangul.d === Hangul.disassemble;
 ```
+As said before, each function can handle non-standard characters from different
+Unicode blocks. `Hangul.disassemble` is no exception. These are some characters
+from the "Hangul Jamo" Unicode Block.
+```js
+Hangul.disassemble('ᄬᄣ'); // => 'ㅂㅂㅇㅂㅅㄷ'
+```
 #### `Hangul.disassembleCharacter(char: Character, options?:object) : CharacterCollection`
 If `options.grouped` is true, it will return an Array.
-```JS
+```js
 Hangul.disassembleCharacter('없'); // => 'ㅇㅓㅂㅅ'
 Hangul.disassembleCharacter('없', ); // => ['ㅇ', 'ㅓ', ['ㅂ', 'ㅅ']]
 ```
 #### `Hangul.stronger(char: Character) : Character`
 This function is essentially the same as the one found in `hangul-js`
-```JS
+```js
 Hangul.stronger('ㄱ'); // => 'ㄲ'
 Hangul.stronger('ㅋ'); // => 'ㄲ'
 Hangul.stronger('ㅅ'); // => 'ㅆ'
 ```
 It basically converts every character into it's stronger counterpart.
-```JS
+```js
 const stronger = {
   ㄱ: 'ㄲ',
   ㅋ: 'ㄲ',
@@ -138,11 +144,12 @@ const stronger = {
   ㅊ: 'ㅉ',
 };
 ```
+#### `Hangul.standardize()`
 ## Keystrokes
 #### `Hangul.hangulToKeys(char: Character, options?:object) : CharacterCollection`
 This function is basically a modified `Hangul.disassemble`.
 That's why the type signatures are the same.
-```JS
+```js
 Hangul.hangulToKeys('고양이'); // => 'rhdiddl'
 Hangul.hangulToKeys('빠른', { grouped: true }); // => [['Q', 'k'], ['f', 'm', 's']]
 Hangul.hangulToKeys('없다', { grouped: true }); // => [['d', 'j', ['q', 't']], ['e', 'k']]
@@ -152,7 +159,7 @@ Hangul.hangulToKeys('', { grouped: true }); // => []
 #### `Hangul.keysToHangul(data: CharacterCollection) : string`
 This converts keystrokes, represented by Latin characters,
 into the corresponding Hangul output.
-```JS
+```js
 Hangul.keysToHangul('qwerty'); // => 'ㅂㅈㄷㄳㅛ'
 Hanguk.keysToHangul(['qwer', 'ty']); // => 'ㅂㅈㄷㄱ쇼'
 ```
@@ -198,10 +205,10 @@ Unicode block.
 - `reserved` tests for the reserved Characters within
 any Unicode block that contains Hangul.
 - `consonant` tests for Hangul consonants.
-A list of them is within [src/unicode/characters.mjs](src/unicode/characters.mjs).
+A list of them is within [src/Unicode/characters.mjs](src/Unicode/characters.mjs).
 - `vowel` tests for Hangul consonants.
-A list of them is within [src/unicode/characters.mjs](src/unicode/characters.mjs).
-```JS
+A list of them is within [src/Unicode/characters.mjs](src/Unicode/characters.mjs).
+```js
 Hangul.is.compatibilityJamo('ㅁ'); // => true
 Hangul.is.compatibilityJamo('a'); // => false
 Hangul.is.compatibilityJamo('ㅁㄴ'); //> Error: "ㅁㄴ" is not a Character!
