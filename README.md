@@ -35,6 +35,7 @@ the `Hangul Compatibility Jamo` and `Hangul Syllables` blocks if possible.
 See `Hangul.standardize`.
 
 [Read about the CharacterCollection data type](character-collections.md)
+
 [Learn how to use the options argument in functions](options.md)
 #### `Hangul.assemble(data: string, options?: object) : string`
 Alias: `Hangul.a`
