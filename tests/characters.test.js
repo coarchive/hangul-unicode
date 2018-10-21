@@ -1,6 +1,6 @@
 import {
   consonants, vowels, hangulToKey, keyToHangul,
-} from './characters';
+} from '../src/unicode/characters';
 
 const characterEntries = Object.entries(Object.assign({}, consonants, vowels));
 const keyToHangulEntries = Object.entries(keyToHangul);

@@ -1,4 +1,4 @@
-import { CombinedRange, UnicodeRange } from './UnicodeRange';
+import { CombinedRange, UnicodeRange } from '../src/unicode/UnicodeRange';
 
 const uRange0 = new UnicodeRange(0, 50);
 const uRange1 = new UnicodeRange(80, 100);

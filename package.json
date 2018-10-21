@@ -3,6 +3,9 @@
   "version": "0.0.2",
   "description": " A library to process and standardize hangul characters across unicode blocks",
   "main": "dist/Hangul.cjs.min.js",
+  "files": [
+    "/dist"
+  ],
   "scripts": {
     "start": "rollup -c -w",
     "build": "rollup -c",

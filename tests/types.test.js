@@ -1,4 +1,4 @@
-import * as types from './types';
+import * as types from '../src/types';
 
 describe('types.character Values', () => {
   test('types.character("a") returns a', () => {

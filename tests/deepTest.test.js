@@ -1,4 +1,4 @@
-import { contains, isAll } from './deepTest';
+import { contains, isAll } from '../src/deepTest';
 
 const string = 'Hello, world!';
 const stringGroup = ['hell', ['o'], ['w', 'o', ['rl', 'd']], '!', [[['5']]]];
