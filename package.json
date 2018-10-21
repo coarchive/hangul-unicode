@@ -3,14 +3,11 @@
   "version": "0.0.2",
   "description": " A library to process and standardize hangul characters across unicode blocks",
   "main": "dist/Hangul.cjs.min.js",
-  "moduleDirectories": [
-    "src"
-  ],
   "scripts": {
     "start": "rollup -c -w",
     "build": "rollup -c",
     "test": "jest --no-cache",
-    "intest": "jest src/main.t.js"
+    "test:integration": "jest src/main.t.js"
   },
   "author": "Cole Gannon",
   "license": "MIT",
