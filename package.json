@@ -2,7 +2,7 @@
   "name": "hangul-unicode",
   "version": "0.0.1",
   "description": " A library to process and standardize hangul characters across unicode blocks",
-  "main": "dist/Hangul.min.js",
+  "main": "dist/Hangul.cjs.min.js",
   "moduleDirectories": [
     "src"
   ],
